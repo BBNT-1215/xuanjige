@@ -1,23 +1,23 @@
 {
-  "timestamp": "2026-05-09T06:37:01.624335+00:00",
-  "overall": "ok",
+  "timestamp": "2026-05-09T06:54:21.500116+00:00",
+  "overall": "warn",
   "checks": {
     "skill_avg_effectiveness": {
-      "value": 0.823,
-      "status": "ok",
+      "value": 0.54,
+      "status": "warn",
       "threshold_warn": 0.6,
       "threshold_critical": 0.4,
       "description": "Skill平均评分"
     },
     "role_avg_quality": {
-      "value": 0.84,
-      "status": "ok",
+      "value": 0.54,
+      "status": "warn",
       "threshold_warn": 0.7,
       "threshold_critical": 0.5,
       "description": "Role平均质量"
     },
     "cold_storage_ratio": {
-      "value": 0.0,
+      "value": 0.333,
       "status": "ok",
       "threshold_warn": 0.7,
       "threshold_critical": 0.9,
@@ -45,6 +45,20 @@
       "description": "Skill冲突率"
     }
   },
-  "alerts": [],
-  "recommendations": []
+  "alerts": [
+    {
+      "level": "warn",
+      "metric": "skill_avg_effectiveness",
+      "message": "Skill平均评分 0.54 偏低（warn<=0.6）"
+    },
+    {
+      "level": "warn",
+      "metric": "role_avg_quality",
+      "message": "Role平均质量 0.54 偏低（warn<=0.7）"
+    }
+  ],
+  "recommendations": [
+    "建议检查最近失败的Task，优化相关Skill的使用场景",
+    "建议Review最近质量低的Role执行记录，分析原因"
+  ]
 }

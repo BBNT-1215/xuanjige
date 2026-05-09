@@ -1,0 +1,25 @@
+name: Feature Request
+description: 提出新功能建议
+title: "[Feature] "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 功能描述
+        清晰描述你期望的功能。
+
+        ## 使用场景
+        在什么情况下会用到这个功能？
+
+        ## 当前替代方案
+        目前如何实现类似功能？
+
+        ## 其他补充
+  - type: textarea
+    id: context
+    attributes:
+      label: 附加上下文
+      description: 任何有助于理解该功能的背景信息
+    validations:
+      required: false

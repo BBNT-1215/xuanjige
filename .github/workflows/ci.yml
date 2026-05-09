@@ -2,51 +2,104 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main]
   pull_request:
-    branches: [ main, master ]
+    branches: [main]
 
 jobs:
-  lint:
+  test:
+    name: Test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Lint check
-        run: |
-          python3 -m py_compile scripts/kanban.py
-          python3 -m py_compile scripts/three_libraries.py
-          python3 -m py_compile scripts/event_bus.py
-          python3 -m py_compile scripts/recovery.py
-          python3 -m py_compile scripts/run_loop.py
-          python3 -m py_compile dashboard/server.py
-          echo "All Python files compile successfully"
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
 
-  test-scripts:
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run tests
+        run: |
+          pytest tests/ -v --tb=short --cov=engine --cov-report=term-missing
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        if: matrix.python-version == '3.12'
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-      - name: Test kanban CLI
+          python-version: "3.12"
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Lint
         run: |
-          export HERMESTRIX_HOME=$PWD
-          python3 scripts/kanban.py create "测试任务" --org Zhongshu --official 太子
-          python3 scripts/kanban.py list
-          python3 scripts/kanban.py state JJ-$(date +%Y%m%d)-001 Taizi "测试"
-          echo "Kanban CLI test passed"
-      - name: Test three libraries
+          ruff check engine/ hermestrix_cli.py
+          ruff format --check engine/ hermestrix_cli.py
+
+  cli-test:
+    name: CLI smoke test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -e .
+
+      - name: CLI smoke tests
         run: |
-          export HERMESTRIX_HOME=$PWD
-          python3 scripts/three_libraries.py list
-          echo "Three libraries test passed"
-      - name: Test event bus
+          hermestrix skill --list
+          hermestrix role --list
+          hermestrix evolution --status
+          hermestrix health --check
+          hermestrix skill --search routing
+
+  build-check:
+    name: Build check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build
+        run: pip install build
+
+      - name: Build sdist
+        run: python -m build --sdist
+
+      - name: Check sdist contents
         run: |
-          export HERMESTRIX_HOME=$PWD
-          python3 scripts/event_bus.py emit task.created '{"task_id":"test"}'
-          echo "Event bus test passed"
+          tar -tzf dist/*.tar.gz | grep -E "(engine|scripts|agents|skills)" | head -20

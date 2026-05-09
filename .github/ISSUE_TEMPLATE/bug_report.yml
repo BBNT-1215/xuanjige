@@ -1,0 +1,31 @@
+name: Bug Report
+description: 报告一个bug
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug描述
+        请清晰描述问题。
+
+        ## 复现步骤
+        1.
+        2.
+        3.
+
+        ## 期望行为
+
+        ## 实际行为
+
+        ## 环境
+        - OS:
+        - Python版本:
+        - Hermestrix版本:
+  - type: textarea
+    id: logs
+    attributes:
+      label: 相关日志
+      description: 请粘贴相关日志（如果有）
+    validations:
+      required: false

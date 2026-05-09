@@ -139,10 +139,15 @@
 ### 安装
 
 ```bash
-git clone https://github.com/yourname/hermestrix.git
+git clone https://github.com/BBNT-1215/hermestrix.git
 cd hermestrix
-pip install -r requirements.txt
+pip install -e ".[all]"          # 完整安装（含测试+Web看板）
+# 或者仅核心安装：
+pip install -e .                  # 仅核心CLI
+pip install -e ".[dev]"          # 核心 + 测试依赖
 ```
+
+> 可选依赖：`flask>=2.0`（Web看板）、`pytest`（测试）
 
 ### 配置
 

@@ -1,0 +1,97 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hermestrix"
+version = "0.1.0"
+description = "Self-evolving AI Agent orchestration OS based on Chinese三省六部 bureaucracy"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Hermestrix Team", email = "hermestrix@example.com" }
+]
+keywords = [
+    "ai", "agent", "multi-agent", "三省六部", "orchestration",
+    "self-evolving", "workflow", "bureaucracy", "hermes"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = [
+    "click>=8.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.4.0",
+]
+web = [
+    "flask>=2.0",
+]
+all = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.4.0",
+    "flask>=2.0",
+]
+
+[project.scripts]
+hermestrix = "hermestrix_cli:main"
+
+[project.urls]
+Homepage = "https://github.com/BBNT-1215/hermestrix"
+Documentation = "https://github.com/BBNT-1215/hermestrix#readme"
+Repository = "https://github.com/BBNT-1215/hermestrix"
+Issues = "https://github.com/BBNT-1215/hermestrix/issues"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/engine",
+    "/scripts",
+    "/agents",
+    "/skills",
+    "/three_libs",
+    "/SKILL.md",
+    "/ROLE.md",
+    "/ARCHITECTURE.md",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["engine"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4"]
+ignore = ["E501"]
+
+[tool.coverage.run]
+source = ["engine"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
