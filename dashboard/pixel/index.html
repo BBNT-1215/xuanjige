@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>玄机阁 · 众生相</title>
+<title>玄机阁 · 议事堂</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;700&display=swap');
 
@@ -274,13 +274,14 @@ body {
 /* ========== STATUS BUBBLE ========== */
 .status-bubble {
   position: absolute;
-  top: -16px;
-  right: -8px;
-  width: 20px;
-  height: 20px;
+  bottom: 4px;
+  right: 4px;
+  top: auto;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  border: 2px solid #1a0f0a;
-  font-size: 10px;
+  border: 2px solid #2d1a0e;
+  font-size: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -305,7 +306,7 @@ body {
 /* ========== THOUGHT BUBBLE (for thinking state) ========== */
 .thought-bubble {
   position: absolute;
-  top: -28px;
+  top: -24px;
   left: 50%;
   transform: translateX(-50%);
   background: white;
@@ -580,7 +581,7 @@ body {
 
 <!-- ============ HEADER ============ -->
 <div id="header">
-  <h1 class="pixel-text">🏯 玄机阁 · 众生相 <span>实时监控</span></h1>
+  <h1 class="pixel-text">🏯 玄机阁 · 议事堂 <span>实时监控</span></h1>
   <div id="stats-bar">
     <div class="stat-chip"><span class="dot idle" id="stat-idle"></span><span id="cnt-idle">0</span> 空闲</div>
     <div class="stat-chip"><span class="dot think" id="stat-think"></span><span id="cnt-thinking">0</span> 思考</div>
@@ -942,6 +943,41 @@ function renderActivity() {
 }
 
 // ============================================================
+// REAL TASK ACTIVITY LOG (from tasks.json)
+// ============================================================
+let lastTaskSnapshot = null;
+
+function updateActivityFromTasks(tasks) {
+  if (!tasks || tasks.length === 0) {
+    const feed = document.getElementById('activity-feed');
+    if (feed && feed.innerHTML.includes('waiting')) {
+      feed.innerHTML = '<div class="loading-hint">暂无任务流转记录</div>';
+    }
+    return;
+  }
+
+  // Build new log entries from task state changes
+  const newEntries = tasks.slice(0, 10).map(t => {
+    const stateLabel = resolveState(t.state) || t.state;
+    const lastH = t.history ? t.history[t.history.length - 1] : null;
+    return {
+      time: t.updated_at ? t.updated_at.substring(11, 19) : '--:--:--',
+      agent: ROLES[t.assignee]?.name || t.assignee || '系统',
+      action: stateLabel,
+      task: t.title || '任务'
+    };
+  });
+
+  // Only update if different from last snapshot
+  const newKey = tasks.map(t => t.id + ':' + t.state).join('|');
+  if (newKey === lastTaskSnapshot) return;
+  lastTaskSnapshot = newKey;
+
+  activityLog = newEntries;
+  renderActivity();
+}
+
+// ============================================================
 // CORE UPDATE LOOP
 // ============================================================
 async function update() {
@@ -949,10 +985,12 @@ async function update() {
   const tasks    = await fetchJSON('/api/tasks');
 
   if (!registry) {
-    // Fallback: generate simulated activity for demo
-    simulateActivity();
+    // 无后端数据时，静默等待，不生成模拟数据
     return;
   }
+
+  // 从真实任务更新流转记录
+  updateActivityFromTasks(tasks);
 
   // Count task states
   const counts = { Doing: 0, Review: 0, Done: 0 };
@@ -980,7 +1018,7 @@ async function update() {
     const el = document.getElementById('tasks-' + id);
     if (el) el.textContent = total + ' 任务';
 
-    // Determine state
+    // Determine state based on task load
     let state = 'idle';
     if (total === 0) state = 'idle';
     else if (doing === 0) state = 'idle';
@@ -992,9 +1030,11 @@ async function update() {
     updateCharacter(id, state);
   });
 
-  // Stats bar
+  // Update header stats bar - count agents by state
   const st = { idle: 0, thinking: 0, busy: 0, mad: 0 };
-  Object.values(agentStates).forEach(s => st[s]++);
+  Object.values(agentStates).forEach(s => {
+    if (st[s] !== undefined) st[s]++;
+  });
   document.getElementById('cnt-idle').textContent      = st.idle;
   document.getElementById('cnt-thinking').textContent  = st.thinking;
   document.getElementById('cnt-busy').textContent      = st.busy;
@@ -1079,7 +1119,6 @@ function simulateActivity() {
 // ============================================================
 update();
 setInterval(update, 4000);
-setInterval(simulateActivity, 6000); // Add demo activity
 </script>
 </body>
 </html>
