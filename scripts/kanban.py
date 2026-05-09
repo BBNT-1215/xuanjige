@@ -263,6 +263,14 @@ def cmd_flow(task_id, from_dept, to_dept, remark):
         if not t:
             print(f'[看板] 任务 {task_id} 不存在', flush=True)
             return tasks
+        # 流转时同步更新状态：尚书省 → Review，其他部门 → Doing
+        dept_lower = to_dept.lower()
+        if dept_lower == '尚书省':
+            new_state = 'Review'
+        elif dept_lower in ('中书省', '门下省', '太子'):
+            new_state = dept_lower  # 这些部门对应自己的state名
+        else:
+            new_state = 'Doing'
         t.setdefault('flow_log', []).append({
             "at": now_iso(),
             "from": from_dept,
@@ -270,7 +278,9 @@ def cmd_flow(task_id, from_dept, to_dept, remark):
             "remark": clean_remark,
             "agent": agent_id,
             "agentLabel": agent_label,
+            "state_change": new_state,
         })
+        t['state'] = new_state
         t['org'] = to_dept
         t['updatedAt'] = now_iso()
         return tasks
