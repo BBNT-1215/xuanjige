@@ -185,6 +185,22 @@ def cmd_list():
         print(f"  - {k}: {len(v)} 条")
     print()
 
+# ── CLI 参数解析（支持 --key=value 和 --key value 两种格式）────
+def _parse_kwargs(args):
+    kwargs = {}
+    i = 0
+    while i < len(args):
+        a = args[i]
+        if a.startswith('--'):
+            if '=' in a:
+                k, v = a.split('=', 1)
+                kwargs[k] = v
+            elif i + 1 < len(args) and not args[i+1].startswith('--'):
+                kwargs[a] = args[i+1]
+                i += 1
+        i += 1
+    return kwargs
+
 # ── CLI ──────────────────────────────────────────────
 def main():
     if len(sys.argv) < 2:
@@ -195,33 +211,33 @@ def main():
 
     if cmd == 'archive-memory':
         task_id = sys.argv[2] if len(sys.argv) > 2 else ''
-        kwargs = dict(a.split('=', 1) for a in sys.argv[3:] if '=' in a)
+        kwargs = _parse_kwargs(sys.argv[3:])
         archive_memory(task_id, kwargs.get('--type','技术'), kwargs.get('--result','好'), kwargs.get('--detail',''))
 
     elif cmd == 'archive-skill':
         task_id = sys.argv[2] if len(sys.argv) > 2 else ''
-        kwargs = dict(a.split('=', 1) for a in sys.argv[3:] if '=' in a)
+        kwargs = _parse_kwargs(sys.argv[3:])
         archive_skill(task_id, kwargs.get('--method',''), kwargs.get('--effect',''))
 
     elif cmd == 'archive-knowledge':
         task_id = sys.argv[2] if len(sys.argv) > 2 else ''
-        kwargs = dict(a.split('=', 1) for a in sys.argv[3:] if '=' in a)
+        kwargs = _parse_kwargs(sys.argv[3:])
         archive_knowledge(task_id, kwargs.get('--domain',''), kwargs.get('--content',''))
 
     elif cmd == 'search-memory':
-        kwargs = dict(a.split('=', 1) for a in sys.argv[2:] if '=' in a)
+        kwargs = _parse_kwargs(sys.argv[2:])
         results = search_memory(kwargs.get('--type'), int(kwargs.get('--limit', 5)))
         for r in results:
             print(f"[{r.get('type')}/{r.get('result')}] {r.get('detail','')[:100]}")
 
     elif cmd == 'search-skill':
-        kwargs = dict(a.split('=', 1) for a in sys.argv[2:] if '=' in a)
+        kwargs = _parse_kwargs(sys.argv[2:])
         results = search_skill(kwargs.get('--domain'), int(kwargs.get('--limit', 5)))
         for r in results:
             print(f"[{r.get('method')}] {r.get('effect','')[:100]}")
 
     elif cmd == 'search-knowledge':
-        kwargs = dict(a.split('=', 1) for a in sys.argv[2:] if '=' in a)
+        kwargs = _parse_kwargs(sys.argv[2:])
         results = search_knowledge(kwargs.get('--query'), kwargs.get('--domain'), int(kwargs.get('--limit', 5)))
         for r in results:
             print(f"[{r.get('domain')}] {r.get('content','')[:100]}")

@@ -149,6 +149,22 @@ def main():
     elif cmd == 'status':
         cmd_status()
 
+    elif cmd == 'health':
+        cmd_status()
+
+    elif cmd == 'history':
+        log = _read_json(RECOVERY_LOG) or []
+        print(f"\n🔧 断点自愈历史记录（共 {len(log)} 条）")
+        for r in log[-20:]:
+            print(f"[{r.get('event')}] {r.get('task_id')} @ {r.get('timestamp')}: {r.get('reason')}")
+        print()
+
+    elif cmd == 'detect':
+        task_id = sys.argv[2] if len(sys.argv) > 2 else ''
+        result = check_task(task_id)
+        print(f"风险等级: {result['risk']}")
+        print(f"原因: {result['reason']}")
+
     elif cmd == 'trigger':
         task_id = sys.argv[2] if len(sys.argv) > 2 else ''
         reason = ''

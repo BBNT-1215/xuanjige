@@ -18,7 +18,9 @@ data/events.json
 data/events.json.tmp
 data/audit_log.json
 data/recovery_log.json
+data/evolution_log.json
 three_libs/*/
+three_libs/*.json
 !three_libs/memory/.gitkeep
 !three_libs/skills/.gitkeep
 !three_libs/knowledge/.gitkeep
