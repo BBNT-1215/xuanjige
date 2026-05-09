@@ -3,18 +3,18 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "hermestrix"
+name = "xuanjige"
 version = "0.1.0"
-description = "Self-evolving AI Agent orchestration OS based on Chinese三省六部 bureaucracy"
+description = "Self-evolving AI Agent orchestration OS based on Chinese三省六部 bureaucracy — 玄机阁"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
-    { name = "Hermestrix Team", email = "hermestrix@example.com" }
+    { name = "BBNT-1215", email = "xuanjige@example.com" }
 ]
 keywords = [
-    "ai", "agent", "multi-agent", "三省六部", "orchestration",
-    "self-evolving", "workflow", "bureaucracy", "hermes"
+    "ai", "agent", "multi-agent", "三省六部", "玄机阁", "xuanjige",
+    "self-evolving", "workflow", "bureaucracy", "orchestration"
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -49,13 +49,13 @@ all = [
 ]
 
 [project.scripts]
-hermestrix = "hermestrix_cli:main"
+xuanjige = "hermestrix_cli:main"
 
 [project.urls]
-Homepage = "https://github.com/BBNT-1215/hermestrix"
-Documentation = "https://github.com/BBNT-1215/hermestrix#readme"
-Repository = "https://github.com/BBNT-1215/hermestrix"
-Issues = "https://github.com/BBNT-1215/hermestrix/issues"
+Homepage = "https://github.com/BBNT-1215/xuanjige"
+Documentation = "https://github.com/BBNT-1215/xuanjige#readme"
+Repository = "https://github.com/BBNT-1215/xuanjige"
+Issues = "https://github.com/BBNT-1215/xuanjige/issues"
 
 [tool.hatch.build.targets.sdist]
 include = [

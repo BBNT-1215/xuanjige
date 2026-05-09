@@ -1,7 +1,11 @@
-# Hermestrix · 三省六部AI Agent协作框架
+# 玄机阁 · XuanJiGe
 
 <p align="center">
-  <strong>用Hermes Agent构建的三省六部多Agent协作体系——分权制衡、实时可观测、断点自愈、持续进化。</strong>
+  <strong>自我进化的 AI Agent 协作操作系统</strong>
+</p>
+
+<p align="center">
+  基于三省六部制 · Skill × Role 双库进化 · 三层记忆系统 · 健康实时自愈
 </p>
 
 <p align="center">
@@ -9,7 +13,7 @@
   <a href="#-快速开始">🚀 快速开始</a> ·
   <a href="#-核心特性">✨ 特性</a> ·
   <a href="#-项目结构">📁 结构</a> ·
-  <a href="#-设计原则">📐 原则</a>
+  <a href="#-玄机阁与三省六部制对照">⚖️ 对照</a>
 </p>
 
 ---
@@ -24,7 +28,7 @@
 
 ---
 
-## 🤔 为什么是三省六部？
+## 🤔 为什么是玄机阁？
 
 大多数 Multi-Agent 框架的套路是：
 
@@ -32,28 +36,68 @@
 
 然后你拿到一坨不知道经过了什么处理的结果，无法复现，无法审计，无法干预。
 
-**Hermestrix 的思路完全不同** —— 我们用了一个在中国存在 1400 年的制度架构：
+**玄机阁的思路完全不同** —— 我们在存在 1400 年的三省六部制度上，为 AI Agent 加上了可量化、可进化、可自愈的记忆与调度系统：
 
 ```
 用户 → 太子(分拣) → 中书省(规划) → 门下省(审核) → 尚书省(派发) → 六部(执行)
+                                                          ↓
+                                                    玄机阁进化引擎
+                                                    Skill库 · Role库
+                                                    健康监控 · 衰减管理
 ```
 
-这不是花哨的 metaphor，这是**真正的分权制衡**：
+这不是花哨的 metaphor，这是**真正的分权制衡 + 系统进化**：
 
-| | CrewAI | MetaGPT | AutoGen | **Hermestrix** |
-|---|:---:|:---:|:---:|:---:|
+| | CrewAI | MetaGPT | AutoGen | **玄机阁** |
+|:---:|:---:|:---:|:---:|:---:|
 | **制度性审核** | ❌ | ⚠️ | ⚠️ | **✅ 门下省专职·可封驳** |
-| **实时看板** | ❌ | ❌ | ❌ | **✅ Web看板+进度追踪** |
+| **Skill进化闭环** | ❌ | ❌ | ❌ | **✅ 量化评分·自动验证** |
+| **Role进化闭环** | ❌ | ❌ | ❌ | **✅ 质量追踪·动态更新** |
+| **健康实时监控** | ❌ | ❌ | ❌ | **✅ 六维度自动告警** |
+| **三层记忆系统** | ❌ | ❌ | ❌ | **✅ L1任务·L2进化·L3知识** |
+| **记忆衰减管理** | ❌ | ❌ | ❌ | **✅ 90天半衰·180天冷存储** |
 | **断点自愈** | ❌ | ❌ | ❌ | **✅ 自动检测+恢复** |
-| **进化闭环** | ❌ | ❌ | ❌ | **✅ 三库分离+持续进化** |
-| **三库分离** | ❌ | ❌ | ❌ | **✅ 记忆/技能/知识分离** |
-| **部署难度** | 中 | 高 | 中 | **低·纯Python** |
+| **零外部依赖** | 中 | 高 | 中 | **✅ 纯Python** |
 
-> **核心差异：制度性审核 + 断点自愈 + 进化闭环 + 零外部依赖**
+> **核心差异：制度性审核 + Skill/Role双库进化 + 健康实时自愈 + 零外部依赖**
 
 ---
 
-## 🏛️ 架构
+## ⚖️ 玄机阁与三省六部制对照
+
+| 维度 | 传统三省六部制 | 玄机阁 |
+|---|---|---|
+| **记忆载体** | 人脑（官员脑子里） | 三层可检索记忆系统（L1任务/L2进化/L3知识） |
+| **经验传承** | 师徒/官员交替（人走经验失传） | Skill库量化卡片（可传承、可进化） |
+| **派发依据** | 官员经验与直觉 | L1历史相似案例 + L2 Skill有效性 + L2 Role质量 + L3领域知识 |
+| **质量监督** | 御史弹劾（滞后+主观） | 健康监控实时预警（六维度自动化） |
+| **进化机制** | 换人（被动） | 进化引擎（主动）—— 评分变化→5次观察窗口→确认或回滚 |
+| **通信机制** | 奏折同步流转（一步卡住全停） | 事件总线异步并行（高效解耦） |
+| **记忆衰减** | 无 | 90天半衰期 → 180天冷存储 → 自动垃圾回收 |
+| **系统自愈** | 无 | 刑部监控断点信号，自动触发恢复流程 |
+
+**一句话**：传统三省六部是人的官僚体系，**玄机阁是能让 AI Agent 自己积累经验、自动进化、实时自愈的操作系统**。
+
+---
+
+## ⚖️ XuanJiGe vs Traditional Three Departments and Six Ministries
+
+| Dimension | Traditional Three Departments and Six Ministries | XuanJiGe |
+|---|---|---|
+| **Memory** | Human brains (officials' minds) | Three-tier searchable memory system (L1 Task / L2 Evolution / L3 Knowledge) |
+| **Experience Transfer** | Master-apprentice / official succession (knowledge lost with people) | Skill library with quantified cards (transferable, evolvable) |
+| **Dispatch Basis** | Officials' experience and intuition | L1 similar cases + L2 Skill effectiveness + L2 Role quality + L3 domain knowledge |
+| **Quality Oversight** | Censor impeachment (lagged + subjective) | Real-time health monitoring (6-dimension automated) |
+| **Evolution Mechanism** | Personnel change (passive) | Evolution engine (proactive) — score change → 5-observation window → confirm or rollback |
+| **Communication** | Synchronous memorial流转 (one bottleneck stalls all) | Event bus async parallel (efficient decoupled) |
+| **Memory Decay** | None | 90-day half-life → 180-day cold storage → automatic garbage collection |
+| **Self-healing** | None | Xingbu monitors breakpoints, auto-triggers recovery |
+
+**One-liner**: Traditional Three Departments and Six Ministries is a human bureaucracy; **XuanJiGe is an operating system that lets AI Agents accumulate experience, evolve automatically, and self-heal in real time.**
+
+---
+
+## 🏛️ 架构 / Architecture
 
 ```
                            ┌───────────────────────────────────┐
@@ -79,6 +123,7 @@
                            ┌─────────────────▼─────────────────┐
                            │          📮 尚书省 (shangshu)       │
                            │     派发任务 → 协调六部 → 汇总回奏  │
+                           │     （查Skill/Role库智能派发）      │
                            └───┬──────┬──────┬──────┬──────┬───┘
                                │      │      │      │      │
                          ┌─────▼┐ ┌───▼───┐ ┌▼────┐ ┌───▼─┐ ┌▼─────┐
@@ -87,11 +132,11 @@
                          └──────┘ └───────┘ └─────┘ └─────┘ └──────┘
                                                              ┌──────┐
                                                              │📋吏部│
-                                                             │ 人事 │
+                                                             │ 三库  │
                                                              └──────┘
 ```
 
-### 各省部职责
+### 各省部职责 / Departments
 
 | 部门 | Agent ID | 职责 | 擅长领域 |
 |------|----------|------|---------|
@@ -104,59 +149,37 @@
 | ⚔️ **兵部** | `bingbu` | 代码、算法、巡检 | 功能开发、Bug 修复、代码审查 |
 | ⚖️ **刑部** | `xingbu` | 安全、合规、审计 | 安全扫描、合规检查、红线管控 |
 | 🔧 **工部** | `gongbu` | CI/CD、部署、工具 | Docker 配置、流水线、自动化 |
-| 📋 **吏部** | `libu` | 人事、三库管理 | Agent 注册、权限维护、培训 |
+| 📋 **吏部** | `libu_hr` | 人事、三库管理 | Agent 注册、权限维护、培训 |
 | 🌅 **早朝官** | `zaochao` | 每日早朝、新闻聚合 | 定时播报、数据汇总 |
 | 🔭 **钦天监** | `qintianjian` | 数据分析、监控 | 数据分析、模型效果评估 |
 
-### 权限矩阵
-
-> 不是想发就能发 —— 真正的分权制衡
-
-| From ↓ \ To → | 太子 | 中书 | 门下 | 尚书 | 户 | 礼 | 兵 | 刑 | 工 | 吏 |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **太子** | — | ✅ | | | | | | | | |
-| **中书省** | ✅ | — | ✅ | ✅ | | | | | | |
-| **门下省** | | ✅ | — | ✅ | | | | | | |
-| **尚书省** | | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **六部+吏部** | | | | ✅ | | | | | | |
-
-### 任务状态流转
-
-```
-用户 → 太子 → 中书规划 → 门下审议 → 已派发 → 执行中 → 待审查 → ✅ 完成
-                      ↑          │
-                      └──── 封驳 ─┘
-```
-
 ---
 
-## 🚀 快速开始
+## 🚀 快速开始 / Quick Start
 
-### 前置条件
+### 前置条件 / Prerequisites
 - Python 3.10+
 - Hermes Agent（已配置）
 
-### 安装
+### 安装 / Installation
 
 ```bash
-git clone https://github.com/BBNT-1215/hermestrix.git
-cd hermestrix
+git clone https://github.com/BBNT-1215/xuanjige.git
+cd xuanjige
 pip install -e ".[all]"          # 完整安装（含测试+Web看板）
 # 或者仅核心安装：
 pip install -e .                  # 仅核心CLI
 pip install -e ".[dev]"          # 核心 + 测试依赖
 ```
 
-> 可选依赖：`flask>=2.0`（Web看板）、`pytest`（测试）
-
-### 配置
+### 配置 / Configuration
 
 ```bash
 cp config.example.yaml config.yaml
 # 编辑 config.yaml，填入你的模型配置
 ```
 
-### 启动
+### 启动 / Launch
 
 ```bash
 # 启动看板服务器
@@ -165,84 +188,134 @@ python dashboard/server.py
 # 在另一个终端，启动任务刷新循环
 python scripts/run_loop.py
 
-# 使用 Hermestrix
-hermes -p hermestrix
+# 使用玄机阁
+hermes -p xuanjige
 ```
 
 ---
 
-## ✨ 核心特性
+## ✨ 核心特性 / Core Features
 
-### 1. 制度性审核（门下省）
+### 1. 制度性审核（门下省）Institutional Review
 - 中书省起草方案后，必须经过门下省审议
 - 门下省可「准奏」或「封驳」（最多3轮，第3轮强制通过）
 - **不是可选插件，是架构强制的质量关卡**
 
-### 2. 断点自愈
+### 2. Skill × Role 双库进化闭环 Self-Evolving Skill & Role Libraries
+```
+任务完成 → 归档L1 → 更新L2评分 → 变化>阈值?
+                                        ↓
+                              是 → 开启5次观察窗口
+                                        ↓
+                              均值≥新评分×0.9 → 确认进化
+                              均值<新评分×0.85 → 回滚旧版本
+```
+- Skill库：16个技能卡片，每次任务后 effectiveness 动态更新
+- Role库：17个角色，每次任务后 quality_score 动态更新
+- 进化引擎自动验证，防止分数抖动
+
+### 3. 三层记忆系统 Three-Tier Memory System
+```
+L1 任务记忆（raw/resolved/cold）
+  ↓ 每次任务归档
+L2 进化层（SkillStats / RoleStats）
+  ↓ 聚合统计
+L3 知识库（workflow规则 + 决策公理 + 项目背景）
+```
+- 记忆不是存储过去，而是服务未来决策
+- 90天半衰期 · 180天冷存储 · 自动垃圾回收
+
+### 4. 健康实时监控 Real-Time Health Monitoring
+| 指标 | 说明 | 阈值方向 |
+|------|------|---------|
+| skill_avg_effectiveness | Skill库平均有效性 | 越低越差 |
+| role_avg_quality | Role库平均质量 | 越低越差 |
+| cold_storage_ratio | 冷存储占比 | 越高越差 |
+| evolution_stagnation_days | 进化停滞天数 | 越高越差 |
+| pending_verifications | 待验证项数量 | 越高越差 |
+| skill_conflict_rate | 记忆冲突率 | 越高越差 |
+
+### 5. 断点自愈 Breakpoint Self-Healing
 - 子Agent执行时，工具调用可能全部成功但输出文件未创建
 - 刑部监控断点信号，自动触发恢复流程
 - **精修类任务强制使用Python单趟脚本，禁止多次patch**
 
-### 3. 三库分离进化
-```
-记忆库：记录"做过什么事，做得好/坏" → 动态经验
-技能库：记录"用什么方法做"           → 能力固化
-知识库：记录"什么事是什么"            → 静态事实
-```
-- 每次任务完成后自动归档到对应库
-- 下次执行前强制检索，作为决策参考
-
-### 4. 实时看板
-- Web看板显示所有任务状态
-- 每个关键步骤强制上报进度
-- 完整流转链可追溯
-
-### 5. 事件驱动通信
-- 各Agent间通过event_bus通信
+### 6. 事件驱动通信 Event-Driven Communication
+- 各Agent间通过EventBus通信
 - 支持异步派发、并行执行、结果汇总
 
 ---
 
-## 📁 项目结构
+## 📁 项目结构 / Project Structure
 
 ```
-hermestrix/
+xuanjige/
 ├── agents/                     # Agent人格定义（SOUL.md）
 │   ├── taizi/                  # 太子·消息分拣
 │   ├── zhongshu/               # 中书省·规划起草
 │   ├── menxia/                 # 门下省·审议封驳
-│   ├── shangshu/               # 尚书省·调度汇总
+│   ├── shangshu/              # 尚书省·调度汇总
 │   ├── hubu/                   # 户部·数据
 │   ├── libu/                   # 礼部·文档
 │   ├── bingbu/                 # 兵部·工程
 │   ├── xingbu/                 # 刑部·质检
 │   ├── gongbu/                 # 工部·基建
-│   ├── libu/                   # 吏部·人事
+│   ├── libu_hr/                # 吏部·三库管理
 │   ├── zaochao/                # 早朝官·情报
 │   └── qintianjian/            # 钦天监·分析
+├── skills/                     # Skill技能库
+│   ├── skill_routing/         # 旨意分拣路由
+│   ├── skill_skill_routing/   # Skill智能检索
+│   ├── skill_role_dispatch/   # Role智能派发
+│   ├── skill_architecture/    # 架构设计
+│   ├── skill_code_review/     # 代码审查
+│   ├── skill_debugging/       # 调试排障
+│   ├── skill_data_analysis/   # 数据分析
+│   ├── skill_reporting/       # 报告撰写
+│   ├── skill_trend_analysis/  # 趋势分析
+│   ├── skill_devops/          # 运维自动化
+│   ├── skill_monitoring/      # 监控配置
+│   ├── skill_incident_response/# 故障响应
+│   ├── skill_database_optimization/# 数据库优化
+│   ├── skill_api_gateway/     # API网关
+│   ├── skill_coding/           # 代码编写
+│   └── skill_qa_testing/      # 质量测试
+├── engine/                     # 核心引擎
+│   ├── memory_manager.py      # L0-L3记忆管理
+│   ├── evolution.py           # 进化引擎+验证闭环
+│   ├── health_monitor.py      # 健康监控
+│   ├── conflict_resolver.py   # 记忆矛盾解决
+│   ├── decay_service.py       # 衰减管理
+│   └── libu_agent.py          # 吏部常驻进程
+├── three_libs/                # 三库存储
+│   ├── memory/                # L1任务记忆（raw/resolved/cold）
+│   ├── skills/                # L2技能进化数据
+│   ├── roles/                 # L2角色进化数据
+│   └── knowledge/             # L3知识库（rules/axioms/context）
 ├── scripts/
-│   ├── kanban.py               # 看板CLI（创建/状态/流转/进度）
-│   ├── event_bus.py            # 事件总线
-│   ├── task_store.py           # 任务存储
-│   ├── three_libraries.py      # 三库管理
-│   ├── run_loop.py             # 主循环刷新
-│   ├── recovery.py             # 断点自愈
-│   └── evolution.py            # 进化闭环
+│   ├── kanban.py              # 看板CLI
+│   ├── event_bus.py           # 事件总线
+│   ├── three_libraries.py     # 三库管理CLI
+│   ├── recovery.py            # 断点自愈
+│   └── run_loop.py            # 主循环
 ├── dashboard/
-│   ├── server.py               # Web看板服务器
-│   └── static/
-│       ├── index.html          # 看板主页面
-│       └── style.css          # 样式
-├── config.yaml                 # 配置文件
-├── requirements.txt
+│   ├── server.py              # Web看板服务器
+│   └── index.html             # 看板主页
+├── tests/                     # 测试套件（30/30 PASS）
+├── SKILL.md                   # Skill标准格式定义
+├── ROLE.md                    # Role标准格式定义
+├── ARCHITECTURE.md            # 架构详细文档
+├── hermestrix_cli.py          # 主CLI
+├── pyproject.toml
+├── CHANGELOG.md
 └── README.md
 ```
 
 ---
 
-## 📐 设计原则
+## 📐 设计原则 / Design Principles
 
-### 核心原则（来自agent-governance-design v5.x）
+### 核心原则 / Core Principles
 
 1. **从本质问题出发，不套模板**
    - 四个本质问题：意图传递、能力匹配、质量验证、持续进化

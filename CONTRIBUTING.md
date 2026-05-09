@@ -1,22 +1,24 @@
-# 贡献指南
+# 贡献指南 / Contributing Guide
 
-欢迎贡献 Hermestrix！
+欢迎贡献 **玄机阁 (XuanJiGe)**！
 
-## 项目愿景
+## 项目愿景 / Project Vision
 
-Hermestrix 是一个自我进化的 AI Agent 协作操作系统，以中国古代三省六部制为组织隐喻，构建能够稳定执行、持续自我进化、感知自身健康的工程产品级多Agent协作框架。
+玄机阁是一个自我进化的 AI Agent 协作操作系统，以中国古代三省六部制为组织隐喻，构建能够稳定执行、持续自我进化、感知自身健康的工程产品级多Agent协作框架。
 
-## 快速开始
+XuanJiGe is a self-evolving AI Agent orchestration operating system. Using the ancient Chinese Three Departments and Six Ministries bureaucracy as its organizational metaphor, it builds an engineering-grade multi-Agent collaboration framework capable of stable execution, continuous self-evolution, and real-time self-healing.
+
+## 快速开始 / Quick Start
 
 ```bash
-git clone https://github.com/BBNT-1215/hermestrix.git
-cd hermestrix
+git clone https://github.com/BBNT-1215/xuanjige.git
+cd xuanjige
 pip install -e ".[dev]"    # 安装依赖（含测试套件）
 pytest tests/ -v            # 运行测试
-hermestrix skill --list     # 验证CLI
+xuanjige skill --list     # 验证CLI
 ```
 
-## 开发环境
+## 开发环境 / Development Environment
 
 - Python >= 3.10
 - HERMESTRIX_HOME 环境变量指向项目根目录（默认自动检测）
@@ -25,10 +27,10 @@ hermestrix skill --list     # 验证CLI
 export HERMESTRIX_HOME=$PWD
 ```
 
-## 项目结构
+## 项目结构 / Project Structure
 
 ```
-hermestrix/
+xuanjige/
 ├── engine/          # 核心引擎（memory_manager, evolution, health_monitor...）
 ├── agents/          # Role库（SOUL.md + METADATA.yaml）
 ├── skills/          # Skill库（SKILL.md + METADATA.yaml + scripts/）
@@ -37,7 +39,7 @@ hermestrix/
 └── tests/           # 测试套件
 ```
 
-## 添加新 Skill
+## 添加新 Skill / Adding a New Skill
 
 ```bash
 # 在 skills/ 下创建 {skill_id}/ 目录
@@ -50,7 +52,7 @@ mkdir skills/skill_my_feature/
 
 参考 `SKILL.md` 标准格式（项目根目录）。
 
-## 添加新 Role
+## 添加新 Role / Adding a New Role
 
 ```bash
 mkdir agents/my_role/
@@ -61,7 +63,7 @@ mkdir agents/my_role/
 
 参考 `ROLE.md` 标准格式（项目根目录）。
 
-## 测试
+## 测试 / Testing
 
 ```bash
 # 运行全部测试
@@ -79,7 +81,7 @@ pytest tests/test_evolution.py -v
 - 使用临时目录隔离测试数据（`tempfile.mkdtemp`）
 - 设置独立的 `HERMESTRIX_HOME` 环境变量
 
-## 提交规范（Conventional Commits）
+## 提交规范 / Commit Convention
 
 ```
 feat:     新功能
@@ -103,6 +105,6 @@ git commit -m "test(evolution): 添加验证窗口测试
 
 main分支推送自动执行完整构建检查。
 
-## 许可证
+## 许可证 / License
 
 MIT License（参见 LICENSE 文件）
