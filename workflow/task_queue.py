@@ -112,8 +112,8 @@ class TaskQueue:
     def get(self, task_id: str) -> dict | None:
         return self.tasks.get(task_id)
 
-    def list(self, state: str = None, assignee: str = None,
-             limit: int = 100) -> list[dict]:
+    def filter_tasks(self, state: str = None, assignee: str = None,
+                    limit: int = 100) -> list[dict]:
         """查询任务列表"""
         results = list(self.tasks.values())
         if state:

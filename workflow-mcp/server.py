@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 """
-玄机阁 MCP Server
-=================
+玄机阁 MCP Server (Kanban 步骤链版)
+====================================
 通过MCP协议暴露工作流引擎工具给Hermes Agent使用。
 
 暴露工具：
-  workflow_submit    提交新任务
-  workflow_process  执行单任务流程
+  workflow_submit    提交新任务（创建步骤链，Watchdog自动推进）
+  workflow_chain_status   查看步骤链状态
+  workflow_watchdog_info  查看Watchdog状态
+  workflow_abort    中止进行中的步骤链
+
+  [旧版兼容]
+  workflow_process  执行单任务流程（手动推进，旧模式）
   workflow_status   查看引擎状态
-  workflow_list     列出任务
-  workflow_trace    查看任务流转历史
-  workflow_start    启动引擎
-  workflow_stop     停止引擎
+  workflow_list     列出任务（旧队列）
+  workflow_trace    查看任务流转历史（旧队列）
 
 配置到 ~/.hermes/config.yaml:
   mcp_servers:
@@ -25,44 +28,51 @@ import json
 import os
 from pathlib import Path
 
-# ── Setup path so we can import the workflow engine ──
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
-# ── Read request from stdin, write response to stdout ──
-# MCP protocol: JSON-RPC over stdio
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'hermes-agent'))
 
 
 def main():
-    """Main loop: read JSON-RPC requests from stdin, respond to stdout"""
     import signal
-
-    # Ignore SIGPIPE
     signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
-    # Import engine components (after path setup)
+    # Lazy import，避免启动时出错
+    from workflow.kanban_step_chain import (
+        create_root_task, build_step_chain, get_chain_steps,
+        is_chain_complete, abort_chain,
+    )
+    from workflow.watchdog import tick as watchdog_tick
+
+    # 旧引擎（兼容）
     from workflow.engine import get_engine
     from workflow.task_queue import get_queue
 
     engine = get_engine()
     queue = get_queue()
 
-    # Read lines from stdin
     for line in sys.stdin:
         line = line.strip()
         if not line:
             continue
-
         try:
             request = json.loads(line)
         except json.JSONDecodeError:
             continue
 
-        response = handle_request(request, engine, queue)
+        ctx = {
+        }
+        response = handle_request(request, engine, queue,
+                                 create_root_task, build_step_chain,
+                                 get_chain_steps, is_chain_complete,
+                                 abort_chain, watchdog_tick)
         if response is not None:
             print(json.dumps(response, ensure_ascii=False), flush=True)
 
 
-def handle_request(req, engine, queue):
+def handle_request(req, engine, queue,
+                 create_root_task_fn, build_step_chain_fn,
+                 get_chain_steps_fn, is_chain_complete_fn,
+                 abort_chain_fn, watchdog_tick_fn):
     """Handle a single JSON-RPC request"""
     method = req.get("method", "")
     req_id = req.get("id")
@@ -100,65 +110,60 @@ def handle_request(req, engine, queue):
                 "tools": [
                     {
                         "name": "workflow_submit",
-                        "description": "提交新任务到玄机阁工作流引擎。任务会自动走完：承旨分拣→机衡调度→六部执行→早朝汇总→御史审核的完整流程。",
+                        "description": "提交新任务到玄机阁（Kanban步骤链版）。任务会自动走完5步：承旨→机衡→六部执行→早朝汇总→御史审核，全自动推进，无需人工干预。",
                         "inputSchema": {
                             "type": "object",
                             "properties": {
                                 "title": {"type": "string", "description": "任务标题"},
                                 "description": {"type": "string", "description": "任务描述"},
-                                "tags": {"type": "string", "description": "标签(逗号分隔)"},
-                                "priority": {"type": "integer", "description": "优先级(数字,越大越优先)", "default": 0},
+                                "target_agent": {"type": "string", "description": "指定执行Agent（可选，默认jizao）", "default": "jizao"},
                             },
                             "required": ["title"],
                         },
                     },
                     {
-                        "name": "workflow_process",
-                        "description": "推进任务到下一步。如果任务需要实际执行（delegate指令存在），请先用delegate_task执行对应Agent，再调用本工具推进状态。返回结果中的needs_execution=true表示需要先delegate执行。",
+                        "name": "workflow_chain_status",
+                        "description": "查看某个任务的步骤链完整状态，包含每步的名称、状态和执行结果。",
                         "inputSchema": {
                             "type": "object",
                             "properties": {
-                                "task_id": {"type": "string", "description": "任务ID"},
+                                "task_id": {"type": "string", "description": "主任务ID（workflow_submit返回的id）"},
+                            },
+                            "required": ["task_id"],
+                        },
+                    },
+                    {
+                        "name": "workflow_watchdog_info",
+                        "description": "手动触发一次Watchdog扫描并查看进行中的任务链概览。",
+                        "inputSchema": {"type": "object", "properties": {}},
+                    },
+                    {
+                        "name": "workflow_abort",
+                        "description": "中止某个进行中的任务链，标记所有步骤为blocked。",
+                        "inputSchema": {
+                            "type": "object",
+                            "properties": {
+                                "task_id": {"type": "string", "description": "主任务ID"},
+                                "reason": {"type": "string", "description": "中止原因"},
                             },
                             "required": ["task_id"],
                         },
                     },
                     {
                         "name": "workflow_status",
-                        "description": "查看玄机阁工作流引擎的当前状态，包括各状态任务数量和最近日志。",
+                        "description": "查看玄机阁工作流引擎状态（兼容旧模式）。",
                         "inputSchema": {"type": "object", "properties": {}},
                     },
                     {
                         "name": "workflow_list",
-                        "description": "列出玄机阁中的任务列表，支持按状态过滤。",
+                        "description": "列出旧队列中的任务（兼容模式）。",
                         "inputSchema": {
                             "type": "object",
                             "properties": {
-                                "state": {"type": "string", "description": "按状态过滤(如:待分拣/执行中/已完成)"},
-                                "limit": {"type": "integer", "description": "返回数量上限", "default": 20},
+                                "state": {"type": "string", "description": "按状态过滤"},
+                                "limit": {"type": "integer", "description": "返回数量", "default": 20},
                             },
                         },
-                    },
-                    {
-                        "name": "workflow_trace",
-                        "description": "查看某个任务的完整流转记录，包括每个步骤的时间和执行Agent。",
-                        "inputSchema": {
-                            "type": "object",
-                            "properties": {
-                                "task_id": {"type": "string", "description": "任务ID"},
-                            },
-                            "required": ["task_id"],
-                        },
-                    },
-                    {
-                        "name": "workflow_start",
-                        "description": "启动玄机阁工作流引擎（后台自动处理待分拣任务）。",
-                        "inputSchema": {"type": "object", "properties": {}},
-                    },
-                    {
-                        "name": "workflow_stop",
-                        "description": "停止玄机阁工作流引擎。",
-                        "inputSchema": {"type": "object", "properties": {}},
                     },
                 ],
             },
@@ -170,19 +175,17 @@ def handle_request(req, engine, queue):
 
         try:
             if tool_name == "workflow_submit":
-                result = _wf_submit(engine, arguments)
-            elif tool_name == "workflow_process":
-                result = _wf_process(engine, arguments)
+                result = _wf_submit(create_root_task_fn, build_step_chain_fn, arguments)
+            elif tool_name == "workflow_chain_status":
+                result = _wf_chain_status(get_chain_steps_fn, arguments)
+            elif tool_name == "workflow_watchdog_info":
+                result = _wf_watchdog_info(get_chain_steps_fn, watchdog_tick_fn)
+            elif tool_name == "workflow_abort":
+                result = _wf_abort(abort_chain_fn, arguments)
             elif tool_name == "workflow_status":
                 result = _wf_status(engine)
             elif tool_name == "workflow_list":
                 result = _wf_list(queue, arguments)
-            elif tool_name == "workflow_trace":
-                result = _wf_trace(queue, arguments)
-            elif tool_name == "workflow_start":
-                result = _wf_start(engine)
-            elif tool_name == "workflow_stop":
-                result = _wf_stop(engine)
             else:
                 result = {"error": f"Unknown tool: {tool_name}"}
         except Exception as e:
@@ -206,7 +209,88 @@ def handle_request(req, engine, queue):
     return None
 
 
-# ── Tool implementations ───────────────────────────────────
+# ── 新工具实现（Kanban步骤链）────────────────────────────────────
+
+def _wf_submit(create_root_task_fn, build_step_chain_fn, args):
+    title       = args["title"]
+    description  = args.get("description", "")
+    target      = args.get("target_agent", "jizao")
+
+    task_id = create_root_task_fn(title, description)
+    build_step_chain_fn(task_id, title, routing={"target": target})
+
+    return {
+        "ok": True,
+        "task_id": task_id,
+        "title": title,
+        "message": f"任务已提交(ID={task_id})，5步流程自动推进中...",
+    }
+
+
+def _wf_chain_status(get_chain_steps_fn, args):
+    task_id = args["task_id"]
+    chain = get_chain_steps_fn(task_id)
+    if not chain:
+        return {"ok": False, "error": f"找不到任务链: {task_id}"}
+
+    done = sum(1 for s in chain if s["status"] == "done")
+    return {
+        "ok": True,
+        "task_id": task_id,
+        "total": len(chain),
+        "done": done,
+        "steps": [
+            {
+                "name": s.get("step_name"),
+                "status": s["status"],
+                "title": s.get("title", "")[:50],
+            }
+            for s in chain
+        ],
+    }
+
+
+def _wf_watchdog_info(get_chain_steps_fn, watchdog_tick_fn):
+    # 先触发一次扫描
+    watchdog_tick_fn()
+
+    # 读取进行中的任务
+    from hermes_cli.kanban_db import connect, list_tasks
+    import json
+    conn = connect()
+    active = []
+    for t in list_tasks(conn, include_archived=False):
+        if t.status in ("ready", "running"):
+            try:
+                body = json.loads(t.body) if isinstance(t.body, str) else {}
+            except Exception:
+                body = {}
+            root_id = body.get("root_id")
+            if root_id and root_id == t.id:
+                chain = get_chain_steps_fn(root_id)
+                done = sum(1 for s in chain if s["status"] == "done")
+                active.append({
+                    "id": t.id,
+                    "title": t.title[:40],
+                    "done": done,
+                    "total": len(chain),
+                })
+    conn.commit()
+    return {
+        "ok": True,
+        "active_chains": len(active),
+        "chains": active,
+    }
+
+
+def _wf_abort(abort_chain_fn, args):
+    task_id = args["task_id"]
+    reason  = args.get("reason", "用户中止")
+    abort_chain_fn(task_id, reason)
+    return {"ok": True, "task_id": task_id, "message": f"任务链已中止: {reason}"}
+
+
+# ── 旧工具实现（兼容）────────────────────────────────────────────
 
 def _wf_start(engine):
     if not engine.running:
@@ -219,31 +303,10 @@ def _wf_stop(engine):
     return {"ok": True, "status": "engine_stopped", "running": engine.running}
 
 
-def _wf_submit(engine, args):
-    tags = None
-    if args.get("tags"):
-        tags = [t.strip() for t in args["tags"].split(",")]
-
-    task = engine.submit(
-        title=args["title"],
-        description=args.get("description", ""),
-        tags=tags,
-        priority=args.get("priority", 0),
-    )
-    return {
-        "ok": True,
-        "task_id": task["id"],
-        "title": task["title"],
-        "state": task["state"],
-        "message": f"任务已提交(ID={task['id']})，当前状态：{task['state']}",
-    }
-
-
 def _wf_process(engine, args):
     task_id = args["task_id"]
     result = engine.process_step(task_id)
     task = engine.queue.get(task_id)
-
     resp = {
         "ok": result.get("ok", False),
         "task_id": task_id,
@@ -252,47 +315,11 @@ def _wf_process(engine, args):
         "next_agent": result.get("next_agent"),
         "message": result.get("message", ""),
     }
-
-    # 关键：暴露delegate指令，告诉Hermes需要实际执行
     if result.get("delegate"):
         resp["delegate"] = result["delegate"]
         resp["needs_execution"] = True
-        resp["message"] += f"\n⚠️ 需要通过 delegate_task 执行：{result['delegate']['role_name']}"
-
+        resp["message"] += f"\n需要通过 delegate_task 执行"
     return resp
-
-
-def _wf_status(engine):
-    st = engine.status()
-    logs = engine.get_log()
-    recent = logs[-10:] if logs else []
-    return {
-        "ok": True,
-        "running": st["running"],
-        "total_tasks": st["stats"]["total"],
-        "by_state": st["stats"]["by_state"],
-        "recent_logs": [f"[{l['time'][11:19]}] {l['msg']}" for l in recent],
-    }
-
-
-def _wf_list(queue, args):
-    state = args.get("state")
-    limit = args.get("limit", 20)
-    tasks = queue.list(state=state, limit=limit)
-    return {
-        "ok": True,
-        "count": len(tasks),
-        "tasks": [
-            {
-                "id": t["id"],
-                "title": t["title"],
-                "state": t["state"],
-                "assignee": t.get("assignee"),
-                "created_at": t.get("created_at", "")[:19],
-            }
-            for t in tasks
-        ],
-    }
 
 
 def _wf_trace(queue, args):
@@ -317,5 +344,39 @@ def _wf_trace(queue, args):
     }
 
 
+def _wf_status(engine):
+    st = engine.status()
+    logs = engine.get_log()
+    recent = logs[-10:] if logs else []
+    return {
+        "ok": True,
+        "running": st["running"],
+        "total_tasks": st["stats"]["total"],
+        "by_state": st["stats"]["by_state"],
+        "recent_logs": [f"[{l['time'][11:19]}] {l['msg']}" for l in recent],
+    }
+
+
+def _wf_list(queue, args):
+    state = args.get("state")
+    limit = args.get("limit", 20)
+    tasks = queue.filter_tasks(state=state, limit=limit)
+    return {
+        "ok": True,
+        "count": len(tasks),
+        "tasks": [
+            {
+                "id": t["id"],
+                "title": t["title"],
+                "state": t["state"],
+                "assignee": t.get("assignee"),
+                "created_at": t.get("created_at", "")[:19],
+            }
+            for t in tasks
+        ],
+    }
+
+
 if __name__ == "__main__":
     main()
+

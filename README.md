@@ -178,14 +178,38 @@ cp config.example.yaml config.yaml
 ### 启动 / Launch
 
 ```bash
-# 启动看板服务器
-python dashboard/server.py
+# 方式1：cronjob 自动驱动（推荐）
+# 玄机阁 Watchdog 每分钟自动扫描并推进所有进行中任务
+hermes cron create \
+  --name "玄机阁 Watchdog" \
+  --every "1m" \
+  --command "cd /root/hermestrix && PYTHONPATH=/root/.hermes/hermes-agent python3 workflow/watchdog.py"
 
-# 在另一个终端，启动任务刷新循环
-python scripts/run_loop.py
+# 方式2：手动持续运行（开发调试）
+cd /root/hermestrix
+PYTHONPATH=/root/.hermes/hermes-agent python3 workflow/watchdog.py --continuous
+
+# 启动 Web 看板（可选，实时监控任务流转）
+python dashboard/server.py
 
 # 使用玄机阁
 hermes -p xuanjige
+```
+
+### 核心运转流程
+
+```
+用户提交任务
+    ↓ workflow_submit
+创建主任务 + 5步子任务链（Kanban SQLite）
+    ↓
+Cronjob 每分钟触发 Watchdog
+    ↓
+Watchdog 扫描所有 READY 步骤 → 执行 → 标记 done
+    ↓
+recompute_ready() 自动将下游步骤升为 READY
+    ↓
+御史审核通过 → 整链完成 → 主任务标记 done
 ```
 
 ---
