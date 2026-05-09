@@ -3,7 +3,7 @@
 Hermestrix 主CLI
 
 Usage:
-  hermestrix <command> [options]
+  xuanjige <command> [options]
 
 Commands:
   skill       Skill库管理（list/search/create/inspect）
@@ -11,6 +11,7 @@ Commands:
   evolution   进化状态（status/pending/confirm/rollback）
   task        任务管理（create/list/state/flow）
   health      健康检查（check/monitor）
+  workflow    玄机阁工作流引擎（start/submit/process/watch）
   jiyan       机研常驻进程（start/stop/status/once）
 """
 
@@ -259,6 +260,98 @@ def cmd_evolution(args):
 
 
 # ============================================================
+# workflow 命令（玄机阁工作流引擎）
+# ============================================================
+
+def cmd_workflow(args):
+    """玄机阁工作流引擎控制"""
+    from workflow.engine import get_engine
+    engine = get_engine()
+
+    if args.start:
+        header("玄机阁 · 引擎启动")
+        engine.start()
+        status = engine.status()
+        cprint(f"  引擎状态: {'运行中' if status['running'] else '已停止'}", "green")
+        cprint(f"  Agent数量: {len(status['agents'])}", "cyan")
+        cprint(f"  任务统计: {json.dumps(status['stats']['by_state'], ensure_ascii=False)}", "cyan")
+        cprint(f"\n  用 xuanjige workflow submit <任务标题> 提交新任务", "yellow")
+
+    elif args.stop:
+        header("玄机阁 · 引擎停止")
+        engine.stop()
+        cprint("  引擎已停止", "yellow")
+
+    elif args.status:
+        header("玄机阁 · 引擎状态")
+        st = engine.status()
+        cprint(f"  引擎: {'🟢 运行中' if st['running'] else '🔴 已停止'}", "green" if st['running'] else "red")
+        cprint(f"  Agent数量: {len(st['agents'])}", "cyan")
+        cprint(f"\n  任务统计:", "cyan")
+        for state, cnt in st['stats']['by_state'].items():
+            cprint(f"    {state}: {cnt}", "yellow")
+        cprint(f"\n  最近日志:", "cyan")
+        for entry in engine.get_log()[-5:]:
+            cprint(f"    [{entry['time'][11:19]}] {entry['msg']}", "")
+
+    elif args.submit:
+        header("玄机阁 · 提交任务")
+        task = engine.submit(title=args.submit,
+                            description=args.desc or "",
+                            skills=args.skills.split(',') if args.skills else None,
+                            tags=args.tags.split(',') if args.tags else None,
+                            priority=int(args.priority or 0))
+        cprint(f"  ✅ 任务已提交", "green")
+        cprint(f"  ID:     {task['id']}", "cyan")
+        cprint(f"  标题:   {task['title']}", "yellow")
+        cprint(f"  状态:   {task['state']}", "")
+        cprint(f"\n  用 xuanjige workflow process {task['id']} 执行工作流", "yellow")
+
+    elif args.process:
+        header("玄机阁 · 执行工作流")
+        result = engine.process_task(args.process)
+        if result.get("ok"):
+            cprint(f"  ✅ 流程执行成功", "green")
+            cprint(f"  当前步骤: {result.get('step', 'unknown')}", "cyan")
+            if result.get("next"):
+                cprint(f"  下一步: {result.get('next')}", "yellow")
+        else:
+            cprint(f"  ❌ 执行失败: {result.get('error')}", "red")
+
+    elif args.watch:
+        header("玄机阁 · 监控模式 (Ctrl+C 退出)")
+        engine.start()
+        try:
+            while True:
+                st = engine.status()
+                stats = st['stats']['by_state']
+                ts_str = datetime.datetime.now().strftime("%H:%M:%S")
+                pending = stats.get('待分拣', 0)
+                running = stats.get('执行中', 0)
+                done = stats.get('已完成', 0)
+                cprint(f"[{ts_str}] 待分拣={pending} 执行中={running} 已完成={done}", "cyan")
+                import time; time.sleep(3)
+        except KeyboardInterrupt:
+            cprint("\n  监控退出", "yellow")
+
+    elif args.log:
+        header("玄机阁 · 执行日志")
+        for entry in engine.get_log()[-20:]:
+            cprint(f"  [{entry['time'][11:19]}] {entry['msg']}", "")
+
+    else:
+        cprint("  使用 xuanjige workflow --help 查看用法", "yellow")
+        cprint("\n  子命令:", "cyan")
+        cprint("    --start              启动工作流引擎", "")
+        cprint("    --stop               停止工作流引擎", "")
+        cprint("    --status             查看引擎状态", "")
+        cprint("    --submit <标题>      提交新任务", "")
+        cprint("    --process <ID>       执行单任务完整流程", "")
+        cprint("    --watch              实时监控模式", "")
+        cprint("    --log                查看执行日志", "")
+
+
+# ============================================================
 # task 命令（封装 kanban）
 # ============================================================
 
@@ -457,6 +550,21 @@ def main():
     g.add_argument("--check", action="store_true", help="执行健康检查")
     g.add_argument("--monitor", "-m", nargs="?", const="5", type=int, metavar="SECS", help="实时监控")
 
+    # workflow
+    p_wf = sub.add_parser("workflow", help="玄机阁工作流引擎")
+    g = p_wf.add_mutually_exclusive_group()
+    g.add_argument("--start", action="store_true", help="启动工作流引擎")
+    g.add_argument("--stop", action="store_true", help="停止工作流引擎")
+    g.add_argument("--status", action="store_true", help="查看引擎状态")
+    g.add_argument("--submit", "-s", metavar="TITLE", help="提交新任务")
+    g.add_argument("--process", "-p", metavar="TASK_ID", help="执行单任务完整流程")
+    g.add_argument("--watch", "-w", action="store_true", help="实时监控模式")
+    g.add_argument("--log", action="store_true", help="查看执行日志")
+    p_wf.add_argument("--desc", help="任务描述")
+    p_wf.add_argument("--skills", help="所需Skill(逗号分隔)")
+    p_wf.add_argument("--tags", help="标签(逗号分隔)")
+    p_wf.add_argument("--priority", help="优先级(数字)")
+
     # libu
     p_l = sub.add_parser("jiyan", help="机研常驻进程")
     g = p_l.add_mutually_exclusive_group()
@@ -471,12 +579,13 @@ def main():
     if args.command is None:
         print(__doc__)
         cprint("\n命令列表：", "cyan", bold=True)
-        print("  hermestrix skill     --list            # 列出所有Skill")
-        print("  hermestrix role     --list            # 列出所有Role")
-        print("  hermestrix evolution --status          # 进化引擎状态")
-        print("  hermestrix task     --list             # 任务列表")
-        print("  hermestrix health   --check            # 健康检查")
-        print("  hermestrix jiyan     --status           # 机研进程状态")
+        print("  xuanjige skill     --list            # 列出所有Skill")
+        print("  xuanjige role     --list            # 列出所有Role")
+        print("  xuanjige evolution --status          # 进化引擎状态")
+        print("  xuanjige task     --list             # 任务列表")
+        print("  xuanjige health   --check            # 健康检查")
+        print("  xuanjige workflow --start            # 启动工作流引擎")
+        print("  xuanjige jiyan     --status           # 机研进程状态")
         return
 
     # 分发
@@ -486,6 +595,7 @@ def main():
         "evolution": cmd_evolution,
         "task": cmd_task,
         "health": cmd_health,
+        "workflow": cmd_workflow,
         "jiyan": cmd_jiyan,
     }
 
