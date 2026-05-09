@@ -1,6 +1,6 @@
-# Hermestrix 架构文档
+# 玄机阁架构文档
 
-> 三省六部 AI Agent 协作框架 — 基于 Skill 进化与 Role 组合的自我进化体系
+> 三省六部 AI Agent 协作框架 — 基于 Skill 进化与 Role 组合的自我进化体系 | 适配：Hermes Agent 原生
 
 ---
 
@@ -216,14 +216,14 @@ Knowledge库：静态知识库（静态型）
 ## 七、目录结构
 
 ```
-hermestrix/
-├── agents/                    # Role库（12个角色定义）
+xuanjige/
+├── agents/                    # Role库（17个角色定义）
 │   ├── {role_id}/
 │   │   ├── SOUL.md          # 角色定义
-│   │   └── METADATA.json    # 角色元数据（v版本/统计/组合）
+│   │   └── METADATA.yaml    # 角色元数据（v版本/统计/组合）
 │   └── ...
 ├── skills/                    # Skill库（可进化技能定义）
-│   └── {skill_id}.json      # 每个技能的定义+评分+进化记录
+│   └── {skill_id}/           # 每个技能的 SKILL.md + METADATA.yaml + scripts/
 ├── scripts/
 │   ├── skill_library.py      # Skill库核心（CRUD/检索/进化）
 │   ├── role_library.py       # Role库核心（扫描/统计/推荐）

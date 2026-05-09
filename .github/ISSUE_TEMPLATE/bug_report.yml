@@ -21,7 +21,7 @@ body:
         ## 环境
         - OS:
         - Python版本:
-        - Hermestrix版本:
+        - 玄机阁版本:
   - type: textarea
     id: logs
     attributes:

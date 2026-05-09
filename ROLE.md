@@ -1,6 +1,6 @@
-# Hermestrix Role 标准格式
+# 玄机阁 Role 标准格式
 
-> 版本：v1.0 | 状态：规范
+> 版本：v1.0 | 状态：规范 | 适配：Hermes Agent 原生
 
 ---
 

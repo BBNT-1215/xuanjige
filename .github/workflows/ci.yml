@@ -76,11 +76,11 @@ jobs:
 
       - name: CLI smoke tests
         run: |
-          hermestrix skill --list
-          hermestrix role --list
-          hermestrix evolution --status
-          hermestrix health --check
-          hermestrix skill --search routing
+          xuanjige skill --list
+          xuanjige role --list
+          xuanjige evolution --status
+          xuanjige health --check
+          xuanjige skill --search routing
 
   build-check:
     name: Build check
