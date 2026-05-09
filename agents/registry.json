@@ -1,0 +1,144 @@
+{
+  "version": "1.0",
+  "updated_at": "2026-05-09T14:00:00Z",
+  "total_roles": 12,
+  "departments": {
+    "三省": ["taizi", "zhongshu", "menxia", "shangshu"],
+    "六部": ["libu_hr", "hubu", "bingbu", "gongbu", "xingbu", "libu"],
+    "特殊": ["zaochao", "qintianjian"]
+  },
+  "roles": [
+    {
+      "id": "taizi",
+      "name": "太子",
+      "department": "三省",
+      "path": "agents/taizi",
+      "is_permanent": true,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_routing", "skill_dispatch"],
+      "health_status": "ok"
+    },
+    {
+      "id": "zhongshu",
+      "name": "中书省",
+      "department": "三省",
+      "path": "agents/zhongshu",
+      "is_permanent": false,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_planning", "skill_doc_writing"],
+      "health_status": "ok"
+    },
+    {
+      "id": "menxia",
+      "name": "门下省",
+      "department": "三省",
+      "path": "agents/menxia",
+      "is_permanent": false,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_review", "skill_risk_assessment"],
+      "health_status": "ok"
+    },
+    {
+      "id": "shangshu",
+      "name": "尚书省",
+      "department": "三省",
+      "path": "agents/shangshu",
+      "is_permanent": false,
+      "version": "5",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_skill_routing", "skill_role_dispatch"],
+      "health_status": "ok"
+    },
+    {
+      "id": "libu_hr",
+      "name": "吏部",
+      "department": "六部",
+      "path": "agents/libu_hr",
+      "is_permanent": true,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_km", "skill_evolution", "skill_data_analysis"],
+      "health_status": "ok"
+    },
+    {
+      "id": "hubu",
+      "name": "户部",
+      "department": "六部",
+      "path": "agents/hubu",
+      "is_permanent": false,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_data_analysis", "skill_reporting"],
+      "health_status": "ok"
+    },
+    {
+      "id": "bingbu",
+      "name": "兵部",
+      "department": "六部",
+      "path": "agents/bingbu",
+      "is_permanent": false,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_devops", "skill_security", "skill_monitoring"],
+      "health_status": "ok"
+    },
+    {
+      "id": "gongbu",
+      "name": "工部",
+      "department": "六部",
+      "path": "agents/gongbu",
+      "is_permanent": false,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_coding", "skill_architecture"],
+      "health_status": "ok"
+    },
+    {
+      "id": "xingbu",
+      "name": "刑部",
+      "department": "六部",
+      "path": "agents/xingbu",
+      "is_permanent": false,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_qa", "skill_audit", "skill_code_review"],
+      "health_status": "ok"
+    },
+    {
+      "id": "libu",
+      "name": "礼部",
+      "department": "六部",
+      "path": "agents/libu",
+      "is_permanent": false,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_doc_writing", "skill_ui_design"],
+      "health_status": "ok"
+    },
+    {
+      "id": "zaochao",
+      "name": "早朝官",
+      "department": "特殊",
+      "path": "agents/zaochao",
+      "is_permanent": false,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_daily_briefing"],
+      "health_status": "ok"
+    },
+    {
+      "id": "qintianjian",
+      "name": "钦天监",
+      "department": "特殊",
+      "path": "agents/qintianjian",
+      "is_permanent": false,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_trend_analysis", "skill_prediction"],
+      "health_status": "ok"
+    }
+  ]
+}

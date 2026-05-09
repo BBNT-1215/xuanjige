@@ -1,0 +1,37 @@
+---
+name: "menxia"
+role_name: "门下省"
+department: "三省"
+version: "1"
+created_at: "2026-05-09T00:00:00Z"
+updated_at: "2026-05-09T14:00:00Z"
+
+description: "审议决策与风险评估"
+
+skills:
+  required:
+    - "skill_review"
+    - "skill_risk_assessment"
+  optional: []
+
+collaborates_with:
+  upstream: ['zhongshu']
+  downstream: ['shangshu']
+  consult: []
+  parallel: []
+
+stats:
+  tasks_completed: 0
+  avg_quality: 0.0
+  avg_duration_minutes: 0
+  last_active: ""
+
+health:
+  status: "ok"
+  trend: "stable"
+
+capabilities:
+  - "执行门下省职责"
+
+limitations:
+  - "不直接处理具体业务细节"
