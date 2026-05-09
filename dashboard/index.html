@@ -129,6 +129,25 @@ const COLUMNS = [
   { key: '阻塞',    label: '🚫 阻塞',      color: '#c0392b', desc: '异常·需干预' },
 ];
 
+// State mapping: legacy → new
+const STATE_MAP = {
+  'Taizi': '承旨', 'taizi': '承旨',
+  'Zhongshu': '机衡', 'zhongshu': '机衡',
+  'Menxia': '审议', 'menxia': '审议',
+  'Shangshu': '机衡', 'shangshu': '机衡',
+  'Doing': '执行', 'doing': '执行',
+  'Next': '执行', 'next': '执行',
+  'Review': '待回奏', 'review': '待回奏',
+  'Done': '完成', 'done': '完成',
+  'Blocked': '阻塞', 'blocked': '阻塞',
+  'Pending': '待处理', 'pending': '待处理',
+  'Cancelled': '阻塞', 'cancelled': '阻塞',
+};
+
+function resolveState(state) {
+  return STATE_MAP[state] || state || '待处理';
+}
+
 let tasks = [];
 let detailTask = null;
 
@@ -136,6 +155,8 @@ async function loadTasks() {
   try {
     const res = await fetch('/api/tasks');
     tasks = await res.json();
+    // Normalize legacy states → new states
+    tasks.forEach(t => { t.state = resolveState(t.state); });
     render();
     document.getElementById('last-update').textContent = new Date().toLocaleTimeString('zh-CN');
   } catch (e) {
@@ -146,11 +167,11 @@ async function loadTasks() {
 function render() {
   // Stats
   const total = tasks.length;
-  const pending = tasks.filter(t => ['承旨','待处理'].includes(t.state)).length;
-  const exec = tasks.filter(t => ['机衡','审议','执行'].includes(t.state)).length;
-  const review = tasks.filter(t => ['待回奏'].includes(t.state)).length;
-  const done = tasks.filter(t => t.state === '完成').length;
-  const blocked = tasks.filter(t => t.state === '阻塞').length;
+  const pending = tasks.filter(t => ['承旨','待处理'].includes(resolveState(t.state))).length;
+  const exec = tasks.filter(t => ['机衡','审议','执行'].includes(resolveState(t.state))).length;
+  const review = tasks.filter(t => ['待回奏'].includes(resolveState(t.state))).length;
+  const done = tasks.filter(t => resolveState(t.state) === '完成').length;
+  const blocked = tasks.filter(t => resolveState(t.state) === '阻塞').length;
   const evoPct = total > 0 ? Math.round(done / total * 100) : 0;
 
   document.getElementById('stat-total').textContent = total;
@@ -166,8 +187,9 @@ function render() {
 
   for (const col of COLUMNS) {
     const colTasks = tasks.filter(t => {
-      if (col.key === '待处理') return t.state === '待处理' || (!t.state && col.key === '待处理');
-      return t.state === col.key;
+      const s = resolveState(t.state);
+      if (col.key === '待处理') return s === '待处理' || (!t.state);
+      return s === col.key;
     });
 
     html += `<div class="column">
@@ -220,7 +242,8 @@ function showDetail(taskId) {
   const content = document.getElementById('detail-content');
   document.getElementById('detail-title').textContent = taskId;
 
-  const stateColor = (COLUMNS.find(c => c.key === detailTask.state) || { color: '#7f8c8d' }).color;
+  const state = resolveState(detailTask.state);
+  const stateColor = (COLUMNS.find(c => c.key === state) || { color: '#7f8c8d' }).color;
 
   let html = `
     <div class="section">
@@ -230,7 +253,7 @@ function showDetail(taskId) {
     <div class="section">
       <div class="section-title">状态</div>
       <div>
-        <span class="tag" style="border-left:3px solid ${stateColor};background:#252d3d">${detailTask.state || '待处理'}</span>
+        <span class="tag" style="border-left:3px solid ${stateColor};background:#252d3d">${state}</span>
         ${detailTask.official ? `<span class="tag">${escapeHtml(detailTask.official)}</span>` : ''}
         ${detailTask.org ? `<span class="tag">${escapeHtml(detailTask.org)}</span>` : ''}
       </div>
