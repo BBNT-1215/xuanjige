@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Lint check
+        run: |
+          python3 -m py_compile scripts/kanban.py
+          python3 -m py_compile scripts/three_libraries.py
+          python3 -m py_compile scripts/event_bus.py
+          python3 -m py_compile scripts/recovery.py
+          python3 -m py_compile scripts/run_loop.py
+          python3 -m py_compile dashboard/server.py
+          echo "All Python files compile successfully"
+
+  test-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Test kanban CLI
+        run: |
+          export HERMESTRIX_HOME=$PWD
+          python3 scripts/kanban.py create "测试任务" --org Zhongshu --official 太子
+          python3 scripts/kanban.py list
+          python3 scripts/kanban.py state JJ-$(date +%Y%m%d)-001 Taizi "测试"
+          echo "Kanban CLI test passed"
+      - name: Test three libraries
+        run: |
+          export HERMESTRIX_HOME=$PWD
+          python3 scripts/three_libraries.py list
+          echo "Three libraries test passed"
+      - name: Test event bus
+        run: |
+          export HERMESTRIX_HOME=$PWD
+          python3 scripts/event_bus.py emit task.created '{"task_id":"test"}'
+          echo "Event bus test passed"

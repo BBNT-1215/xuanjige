@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermestrix - 三省六部AI协作</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1419; color: #e7e9ea; min-height: 100vh; }
+  .header { background: #1a1f2e; border-bottom: 1px solid #2f3847; padding: 12px 24px; display: flex; align-items: center; gap: 16px; }
+  .header h1 { font-size: 18px; color: #f7dc6f; }
+  .header .subtitle { font-size: 12px; color: #7f8c8d; }
+  .stats { display: flex; gap: 24px; padding: 16px 24px; background: #1a1f2e; }
+  .stat { text-align: center; }
+  .stat .num { font-size: 24px; font-weight: bold; }
+  .stat .label { font-size: 11px; color: #7f8c8d; text-transform: uppercase; }
+  .kanban { display: flex; gap: 12px; padding: 16px; overflow-x: auto; }
+  .column { flex: 0 0 280px; background: #1a1f2e; border-radius: 8px; border: 1px solid #2f3847; display: flex; flex-direction: column; max-height: calc(100vh - 180px); }
+  .column-header { padding: 12px 16px; font-size: 13px; font-weight: bold; border-bottom: 1px solid #2f3847; display: flex; justify-content: space-between; align-items: center; }
+  .column-body { flex: 1; overflow-y: auto; padding: 8px; }
+  .task-card { background: #252d3d; border: 1px solid #2f3847; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.2s; }
+  .task-card:hover { border-color: #f7dc6f; }
+  .task-card .task-id { font-size: 10px; color: #7f8c8d; margin-bottom: 4px; }
+  .task-card .task-title { font-size: 13px; color: #e7e9ea; line-height: 1.4; margin-bottom: 6px; }
+  .task-card .task-meta { display: flex; gap: 8px; font-size: 10px; }
+  .task-card .badge { padding: 2px 6px; border-radius: 4px; background: #2f3847; color: #a0a0a0; }
+  .task-card .badge.pending { background: #1e3a5f; color: #5dade2; }
+  .task-card .badge.doing { background: #3d2e1f; color: #f39c12; }
+  .task-card .badge.done { background: #1e3a2f; color: #27ae60; }
+  .task-card .badge.blocked { background: #3d1f1f; color: #e74c3c; }
+  .progress-bar { height: 3px; background: #2f3847; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+  .progress-bar .fill { height: 100%; background: #f7dc6f; transition: width 0.3s; }
+  .detail-panel { display: none; position: fixed; right: 0; top: 0; bottom: 0; width: 480px; background: #1a1f2e; border-left: 1px solid #2f3847; overflow-y: auto; padding: 20px; z-index: 100; }
+  .detail-panel.active { display: block; }
+  .detail-panel h2 { font-size: 16px; margin-bottom: 16px; color: #f7dc6f; }
+  .detail-panel .section { margin-bottom: 20px; }
+  .detail-panel .section-title { font-size: 11px; text-transform: uppercase; color: #7f8c8d; margin-bottom: 8px; }
+  .detail-panel .flow-item { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid #2f3847; }
+  .detail-panel .flow-item .time { font-size: 10px; color: #7f8c8d; width: 60px; flex-shrink: 0; }
+  .detail-panel .flow-item .arrow { color: #7f8c8d; }
+  .detail-panel .flow-item .content { font-size: 12px; }
+  .detail-panel .flow-item .agent { font-size: 10px; color: #f7dc6f; }
+  .close-btn { position: absolute; right: 16px; top: 16px; background: none; border: none; color: #7f8c8d; font-size: 20px; cursor: pointer; }
+  .loading { text-align: center; padding: 40px; color: #7f8c8d; }
+  .empty { text-align: center; padding: 40px; color: #4a5568; font-size: 13px; }
+  /* Status colors */
+  .state-Taizi { border-left: 3px solid #9b59b6; }
+  .state-Zhongshu { border-left: 3px solid #3498db; }
+  .state-Menxia { border-left: 3px solid #e67e22; }
+  .state-Assigned, .state-Next { border-left: 3px solid #f39c12; }
+  .state-Doing { border-left: 3px solid #e74c3c; }
+  .state-Review { border-left: 3px solid #1abc9c; }
+  .state-Done { border-left: 3px solid #27ae60; }
+  .state-Blocked { border-left: 3px solid #c0392b; }
+  .state-Pending { border-left: 3px solid #7f8c8d; }
+  .state-Cancelled { border-left: 3px solid #4a5568; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>⚔️ Hermestrix</h1>
+    <div class="subtitle">三省六部 AI Agent 协作系统</div>
+  </div>
+  <div style="margin-left: auto; font-size: 12px; color: #7f8c8d;">
+    实时看板 · <span id="last-update">--</span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="num" id="stat-total">0</div><div class="label">全部</div></div>
+  <div class="stat"><div class="num" id="stat-pending">0</div><div class="label">待处理</div></div>
+  <div class="stat"><div class="num" id="stat-doing">0</div><div class="label">进行中</div></div>
+  <div class="stat"><div class="num" id="stat-done">0</div><div class="label">已完成</div></div>
+  <div class="stat"><div class="num" id="stat-blocked">0</div><div class="label">阻塞</div></div>
+</div>
+
+<div class="kanban" id="kanban">
+  <div class="loading">加载中...</div>
+</div>
+
+<div class="detail-panel" id="detail-panel">
+  <button class="close-btn" onclick="closeDetail()">×</button>
+  <h2 id="detail-title">任务详情</h2>
+  <div id="detail-content"></div>
+</div>
+
+<script>
+const COLUMNS = [
+  { key: 'Taizi', label: '🤴 太子', color: '#9b59b6' },
+  { key: 'Zhongshu', label: '📜 中书省', color: '#3498db' },
+  { key: 'Menxia', label: '🔍 门下省', color: '#e67e22' },
+  { key: 'Assigned', label: '📮 尚书省', color: '#f39c12' },
+  { key: 'Doing', label: '⚙️ 执行中', color: '#e74c3c' },
+  { key: 'Review', label: '✅ 待审查', color: '#1abc9c' },
+  { key: 'Done', label: '🏁 已完成', color: '#27ae60' },
+  { key: 'Blocked', label: '🚫 阻塞', color: '#c0392b' },
+];
+
+let tasks = [];
+let detailTask = null;
+
+async function loadTasks() {
+  try {
+    const res = await fetch('/api/tasks');
+    tasks = await res.json();
+    render();
+    document.getElementById('last-update').textContent = new Date().toLocaleTimeString('zh-CN');
+  } catch (e) {
+    console.error('加载失败', e);
+  }
+}
+
+function getStateLabel(state) {
+  const col = COLUMNS.find(c => c.key === state);
+  return col ? col.label : state;
+}
+
+function getStateClass(state) {
+  return 'state-' + state;
+}
+
+function render() {
+  const kanban = document.getElementById('kanban');
+  
+  // Stats
+  document.getElementById('stat-total').textContent = tasks.length;
+  document.getElementById('stat-pending').textContent = tasks.filter(t => ['Taizi','Zhongshu','Menxia','Assigned','Pending'].includes(t.state)).length;
+  document.getElementById('stat-doing').textContent = tasks.filter(t => ['Doing','Next','Review'].includes(t.state)).length;
+  document.getElementById('stat-done').textContent = tasks.filter(t => t.state === 'Done').length;
+  document.getElementById('stat-blocked').textContent = tasks.filter(t => t.state === 'Blocked').length;
+
+  let html = '';
+  for (const col of COLUMNS) {
+    const colTasks = tasks.filter(t => t.state === col.key);
+    html += `<div class="column">
+      <div class="column-header" style="border-top: 3px solid ${col.color}">
+        ${col.label}
+        <span style="background:#2f3847;padding:2px 8px;border-radius:10px;font-size:11px">${colTasks.length}</span>
+      </div>
+      <div class="column-body">`;
+    
+    if (colTasks.length === 0) {
+      html += '<div class="empty">暂无任务</div>';
+    } else {
+      for (const t of colTasks) {
+        const todos = t.todos || [];
+        const completed = todos.filter(td => td.status === 'completed').length;
+        const total = todos.length;
+        const progressPct = total > 0 ? Math.round(completed / total * 100) : 0;
+        html += `<div class="task-card ${getStateClass(t.state)}" onclick="showDetail('${t.id}')">
+          <div class="task-id">${t.id}</div>
+          <div class="task-title">${escapeHtml(t.title || '')}</div>
+          <div class="task-meta">
+            <span class="badge">${t.official || ''}</span>
+            ${t.org ? `<span class="badge">${t.org}</span>` : ''}
+          </div>
+          ${total > 0 ? `<div class="progress-bar"><div class="fill" style="width:${progressPct}%"></div></div>` : ''}
+        </div>`;
+      }
+    }
+    html += '</div></div>';
+  }
+  kanban.innerHTML = html;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function showDetail(taskId) {
+  detailTask = tasks.find(t => t.id === taskId);
+  if (!detailTask) return;
+  
+  const panel = document.getElementById('detail-panel');
+  const content = document.getElementById('detail-content');
+  const title = document.getElementById('detail-title');
+  
+  title.textContent = detailTask.id;
+  
+  let html = `
+    <div class="section">
+      <div class="section-title">标题</div>
+      <div>${escapeHtml(detailTask.title || '')}</div>
+    </div>
+    <div class="section">
+      <div class="section-title">状态</div>
+      <div><span class="badge ${detailTask.state}">${detailTask.state}</span> · ${detailTask.org || ''}</div>
+    </div>
+    <div class="section">
+      <div class="section-title">当前动态</div>
+      <div>${escapeHtml(detailTask.now || '—')}</div>
+    </div>
+    <div class="section">
+      <div class="section-title">流转记录</div>`;
+  
+  const flowLog = detailTask.flow_log || [];
+  if (flowLog.length === 0) {
+    html += '<div style="color:#7f8c8d;font-size:12px">暂无记录</div>';
+  } else {
+    for (const fl of flowLog) {
+      html += `<div class="flow-item">
+        <div class="time">${(fl.at || '').slice(11, 16)}</div>
+        <div class="arrow">→</div>
+        <div class="content">
+          <div>${escapeHtml(fl.from || '')} → ${escapeHtml(fl.to || '')}</div>
+          <div style="color:#7f8c8d;font-size:11px;margin-top:2px">${escapeHtml(fl.remark || '')}</div>
+          ${fl.agent ? `<div class="agent">${escapeHtml(fl.agent)}</div>` : ''}
+        </div>
+      </div>`;
+    }
+  }
+  html += '</div>';
+  
+  const progressLog = detailTask.progress_log || [];
+  if (progressLog.length > 0) {
+    html += `<div class="section">
+      <div class="section-title">最近进展</div>`;
+    for (const pl of progressLog.slice(-5)) {
+      html += `<div style="padding:4px 0;border-bottom:1px solid #2f3847;font-size:12px">
+        <div>${escapeHtml(pl.current || '')}</div>
+        ${pl.plan ? `<div style="color:#7f8c8d;font-size:11px;margin-top:2px">${escapeHtml(pl.plan || '')}</div>` : ''}
+      </div>`;
+    }
+    html += '</div>';
+  }
+  
+  const todos = detailTask.todos || [];
+  if (todos.length > 0) {
+    html += `<div class="section">
+      <div class="section-title">子任务 (${todos.filter(td=>td.status==='completed').length}/${todos.length})</div>`;
+    for (const td of todos) {
+      const check = td.status === 'completed' ? '✅' : '⬜';
+      html += `<div style="font-size:12px;padding:2px 0">${check} ${escapeHtml(td.title || '')}</div>`;
+    }
+    html += '</div>';
+  }
+  
+  content.innerHTML = html;
+  panel.classList.add('active');
+}
+
+function closeDetail() {
+  document.getElementById('detail-panel').classList.remove('active');
+  detailTask = null;
+}
+
+// Auto-refresh
+loadTasks();
+setInterval(loadTasks, 5000);
+</script>
+</body>
+</html>

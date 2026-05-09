@@ -1,0 +1,44 @@
+# Hermestrix 配置文件
+# 复制自 config.example.yaml
+
+hermestrix_home: ~/.hermes/hermestrix
+data_dir: ~/.hermes/hermestrix/data
+
+three_libraries:
+  memory: ~/.hermes/hermestrix/three_libs/memory
+  skills: ~/.hermes/hermestrix/three_libs/skills
+  knowledge: ~/.hermes/hermestrix/three_libs/knowledge
+
+kanban_file: ~/.hermes/hermestrix/data/tasks.json
+
+agents:
+  default_model: "MiniMax-M3"
+  model_per_agent:
+    taizi: "MiniMax-M3"
+    zhongshu: "MiniMax-M3"
+    menxia: "MiniMax-M3"
+    shangshu: "MiniMax-M3"
+    hubu: "MiniMax-M2"
+    libu: "MiniMax-M2"
+    bingbu: "MiniMax-M3"
+    xingbu: "MiniMax-M2"
+    gongbu: "MiniMax-M2"
+    zaochao: "MiniMax-M2"
+    qintianjian: "MiniMax-M3"
+
+recovery:
+  max_tool_calls: 20
+  max_task_duration: 300
+  max_patch_failures: 3
+  auto_recover: true
+
+evolution:
+  auto_archive: true
+  memory_update_threshold: 3
+  knowledge_expiry_days: 30
+
+kanban_refresh_interval: 15
+
+dashboard:
+  host: "127.0.0.1"
+  port: 7892

@@ -1,0 +1,71 @@
+# Hermestrix 配置文件
+# 复制此文件为 config.yaml 并填写实际值
+
+# 项目根目录
+hermestrix_home: ~/.hermes/hermestrix
+
+# 数据目录
+data_dir: ~/.hermes/hermestrix/data
+
+# 三库目录
+three_libraries:
+  memory: ~/.hermes/hermestrix/three_libs/memory     # 记忆库
+  skills: ~/.hermes/hermestrix/three_libs/skills     # 技能库
+  knowledge: ~/.hermes/hermestrix/three_libs/knowledge # 知识库
+
+# 看板数据文件
+kanban_file: ~/.hermes/hermestrix/data/kanban.json
+
+# Agent配置
+agents:
+  # 默认模型（可在各Agent SOUL中覆盖）
+  default_model: "MiniMax-M3"
+
+  # 各Agent独立模型配置
+  # 可用: MiniMax-M3, MiniMax-M2, Claude-3.5, GPT-4o, DeepSeek
+  model_per_agent:
+    taizi: "MiniMax-M3"
+    zhongshu: "MiniMax-M3"
+    menxia: "MiniMax-M3"
+    shangshu: "MiniMax-M3"
+    hubu: "MiniMax-M2"
+    libu: "MiniMax-M2"
+    bingbu: "MiniMax-M3"
+    xingbu: "MiniMax-M2"
+    gongbu: "MiniMax-M2"
+    libu: "MiniMax-M2"
+    zaochao: "MiniMax-M2"
+    qintianjian: "MiniMax-M3"
+
+# 断点自愈配置
+recovery:
+  # 子Agent工具调用上限（超过视为异常）
+  max_tool_calls: 20
+
+  # 任务执行时间上限（秒）
+  max_task_duration: 300
+
+  # 连续patch失败次数上限
+  max_patch_failures: 3
+
+  # 是否启用自动恢复
+  auto_recover: true
+
+# 进化配置
+evolution:
+  # 任务完成后自动归档三库
+  auto_archive: true
+
+  # 记忆库更新阈值（同一类型任务完成N次后更新记忆）
+  memory_update_threshold: 3
+
+  # 知识库老化天数
+  knowledge_expiry_days: 30
+
+# 看板刷新间隔（秒）
+kanban_refresh_interval: 15
+
+# Dashboard配置
+dashboard:
+  host: "127.0.0.1"
+  port: 7892
