@@ -1,173 +1,70 @@
 {
   "version": "1.0",
-  "updated_at": "2026-05-09T00:00:00Z",
-  "total_skills": 14,
   "skills": [
     {
       "id": "skill_api_gateway",
-      "name": "API Gateway",
-      "domain": "operation",
-      "tier": "STANDARD",
-      "path": "skills/skill_api_gateway",
-      "effectiveness_score": 0.7,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": []
+      "domain": "operation"
     },
     {
       "id": "skill_architecture",
-      "name": "Architecture",
-      "domain": "engineering",
-      "tier": "POWERFUL",
-      "path": "skills/skill_architecture",
-      "effectiveness_score": 0.7,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": []
+      "domain": "engineering"
     },
     {
       "id": "skill_code_review",
-      "name": "Code Review",
-      "domain": "engineering",
-      "tier": "STANDARD",
-      "path": "skills/skill_code_review",
-      "effectiveness_score": 0.7,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": []
+      "domain": "engineering"
     },
     {
       "id": "skill_data_analysis",
-      "name": "Data Analysis",
-      "domain": "analysis",
-      "tier": "STANDARD",
-      "path": "skills/skill_data_analysis",
-      "effectiveness_score": 0.7,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": []
+      "domain": "analysis"
     },
     {
       "id": "skill_database_optimization",
-      "name": "Database Optimization",
-      "domain": "operation",
-      "tier": "STANDARD",
-      "path": "skills/skill_database_optimization",
-      "effectiveness_score": 0.7,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": []
+      "domain": "operation"
     },
     {
       "id": "skill_debugging",
-      "name": "Debugging",
-      "domain": "engineering",
-      "tier": "STANDARD",
-      "path": "skills/skill_debugging",
-      "effectiveness_score": 0.7,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": []
+      "domain": "engineering"
     },
     {
       "id": "skill_devops",
-      "name": "DevOps",
-      "domain": "operation",
-      "tier": "STANDARD",
-      "path": "skills/skill_devops",
-      "effectiveness_score": 0.7,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": []
+      "domain": "operation"
     },
     {
       "id": "skill_incident_response",
-      "name": "Incident Response",
-      "domain": "operation",
-      "tier": "POWERFUL",
-      "path": "skills/skill_incident_response",
-      "effectiveness_score": 0.7,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": []
+      "domain": "operation"
     },
     {
       "id": "skill_monitoring",
-      "name": "Monitoring",
-      "domain": "operation",
-      "tier": "STANDARD",
-      "path": "skills/skill_monitoring",
-      "effectiveness_score": 0.7,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": []
+      "domain": "operation"
     },
     {
       "id": "skill_reporting",
-      "name": "Reporting",
-      "domain": "analysis",
-      "tier": "STANDARD",
-      "path": "skills/skill_reporting",
-      "effectiveness_score": 0.7,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": []
+      "domain": "analysis"
     },
     {
       "id": "skill_role_dispatch",
-      "name": "Role检索派发",
-      "domain": "orchestration",
-      "tier": "POWERFUL",
-      "path": "skills/skill_role_dispatch",
-      "effectiveness_score": 0.76,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": [
-        "shangshu"
-      ]
+      "domain": "orchestration"
     },
     {
       "id": "skill_routing",
-      "name": "旨意分拣",
-      "domain": "orchestration",
-      "tier": "STANDARD",
-      "path": "skills/skill_routing",
-      "effectiveness_score": 0.89,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": [
-        "taizi"
-      ]
+      "domain": "orchestration"
     },
     {
       "id": "skill_skill_routing",
-      "name": "Skill检索派发",
-      "domain": "orchestration",
-      "tier": "POWERFUL",
-      "path": "skills/skill_skill_routing",
-      "effectiveness_score": 0.78,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": [
-        "shangshu"
-      ]
+      "domain": "orchestration"
     },
     {
       "id": "skill_trend_analysis",
-      "name": "Trend Analysis",
-      "domain": "analysis",
-      "tier": "STANDARD",
-      "path": "skills/skill_trend_analysis",
-      "effectiveness_score": 0.7,
-      "confidence": "medium",
-      "status": "active",
-      "used_by_roles": []
+      "domain": "analysis"
+    },
+    {
+      "id": "skill_coding",
+      "domain": "engineering"
+    },
+    {
+      "id": "skill_qa_testing",
+      "domain": "engineering"
     }
   ],
-  "domains": {
-    "operation": 5,
-    "engineering": 3,
-    "analysis": 3,
-    "orchestration": 3
-  }
+  "last_updated": "2026-05-09T16:00:00"
 }

@@ -272,11 +272,17 @@ def cmd_task(args):
     elif args.list:
         cmd += ["list"]
     elif args.state:
-        cmd += ["state", args.state]
+        # task --state TASK_ID 缺少NEW_STATE参数，提示用户
+        cprint("  --state 需要两个参数: TASK_ID NEW_STATE", "yellow")
+        cprint("  用法: hermestrix task --state <TASK_ID> <NEW_STATE>", "yellow")
+        return
     elif args.flow:
-        cmd += ["flow", args.flow]
+        # task --flow TASK_ID 缺少FROM_D TO_D参数，提示用户
+        cprint("  --flow 需要三个参数: TASK_ID FROM_D TO_D", "yellow")
+        cprint("  用法: hermestrix task --flow <TASK_ID> <FROM_DEPT> <TO_DEPT>", "yellow")
+        return
     elif args.show:
-        cmd += ["show", args.show]
+        cmd += ["get", args.show]
     else:
         cprint("  使用 hermestrix task --help 查看用法", "yellow")
         return
@@ -328,7 +334,7 @@ def cmd_health(args):
                 color = "green" if report.overall == "ok" else "red"
                 alerts = len(report.alerts) if hasattr(report, "alerts") else 0
                 cprint(f"[{ts_str}] overall={report.overall}, alerts={alerts}", color)
-                if args.verbose and hasattr(report, "metrics"):
+                if hasattr(args, 'verbose') and args.verbose and hasattr(report, "metrics"):
                     for m in report.metrics:
                         cprint(f"    {m.get('name','')}={m.get('value','?')}", "cyan")
                 import time; time.sleep(args.monitor)
