@@ -25,8 +25,8 @@ tools:
   - "scripts/architect.py"
 
 used_by_roles:
-  - "shangshu"
-  - "bingbu"
+  - "jiheng"
+  - "bingrong"
 
 quality_tiers:
   excellent: [0.9, 1.0]

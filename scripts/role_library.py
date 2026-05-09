@@ -108,10 +108,10 @@ def scan_roles():
 def _create_default_metadata(role_id, soul_preview=""):
     """为新角色创建默认METADATA"""
     role_names = {
-        "taizi": "太子", "zhongshu": "中书省", "menxia": "门下省",
-        "shangshu": "尚书省", "hubu": "户部", "libu": "礼部",
-        "bingbu": "兵部", "xingbu": "刑部", "gongbu": "工部",
-        "libu_hr": "吏部", "zaochao": "早朝官", "qintianjian": "钦天监"
+        "chengzhi": "太子", "jiheng": "中书省", "shenyi": "门下省",
+        "jiheng": "尚书省", "shusuan": "户部", "diancang": "礼部",
+        "bingrong": "兵部", "xingce": "刑部", "jizao": "工部",
+        "jiyan": "吏部", "zaohuang": "早朝官", "qitian": "钦天监"
     }
     
     return {
@@ -305,14 +305,14 @@ def recommend_combination(task_type=None, complexity="medium"):
     
     if not roles:
         # 默认组合
-        return ["shangshu"], ["hubu"]
+        return ["jiheng"], ["shusuan"]
     
     role_ids = [r[0] for r in roles]
     
     # 分离主角色和辅助角色
     # 主角色：尚书省必须，核心执行部门
-    primary = ["shangshu"] if "shangshu" in role_ids else [role_ids[0]]
-    supporting = [r for r in role_ids[1:n] if r != "shangshu"]
+    primary = ["jiheng"] if "jiheng" in role_ids else [role_ids[0]]
+    supporting = [r for r in role_ids[1:n] if r != "jiheng"]
     
     return primary, supporting
 
@@ -347,7 +347,7 @@ def main():
             print(f"  [{meta.get('role_name', rid)}] {rid}")
     
     elif cmd == 'stats':
-        role_id = sys.argv[2] if len(sys.argv) > 2 else 'shangshu'
+        role_id = sys.argv[2] if len(sys.argv) > 2 else 'jiheng'
         meta_file = AGENTS_DIR / role_id / 'METADATA.json'
         if meta_file.exists():
             meta = _read_json(meta_file)

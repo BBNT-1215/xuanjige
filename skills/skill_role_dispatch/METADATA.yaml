@@ -26,7 +26,7 @@ tools:
   - "scripts/role_dispatch.py"
 
 used_by_roles:
-  - "shangshu"
+  - "jiheng"
 
 quality_tiers:
   excellent: [0.9, 1.0]

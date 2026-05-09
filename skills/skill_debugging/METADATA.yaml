@@ -25,9 +25,9 @@ tools:
   - "scripts/debug.py"
 
 used_by_roles:
-  - "shangshu"
-  - "gongbu"
-  - "zaochao"
+  - "jiheng"
+  - "jizao"
+  - "zaohuang"
 
 quality_tiers:
   excellent: [0.9, 1.0]

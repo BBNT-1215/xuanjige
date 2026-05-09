@@ -87,7 +87,7 @@ def main():
             HOST = sys.argv[i+1]
 
     with socketserver.TCPServer((HOST, PORT), Handler) as httpd:
-        print(f"\n\n⚔️  Hermestrix Dashboard")
+        print(f"\n\n⚔️ 玄机阁 Dashboard")
         print(f"   http://{HOST}:{PORT}")
         print(f"   看板: http://{HOST}:{PORT}/index.html")
         print(f"\n   按 Ctrl+C 停止\n\n")

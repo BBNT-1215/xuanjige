@@ -33,7 +33,7 @@ def make_task(task_id, quality=0.80, tier="good", skills=None):
         quality_score=quality,
         quality_tier=tier,
         completed_at=datetime.now(timezone.utc).isoformat(),
-        executing_roles=["gongbu"],
+        executing_roles=["jizao"],
     )
 
 

@@ -27,7 +27,7 @@ tools:
 
 used_by_roles:
   - "data_analyst"
-  - "taizi"
+  - "chengzhi"
 
 quality_tiers:
   excellent: [0.9, 1.0]

@@ -1,4 +1,4 @@
-# Hermestrix 配置文件
+# 玄机阁 配置文件
 # 复制自 config.example.yaml
 
 hermestrix_home: ~/.hermes/hermestrix
@@ -14,17 +14,18 @@ kanban_file: ~/.hermes/hermestrix/data/tasks.json
 agents:
   default_model: "MiniMax-M3"
   model_per_agent:
-    taizi: "MiniMax-M3"
-    zhongshu: "MiniMax-M3"
-    menxia: "MiniMax-M3"
-    shangshu: "MiniMax-M3"
-    hubu: "MiniMax-M2"
-    libu: "MiniMax-M2"
-    bingbu: "MiniMax-M3"
-    xingbu: "MiniMax-M2"
-    gongbu: "MiniMax-M2"
-    zaochao: "MiniMax-M2"
-    qintianjian: "MiniMax-M3"
+    chengzhi: "MiniMax-M3"
+    jiheng: "MiniMax-M3"
+    shenyi: "MiniMax-M3"
+    jiyan: "MiniMax-M2"
+    jizao: "MiniMax-M2"
+    xingce: "MiniMax-M2"
+    diancang: "MiniMax-M2"
+    shusuan: "MiniMax-M2"
+    bingrong: "MiniMax-M3"
+    zaohuang: "MiniMax-M2"
+    qitian: "MiniMax-M3"
+    yushi: "MiniMax-M2"
 
 recovery:
   max_tool_calls: 20

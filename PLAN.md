@@ -52,16 +52,16 @@ Role  = 做事的人（Know-Who）
 
 | 部门 | Role | 核心Skill | 说明 |
 |------|------|-----------|------|
-| **太子** | taizi | skill_routing, skill_dispatch | 任务分拣、路由决策 |
-| **中书省** | zhongshu | skill_planning, skill_doc_writing | 方案起草、文档输出 |
-| **门下省** | menxia | skill_review, skill_risk_assessment | 审议、风险评估 |
-| **尚书省** | shangshu | skill_skill_routing, skill_role_dispatch | Skill/Role检索、派发 |
-| **吏部** | libu_hr | skill_km, skill_evolution | 三库管理、进化引擎 |
-| **户部** | hubu | skill_data_analysis, skill_reporting | 数据分析、财务报表 |
-| **礼部** | libu | skill_doc_writing, skill_ui_design | 文档撰写、UI设计 |
-| **兵部** | bingbu | skill_devops, skill_security, skill_monitoring | 部署运维、安全监控 |
-| **工部** | gongbu | skill_coding, skill_architecture, skill_testing | 开发、架构、测试 |
-| **刑部** | xingbu | skill_qa, skill_audit, skill_review | 质量审查、代码审计 |
+| **太子** | chengzhi | skill_routing, skill_dispatch | 任务分拣、路由决策 |
+| **中书省** | jiheng | skill_planning, skill_doc_writing | 方案起草、文档输出 |
+| **门下省** | shenyi | skill_review, skill_risk_assessment | 审议、风险评估 |
+| **尚书省** | jiheng | skill_skill_routing, skill_role_dispatch | Skill/Role检索、派发 |
+| **吏部** | jiyan | skill_km, skill_evolution | 三库管理、进化引擎 |
+| **户部** | shusuan | skill_data_analysis, skill_reporting | 数据分析、财务报表 |
+| **礼部** | diancang | skill_doc_writing, skill_ui_design | 文档撰写、UI设计 |
+| **兵部** | bingrong | skill_devops, skill_security, skill_monitoring | 部署运维、安全监控 |
+| **工部** | jizao | skill_coding, skill_architecture, skill_testing | 开发、架构、测试 |
+| **刑部** | xingce | skill_qa, skill_audit, skill_review | 质量审查、代码审计 |
 | **早朝官** | morning | skill_daily_briefing | 每日晨报 |
 | **钦天监** | qintian | skill_trend_analysis, skill_prediction | 趋势预测、预判 |
 
@@ -162,7 +162,7 @@ Role  = 做事的人（Know-Who）
 ### 2.5 Skill × Role 依赖声明机制
 
 ```yaml
-# roles/shangshu/METADATA.yaml
+# roles/jiheng/METADATA.yaml
 skills:
   required:
     - skill_skill_routing   # 尚书省必须会用Skill检索
@@ -241,18 +241,18 @@ hermestrix/
 │
 ├── roles/                 # Role库（重命名自agents/）
 │   ├── registry.json       # Role中心注册表
-│   ├── taizi/
+│   ├── chengzhi/
 │   │   ├── SOUL.md        # Role定义（prompt）
 │   │   └── METADATA.yaml  # 元数据（YAML frontmatter）
-│   ├── shangshu/
-│   ├── zhongshu/
-│   ├── menxia/
-│   ├── libu_hr/           # 吏部（Permanent Agent）
-│   ├── hubu/
-│   ├── bingbu/
-│   ├── gongbu/
-│   ├── xingbu/
-│   ├── libu/
+│   ├── jiheng/
+│   ├── jiheng/
+│   ├── shenyi/
+│   ├── jiyan/           # 吏部（Permanent Agent）
+│   ├── shusuan/
+│   ├── bingrong/
+│   ├── jizao/
+│   ├── xingce/
+│   ├── diancang/
 │   ├── morning/
 │   └── qintian/
 │
@@ -277,7 +277,7 @@ hermestrix/
 ├── agents/               # Agent实现
 │   ├── permanent/         # 常驻Agent
 │   │   ├── libu_agent.py  # 吏部常驻进程
-│   │   └── taizi_agent.py # 太子常驻进程（可选）
+│   │   └── chengzhi_agent.py # 太子常驻进程（可选）
 │   └── templates/         # Agent模板
 │
 ├── three_libs/           # 三库（持久化）
@@ -399,7 +399,7 @@ python3 scripts/review.py quick <path>
       "last_used": "2026-05-09T11:40:00Z",
       "version": "2",
       "tools": ["scripts/review.py", "scripts/lint.py"],
-      "used_by_roles": ["xingbu", "shangshu"]
+      "used_by_roles": ["xingce", "jiheng"]
     }
   ]
 }
@@ -411,7 +411,7 @@ python3 scripts/review.py quick <path>
 
 ### 5.1 SOUL.md + METADATA.yaml 双文件
 
-**roles/shangshu/SOUL.md：**
+**roles/jiheng/SOUL.md：**
 ```markdown
 # 尚书省 · 执行调度
 
@@ -420,10 +420,10 @@ python3 scripts/review.py quick <path>
 [现有内容...]
 ```
 
-**roles/shangshu/METADATA.yaml：**
+**roles/jiheng/METADATA.yaml：**
 ```yaml
 ---
-name: "shangshu"
+name: "jiheng"
 role_name: "尚书省"
 department: "三省"
 
@@ -437,9 +437,9 @@ skills:
     - skill_data_analysis   # 可选数据分析辅助
 
 collaborates_with:
-  - zhongshu    # 上游：中书省
-  - xingbu      # 下游：刑部质量审查
-  - libu_hr     # 咨询：吏部技能查询
+  - jiheng    # 上游：中书省
+  - xingce      # 下游：刑部质量审查
+  - jiyan     # 咨询：吏部技能查询
 
 stats:
   tasks_completed: 12
@@ -460,10 +460,10 @@ evolution:
   "updated_at": "2026-05-09T12:00:00Z",
   "roles": [
     {
-      "id": "shangshu",
+      "id": "jiheng",
       "name": "尚书省",
       "department": "三省",
-      "path": "roles/shangshu",
+      "path": "roles/jiheng",
       "is_permanent": false,
       "version": "3",
       "stats": {
@@ -484,16 +484,16 @@ evolution:
 
 | 角色 | required Skills | optional Skills | 说明 |
 |------|----------------|-----------------|------|
-| taizi | skill_routing, skill_dispatch | skill_analysis | 任务分拣与路由 |
-| zhongshu | skill_planning, skill_doc_writing | skill_analysis | 方案起草 |
-| menxia | skill_review, skill_risk_assessment | skill_analysis | 审议与风险 |
-| shangshu | skill_skill_routing, skill_role_dispatch | skill_data_analysis | Skill/Role检索 |
-| libu_hr | skill_km, skill_evolution, skill_data_analysis | - | 三库管理与进化 |
-| hubu | skill_data_analysis, skill_reporting | skill_doc_writing | 数据分析 |
-| bingbu | skill_devops, skill_security, skill_monitoring | skill_incident_response | 运维与安全 |
-| gongbu | skill_coding, skill_architecture | skill_testing, skill_code_review | 开发与架构 |
-| xingbu | skill_qa, skill_audit, skill_code_review | skill_testing | 质量与审计 |
-| libu | skill_doc_writing, skill_ui_design | skill_presentation | 文档与设计 |
+| chengzhi | skill_routing, skill_dispatch | skill_analysis | 任务分拣与路由 |
+| jiheng | skill_planning, skill_doc_writing | skill_analysis | 方案起草 |
+| shenyi | skill_review, skill_risk_assessment | skill_analysis | 审议与风险 |
+| jiheng | skill_skill_routing, skill_role_dispatch | skill_data_analysis | Skill/Role检索 |
+| jiyan | skill_km, skill_evolution, skill_data_analysis | - | 三库管理与进化 |
+| shusuan | skill_data_analysis, skill_reporting | skill_doc_writing | 数据分析 |
+| bingrong | skill_devops, skill_security, skill_monitoring | skill_incident_response | 运维与安全 |
+| jizao | skill_coding, skill_architecture | skill_testing, skill_code_review | 开发与架构 |
+| xingce | skill_qa, skill_audit, skill_code_review | skill_testing | 质量与审计 |
+| diancang | skill_doc_writing, skill_ui_design | skill_presentation | 文档与设计 |
 | morning | skill_daily_briefing | skill_data_analysis | 每日晨报 |
 | qintian | skill_trend_analysis, skill_prediction | skill_data_analysis | 趋势预测 |
 

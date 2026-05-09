@@ -48,8 +48,8 @@ tools:
   - "scripts/main.py"
 
 used_by_roles:
-  - "taizi"
-  - "shangshu"
+  - "chengzhi"
+  - "jiheng"
 
 effectiveness_score: 0.82
 confidence: "high"
@@ -132,7 +132,7 @@ tools:
   - "scripts/main.py"
 
 used_by_roles:
-  - "taizi"
+  - "chengzhi"
 
 quality_tiers:
   excellent: [0.9, 1.0]

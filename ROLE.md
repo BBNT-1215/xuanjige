@@ -41,10 +41,10 @@ skills:
 
 # Role协作关系（来自三省六部流程）
 collaborates_with:
-  upstream: ["zhongshu"]
-  downstream: ["xingbu"]
-  consult: ["libu_hr"]
-  parallel: ["bingbu", "gongbu"]
+  upstream: ["jiheng"]
+  downstream: ["xingce"]
+  consult: ["jiyan"]
+  parallel: ["bingrong", "jizao"]
 
 # 执行统计
 stats:
@@ -83,24 +83,58 @@ evolution_history:
 
 ```json
 {
-  "version": "1.0",
-  "updated_at": "2026-05-09T12:00:00Z",
-  "total_roles": 12,
+  "version": "2.0",
+  "updated_at": "2026-05-09T16:00:00Z",
+  "total_roles": 11,
   "departments": {
-    "三省": ["taizi", "zhongshu", "menxia", "shangshu"],
-    "六部": ["libu_hr", "hubu", "bingbu", "gongbu", "xingbu", "libu"],
-    "特殊": ["morning", "qintian"]
+    "入口": ["chengzhi"],
+    "三省": ["jiheng", "shenyi"],
+    "六部": ["jizao", "xingce", "diancang", "shusuan", "bingrong", "jiyan"],
+    "辅助": ["qitian", "zaohuang", "yushi"]
   },
   "roles": [
     {
-      "id": "shangshu",
-      "name": "尚书省",
+      "id": "chengzhi",
+      "name": "承旨",
+      "department": "入口",
+      "path": "agents/chengzhi",
+      "is_permanent": true,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_routing", "skill_dispatch"],
+      "health_status": "ok"
+    },
+    {
+      "id": "jiheng",
+      "name": "机衡",
       "department": "三省",
-      "path": "agents/shangshu",
+      "path": "agents/jiheng",
       "is_permanent": false,
-      "version": "4",
-      "stats": {"tasks_completed": 23, "avg_quality": 0.86},
+      "version": "5",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
       "skills_required": ["skill_skill_routing", "skill_role_dispatch"],
+      "health_status": "ok"
+    },
+    {
+      "id": "shenyi",
+      "name": "审议",
+      "department": "三省",
+      "path": "agents/shenyi",
+      "is_permanent": false,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_review", "skill_risk_assessment"],
+      "health_status": "ok"
+    },
+    {
+      "id": "jiyan",
+      "name": "机研",
+      "department": "六部",
+      "path": "agents/jiyan",
+      "is_permanent": true,
+      "version": "1",
+      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
+      "skills_required": ["skill_km", "skill_evolution", "skill_data_analysis"],
       "health_status": "ok"
     }
   ]

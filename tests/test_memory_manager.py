@@ -152,12 +152,12 @@ class TestMemoryManager_L2_Role:
             quality_score=0.82,
             quality_tier="good",
             completed_at=datetime.now(timezone.utc).isoformat(),
-            executing_roles=["gongbu"],
+            executing_roles=["jizao"],
         )
         mm.archive_task(record)
-        stats = mm.update_role_from_record("gongbu", 0.82, collaborators=["bingbu"])
+        stats = mm.update_role_from_record("jizao", 0.82, collaborators=["bingrong"])
         assert stats.stats["tasks_completed"] >= 1
-        assert "bingbu" in stats.collaborations
+        assert "bingrong" in stats.collaborations
 
 
 class TestTaskRecord:

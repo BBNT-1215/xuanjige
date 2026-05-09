@@ -34,7 +34,7 @@ def route_message(message: str, context: dict = None) -> dict:
 
     Returns:
         {
-            "route": "zhongshu|direct|reject|clarify",
+            "route": "jiheng|direct|reject|clarify",
             "confidence": 0.0-1.0,
             "reasoning": "...",
             "task_type": "...",
@@ -62,7 +62,7 @@ def route_message(message: str, context: dict = None) -> dict:
     routing_rules = [
         (["构建", "开发", "创建", "设计", "扩展", "增加", "添加",
           "build", "create", "develop", "expand", "add", "设计"],
-         "zhongshu", 0.85, "旨意包含建设性关键词，应走中书省起草方案"),
+         "jiheng", 0.85, "旨意包含建设性关键词，应走中书省起草方案"),
 
         (["查询", "状态", "情况", "list", "status", "query", "有什么", "多少"],
          "direct", 0.80, "旨意是简单查询，可直接处理"),
@@ -71,10 +71,10 @@ def route_message(message: str, context: dict = None) -> dict:
          "direct", 0.75, "旨意是修复类任务，可直接执行"),
 
         (["分析", "调研", "研究", "analyze", "research", "调查"],
-         "zhongshu", 0.80, "旨意是分析调研类，应走中书省起草"),
+         "jiheng", 0.80, "旨意是分析调研类，应走中书省起草"),
 
         (["文档", "说明", "写", "doc", "write", "撰写"],
-         "zhongshu", 0.75, "旨意是文档类，可走中书省或直接处理"),
+         "jiheng", 0.75, "旨意是文档类，可走中书省或直接处理"),
     ]
 
     best_match = None
@@ -99,7 +99,7 @@ def route_message(message: str, context: dict = None) -> dict:
 
     # 判断task_type
     task_type = None
-    if best_match["route"] == "zhongshu":
+    if best_match["route"] == "jiheng":
         if any(k in message_lower for k in ["构建", "开发", "创建", "设计", "build", "create", "develop"]):
             task_type = "system_setup"
         elif any(k in message_lower for k in ["扩展", "增加", "添加", "expand", "add"]):

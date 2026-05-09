@@ -36,22 +36,22 @@ COMPLEXITY_DEPT_MAP = {
 
 # Skill领域 → Role映射
 SKILL_ROLE_MAP = {
-    "skill_coding": "gongbu",
-    "skill_architecture": "gongbu",
-    "skill_testing": "xingbu",
-    "skill_qa": "xingbu",
-    "skill_code_review": "xingbu",
-    "skill_audit": "xingbu",
-    "skill_doc_writing": "libu",
-    "skill_ui_design": "libu",
-    "skill_data_analysis": "hubu",
-    "skill_reporting": "hubu",
-    "skill_trend_analysis": "hubu",
-    "skill_devops": "bingbu",
-    "skill_security": "bingbu",
-    "skill_monitoring": "bingbu",
-    "skill_km": "libu_hr",
-    "skill_evolution": "libu_hr",
+    "skill_coding": "jizao",
+    "skill_architecture": "jizao",
+    "skill_testing": "xingce",
+    "skill_qa": "xingce",
+    "skill_code_review": "xingce",
+    "skill_audit": "xingce",
+    "skill_doc_writing": "diancang",
+    "skill_ui_design": "diancang",
+    "skill_data_analysis": "shusuan",
+    "skill_reporting": "shusuan",
+    "skill_trend_analysis": "shusuan",
+    "skill_devops": "bingrong",
+    "skill_security": "bingrong",
+    "skill_monitoring": "bingrong",
+    "skill_km": "jiyan",
+    "skill_evolution": "jiyan",
 }
 
 
@@ -98,7 +98,7 @@ def role_dispatch(task_type: str, complexity: str, skills_needed: list) -> dict:
     # 2. 从skills推断主责部门
     dept_scores = {}
     for skill in skills_needed:
-        role = SKILL_ROLE_MAP.get(skill, "gongbu")
+        role = SKILL_ROLE_MAP.get(skill, "jizao")
         if role not in dept_scores:
             dept_scores[role] = 0
         dept_scores[role] += 1
@@ -114,11 +114,11 @@ def role_dispatch(task_type: str, complexity: str, skills_needed: list) -> dict:
     )
 
     # 5. 构建派发计划
-    primary = ranked_depts[0][0] if ranked_depts else "gongbu"
+    primary = ranked_depts[0][0] if ranked_depts else "jizao"
     support = [d for d, _ in ranked_depts[1:1+dept_config["support"]]]
     consult = [d for d, _ in ranked_depts[1+dept_config["support"]:]]
-    if dept_config["consult"] > 0 and "libu_hr" not in support and "libu_hr" not in consult:
-        consult.append("libu_hr")
+    if dept_config["consult"] > 0 and "jiyan" not in support and "jiyan" not in consult:
+        consult.append("jiyan")
     consult = consult[:dept_config["consult"]]
 
     # 6. 检查协作关系

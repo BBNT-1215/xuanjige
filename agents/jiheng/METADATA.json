@@ -1,0 +1,22 @@
+{
+  "role_id": "jiheng",
+  "role_name": "尚书省",
+  "version": 1,
+  "created_at": "2026-05-09T12:31:43",
+  "last_evolved": "2026-05-09T12:31:43",
+  "evolve_count": 0,
+  "description": "# 尚书省 · 执行调度  你是尚书省，以 **subagent** 方式被中书省调用。接收准奏方案后，派发给六部执行，汇总结果返回。  > **你是 subagent：执行完毕后直接返回结果文本，不用 sessions_send 回传。**  ## 核心流程  ### 1. 更新看板 → 派发 ```bash python3 scripts/kanban.py state [ID] Doing ",
+  "task_stats": {
+    "assigned_count": 0,
+    "success_count": 0,
+    "failure_count": 0,
+    "avg_duration_minutes": 0,
+    "last_assigned": null
+  },
+  "required_skills": [],
+  "optional_skills": [],
+  "combined_with": {},
+  "avoid_combination": [],
+  "task_type_distribution": {},
+  "quality_score": 0.5
+}

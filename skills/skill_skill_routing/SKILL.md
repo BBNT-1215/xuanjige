@@ -30,7 +30,7 @@ tools:
   - "scripts/skill_routing.py"
 
 used_by_roles:
-  - "shangshu"
+  - "jiheng"
 
 effectiveness_score: 0.78
 confidence: "high"
@@ -71,7 +71,7 @@ confidence: "high"
     {"skill_id": "skill_coding", "score": 0.85, "reasoning": "代码开发首选"},
     {"skill_id": "skill_code_review", "score": 0.82, "reasoning": "配合代码开发使用"}
   ],
-  "recommended_department": "gongbu",
+  "recommended_department": "jizao",
   "reasoning": "任务类型为代码开发，工部执行，skill_coding为主，skill_code_review辅助"
 }
 ```

@@ -43,8 +43,8 @@ tools:
   - "scripts/review.py"
 
 used_by_roles:
-  - "shangshu"
-  - "gongbu"
+  - "jiheng"
+  - "jizao"
 
 effectiveness_score: 0.78
 confidence: "high"

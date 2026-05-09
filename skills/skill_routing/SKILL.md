@@ -18,7 +18,7 @@ inputs:
 outputs:
   - name: "route"
     type: "string"
-    description: "路由方向：zhongshu / direct / reject / clarify"
+    description: "路由方向：jiheng / direct / reject / clarify"
   - name: "confidence"
     type: "float"
     description: "置信度 0.0-1.0"
@@ -32,7 +32,7 @@ tools:
   - "scripts/route.py"
 
 used_by_roles:
-  - "taizi"
+  - "chengzhi"
 
 effectiveness_score: 0.82
 confidence: "high"
@@ -67,7 +67,7 @@ confidence: "high"
 **Expected Output:**
 ```json
 {
-  "route": "zhongshu",
+  "route": "jiheng",
   "confidence": 0.88,
   "reasoning": "旨意包含'构建'关键词，匹配系统建设类型，应走中书省起草"
 }
@@ -79,7 +79,7 @@ confidence: "high"
 
 | 关键词 | 路由方向 |
 |--------|---------|
-| 构建 / 开发 / 创建 / 设计 | zhongshu |
+| 构建 / 开发 / 创建 / 设计 | jiheng |
 | 查询 / 状态 / 情况 | direct |
 | 模糊 / 不确定 | clarify |
 | 违规 / 不当 | reject |

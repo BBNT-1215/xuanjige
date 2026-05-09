@@ -24,9 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - operation: `skill_devops`, `skill_monitoring`, `skill_incident_response`, `skill_database_optimization`, `skill_api_gateway`
 
 #### Role库（17个）
-- 三省: `taizi`, `zhongshu`, `menxia`, `shangshu`
-- 六部: `hubu`, `gongbu`, `bingbu`, `xingbu`, `libu`, `libu_hr`
-- 特殊: `zaochao`, `qintianjian`
+- 三省: `chengzhi`, `jiheng`, `shenyi`, `jiheng`
+- 六部: `shusuan`, `jizao`, `bingrong`, `xingce`, `diancang`, `jiyan`
+- 特殊: `zaohuang`, `qitian`
 - 扩展: `bishou` (笔受), `yushi` (御史), `jiedushi` (节度使), `silium` (司礼监), `xingke` (刑科)
 
 #### CLI工具链 (`hermestrix_cli.py`)
@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `hermestrix evolution` — --status / --rollback
 - `hermestrix task` — --create / --list / --state / --flow / --show
 - `hermestrix health` — --check / --monitor
-- `hermestrix libu` — --start / --stop / --status / --once
+- `hermestrix diancang` — --start / --stop / --status / --once
 
 #### 测试套件 (`tests/`)
 - `test_memory_manager.py` — 17 tests (L1/L2 CRUD)

@@ -1,4 +1,4 @@
-# Hermestrix 配置文件
+# 玄机阁 配置文件
 # 复制此文件为 config.yaml 并填写实际值
 
 # 项目根目录
@@ -24,18 +24,18 @@ agents:
   # 各Agent独立模型配置
   # 可用: MiniMax-M3, MiniMax-M2, Claude-3.5, GPT-4o, DeepSeek
   model_per_agent:
-    taizi: "MiniMax-M3"
-    zhongshu: "MiniMax-M3"
-    menxia: "MiniMax-M3"
-    shangshu: "MiniMax-M3"
-    hubu: "MiniMax-M2"
-    libu: "MiniMax-M2"
-    bingbu: "MiniMax-M3"
-    xingbu: "MiniMax-M2"
-    gongbu: "MiniMax-M2"
-    libu: "MiniMax-M2"
-    zaochao: "MiniMax-M2"
-    qintianjian: "MiniMax-M3"
+    chengzhi: "MiniMax-M3"    # 承旨
+    jiheng: "MiniMax-M3"      # 机衡
+    shenyi: "MiniMax-M3"      # 审议
+    jiyan: "MiniMax-M2"       # 机研
+    jizao: "MiniMax-M2"       # 技造
+    xingce: "MiniMax-M2"      # 刑策
+    diancang: "MiniMax-M2"     # 文册
+    shusuan: "MiniMax-M2"     # 数算
+    bingrong: "MiniMax-M3"    # 兵戎
+    zaohuang: "MiniMax-M2"    # 早朝
+    qitian: "MiniMax-M3"      # 枢观
+    yushi: "MiniMax-M2"       # 御史
 
 # 断点自愈配置
 recovery:

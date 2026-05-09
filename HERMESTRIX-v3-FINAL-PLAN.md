@@ -262,8 +262,8 @@ memory/
   "completed_at": "2026-05-09T11:40:00Z",
   "duration_minutes": 4,
 
-  "executing_roles": ["zhongshu", "menxia", "shangshu"],
-  "org_flow": ["taizi", "zhongshu", "menxia", "shangshu"],
+  "executing_roles": ["jiheng", "shenyi", "jiheng"],
+  "org_flow": ["chengzhi", "jiheng", "shenyi", "jiheng"],
 
   "skills_used": [
     {"skill_id": "skill_planning", "quality_score": 0.90},
@@ -364,7 +364,7 @@ memory/
 
 ```json
 {
-  "role_id": "shangshu",
+  "role_id": "jiheng",
   "version": "4",
   "updated_at": "2026-05-09T12:00:00Z",
 
@@ -376,9 +376,9 @@ memory/
   },
 
   "collaborations": {
-    "with_xingbu": {"count": 8, "avg_quality": 0.91},
-    "with_gongbu": {"count": 5, "avg_quality": 0.84},
-    "with_libu_hr": {"count": 3, "avg_quality": 0.88}
+    "with_xingce": {"count": 8, "avg_quality": 0.91},
+    "with_jizao": {"count": 5, "avg_quality": 0.84},
+    "with_jiyan": {"count": 3, "avg_quality": 0.88}
   },
 
   "skill_usage": {
@@ -577,7 +577,7 @@ inputs:
 outputs:
   - name: "route"
     type: "string"
-    description: "路由方向：zhongshu / direct / reject / clarify"
+    description: "路由方向：jiheng / direct / reject / clarify"
   - name: "confidence"
     type: "float"
     description: "置信度 0.0-1.0"
@@ -591,7 +591,7 @@ tools:
   - "scripts/route.py"
 
 used_by_roles:
-  - "taizi"
+  - "chengzhi"
 
 effectiveness_score: 0.82
 confidence: "high"
@@ -626,7 +626,7 @@ confidence: "high"
 **Expected Output:**
 ```json
 {
-  "route": "zhongshu",
+  "route": "jiheng",
   "confidence": 0.88,
   "reasoning": "旨意包含'构建'关键词，匹配系统建设类型"
 }
@@ -691,7 +691,7 @@ tools:
   - "scripts/route.py"
 
 used_by_roles:
-  - "taizi"
+  - "chengzhi"
 
 requires_roles: []          # 这个Skill不强制要求特定Role
 
@@ -720,7 +720,7 @@ quality_tiers:
       "effectiveness_score": 0.82,
       "confidence": "high",
       "status": "active",
-      "used_by_roles": ["taizi"]
+      "used_by_roles": ["chengzhi"]
     },
     {
       "id": "skill_skill_routing",
@@ -731,7 +731,7 @@ quality_tiers:
       "effectiveness_score": 0.78,
       "confidence": "high",
       "status": "active",
-      "used_by_roles": ["shangshu"]
+      "used_by_roles": ["jiheng"]
     }
   ],
 
@@ -802,13 +802,13 @@ def calculate_effectiveness(skill_id, records):
 roles/
 ├── registry.json                    # Role中心注册表
 │
-├── taizi/
+├── chengzhi/
 │   ├── SOUL.md                     # Role定义（prompt）
 │   ├── METADATA.yaml               # 元数据
 │   └── references/
 │       └── routing_history.md       # 历史路由案例
 │
-├── shangshu/
+├── jiheng/
 │   ├── SOUL.md
 │   ├── METADATA.yaml
 │   └── references/
@@ -826,7 +826,7 @@ roles/
 
 ```yaml
 ---
-name: "shangshu"
+name: "jiheng"
 role_name: "尚书省"
 department: "三省"
 version: "4"
@@ -846,14 +846,14 @@ skills:
 # Role协作关系
 collaborates_with:
   upstream:           # 上游（流程前置角色）
-    - zhongshu       # 中书省
+    - jiheng       # 中书省
   downstream:        # 下游（执行后汇总）
-    - xingbu         # 刑部（质量审查）
+    - xingce         # 刑部（质量审查）
   consult:           # 咨询（不参与主流程）
-    - libu_hr        # 吏部（Skill/Role查询）
+    - jiyan        # 吏部（Skill/Role查询）
   parallel:          # 并行执行
-    - bingbu         # 兵部
-    - gongbu         # 工部
+    - bingrong         # 兵部
+    - jizao         # 工部
 
 # 执行统计
 stats:
@@ -902,17 +902,17 @@ evolution_history:
   "total_roles": 12,
 
   "departments": {
-    "三省": ["taizi", "zhongshu", "menxia", "shangshu"],
-    "六部": ["libu_hr", "hubu", "bingbu", "gongbu", "xingbu", "libu"],
+    "三省": ["chengzhi", "jiheng", "shenyi", "jiheng"],
+    "六部": ["jiyan", "shusuan", "bingrong", "jizao", "xingce", "diancang"],
     "特殊": ["morning", "qintian"]
   },
 
   "roles": [
     {
-      "id": "shangshu",
+      "id": "jiheng",
       "name": "尚书省",
       "department": "三省",
-      "path": "roles/shangshu",
+      "path": "roles/jiheng",
       "is_permanent": false,
       "version": "4",
       "stats": {"tasks_completed": 23, "avg_quality": 0.86},
@@ -957,16 +957,16 @@ def validate_role_skill_dependencies(role_id):
 
 | 角色 | Required Skills | Optional Skills | 核心职责 |
 |------|----------------|-----------------|---------|
-| **taizi** | skill_routing, skill_dispatch | skill_analysis | 旨意分拣与路由 |
-| **zhongshu** | skill_planning, skill_doc_writing | skill_analysis | 方案起草 |
-| **menxia** | skill_review, skill_risk_assessment | skill_analysis | 审议与风险 |
-| **shangshu** | skill_skill_routing, skill_role_dispatch | skill_data_analysis | Skill/Role检索派发 |
-| **libu_hr** | skill_km, skill_evolution, skill_data_analysis | - | 三库守护+进化 |
-| **hubu** | skill_data_analysis, skill_reporting | skill_doc_writing | 数据分析 |
-| **bingbu** | skill_devops, skill_security, skill_monitoring | skill_incident_response | 运维安全 |
-| **gongbu** | skill_coding, skill_architecture | skill_testing, skill_code_review | 开发架构 |
-| **xingbu** | skill_qa, skill_audit, skill_code_review | skill_testing | 质量审计 |
-| **libu** | skill_doc_writing, skill_ui_design | skill_presentation | 文档设计 |
+| **chengzhi** | skill_routing, skill_dispatch | skill_analysis | 旨意分拣与路由 |
+| **jiheng** | skill_planning, skill_doc_writing | skill_analysis | 方案起草 |
+| **shenyi** | skill_review, skill_risk_assessment | skill_analysis | 审议与风险 |
+| **jiheng** | skill_skill_routing, skill_role_dispatch | skill_data_analysis | Skill/Role检索派发 |
+| **jiyan** | skill_km, skill_evolution, skill_data_analysis | - | 三库守护+进化 |
+| **shusuan** | skill_data_analysis, skill_reporting | skill_doc_writing | 数据分析 |
+| **bingrong** | skill_devops, skill_security, skill_monitoring | skill_incident_response | 运维安全 |
+| **jizao** | skill_coding, skill_architecture | skill_testing, skill_code_review | 开发架构 |
+| **xingce** | skill_qa, skill_audit, skill_code_review | skill_testing | 质量审计 |
+| **diancang** | skill_doc_writing, skill_ui_design | skill_presentation | 文档设计 |
 | **morning** | skill_daily_briefing | skill_data_analysis | 每日晨报 |
 | **qintian** | skill_trend_analysis, skill_prediction | skill_data_analysis | 趋势预测 |
 
@@ -975,7 +975,7 @@ def validate_role_skill_dependencies(role_id):
 ```
 太子（分拣）
   L1: query_similar_tasks(task_type)     → 类似旨意历史
-  L2: get_role_stats('taizi')           → taizi的执行质量
+  L2: get_role_stats('chengzhi')           → chengzhi的执行质量
   L3: get_workflow_rules('routing')    → 路由规则
   → 输出：路由方向
 
@@ -986,8 +986,8 @@ def validate_role_skill_dependencies(role_id):
   → 输出：方案草案
 
 门下省（审议）
-  L1: query_role_history('zhongshu')     → 中书省历史表现
-  Skill预检：validate_role_skill_dependencies('zhongshu')
+  L1: query_role_history('jiheng')     → 中书省历史表现
+  Skill预检：validate_role_skill_dependencies('jiheng')
   L3: get_workflow_rules('review')      → 审议规则
   → 输出：准奏/驳回
 
@@ -1031,7 +1031,7 @@ def validate_role_skill_dependencies(role_id):
 ├───────┼───────────┼──────────────────────────────┼─────────────────
 │ 11:37 │ 尚书省    │ 检索Skill库                  │ L2查询→评分排序
 │       │           │ - skill_domain_classify×    │ 选engineering优先
-│       │           │ 检索Role组合                 │ L2→gongbu+hubu协作好
+│       │           │ 检索Role组合                 │ L2→jizao+shusuan协作好
 │       │           │ 派发：工部(主)+户部(数据)    │ 派发成功
 ├───────┼───────────┼──────────────────────────────┼─────────────────
 │ 11:38 │ 工部      │ 执行：批量创建Skill          │ 使用skill_domain_classify
@@ -1042,7 +1042,7 @@ def validate_role_skill_dependencies(role_id):
 │ 11:40 │ 吏部      │ 归档L1                       │ 写入raw/good/
 │       │           │ 冲突检测→无矛盾              │
 │       │           │ 更新L2 Skill                 │ skill_domain_classify+1
-│       │           │ 更新L2 Role                 │ gongbu.stats+1
+│       │           │ 更新L2 Role                 │ jizao.stats+1
 │       │           │ 健康检查→OK                  │
 │       │           │ 衰减权重更新                 │ 旧记忆权重-0.1
 └───────┴───────────┴──────────────────────────────┴─────────────────
@@ -1358,7 +1358,7 @@ class HealthMonitor:
 4. 定期执行衰减管理
 
 启动：
-  python3 agents/permanent/libu_agent.py [--poll-interval 5]
+  python3 agents/permanent/diancang_agent.py [--poll-interval 5]
 
 持久化：
   使用文件系统（JSON），无需数据库
@@ -1561,8 +1561,8 @@ hermestrix/
 │
 ├── roles/                      # Role库（12个）
 │   ├── registry.json
-│   ├── taizi/SOUL.md + METADATA.yaml
-│   ├── shangshu/SOUL.md + METADATA.yaml
+│   ├── chengzhi/SOUL.md + METADATA.yaml
+│   ├── jiheng/SOUL.md + METADATA.yaml
 │   └── ...
 │
 ├── skills/                     # Skill库
@@ -1584,7 +1584,7 @@ hermestrix/
 │
 ├── agents/                     # Agent实现
 │   └── permanent/
-│       └── libu_agent.py      # 吏部常驻进程
+│       └── diancang_agent.py      # 吏部常驻进程
 │
 ├── three_libs/                 # 三库（持久化）
 │   ├── memory/
@@ -1678,8 +1678,8 @@ hermestrix/
 □ 实现 role_cli.py
 □ 创建 roles/registry.json
 □ 验证 Role × Skill 依赖校验
-□ 改造 shangshu SOUL.md：嵌入L1/L2检索调用
-□ 改造 taizi SOUL.md：嵌入L1检索调用
+□ 改造 jiheng SOUL.md：嵌入L1/L2检索调用
+□ 改造 chengzhi SOUL.md：嵌入L1检索调用
 ```
 
 ### Phase 2：进化闭环（Week 2）
@@ -1696,7 +1696,7 @@ hermestrix/
   - 记录任务依赖链
   - AB测试对比
 
-□ 实现吏部常驻进程 libu_agent.py
+□ 实现吏部常驻进程 diancang_agent.py
   - EventBus 监听
   - 定时健康检查
   - 定时衰减管理
@@ -1773,7 +1773,7 @@ hermestrix/
 □ evolution.py 完整实现进化更新
 □ 3个核心Skill含完整SKILL.md + METADATA.yaml + scripts/
 □ 12个Role含完整METADATA.yaml
-□ shangshu/taizi SOUL.md 嵌入记忆检索
+□ jiheng/chengzhi SOUL.md 嵌入记忆检索
 □ Role×Skill依赖校验正常工作
 □ skill_cli.py + role_cli.py 可用
 □ 端到端流程跑通

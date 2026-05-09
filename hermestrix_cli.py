@@ -11,7 +11,7 @@ Commands:
   evolution   进化状态（status/pending/confirm/rollback）
   task        任务管理（create/list/state/flow）
   health      健康检查（check/monitor）
-  libu        吏部常驻进程（start/stop/status/once）
+  jiyan       机研常驻进程（start/stop/status/once）
 """
 
 import argparse
@@ -349,13 +349,13 @@ def cmd_health(args):
 # libu 命令
 # ============================================================
 
-def cmd_libu(args):
-    """吏部常驻进程"""
-    from engine.libu_agent import LibuAgent
+def cmd_jiyan(args):
+    """机研常驻进程"""
+    from engine.jiyan_agent import JiyanAgent
     import subprocess, signal
 
     DATA_DIR = HERMESTRIX_HOME / "data"
-    PID_FILE = DATA_DIR / "libu_agent.pid"
+    PID_FILE = DATA_DIR / "jiyan_agent.pid"
 
     if args.start:
         # 检查是否已运行
@@ -363,15 +363,15 @@ def cmd_libu(args):
             pid = int(PID_FILE.read_text().strip())
             try:
                 os.kill(pid, 0)
-                cprint(f"  吏部进程已在运行 (PID={pid})，无需重复启动", "yellow")
+                cprint(f"  机研进程已在运行 (PID={pid})，无需重复启动", "yellow")
                 return
             except OSError:
                 cprint(f"  PID文件过期，清理中...", "yellow")
                 PID_FILE.unlink()
 
-        cprint("  启动吏部常驻进程...", "green")
+        cprint("  启动机研常驻进程...", "green")
         proc = subprocess.Popen(
-            ["python3", str(HERMESTRIX_HOME / "engine" / "libu_agent.py")],
+            ["python3", str(HERMESTRIX_HOME / "engine" / "jiyan_agent.py")],
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
             cwd=str(HERMESTRIX_HOME)
         )
@@ -380,7 +380,7 @@ def cmd_libu(args):
 
     elif args.stop:
         if not PID_FILE.exists():
-            cprint("  吏部进程未运行（无PID文件）", "yellow")
+            cprint("  机研进程未运行（无PID文件）", "yellow")
             return
         pid = int(PID_FILE.read_text().strip())
         try:
@@ -392,14 +392,14 @@ def cmd_libu(args):
 
     elif args.status:
         if not PID_FILE.exists():
-            cprint("  吏部进程: 未运行", "red")
+            cprint("  机研进程: 未运行", "red")
             return
         pid = int(PID_FILE.read_text().strip())
         try:
             os.kill(pid, 0)
-            cprint(f"  吏部进程: 运行中 (PID={pid})", "green")
+            cprint(f"  机研进程: 运行中 (PID={pid})", "green")
         except OSError:
-            cprint(f"  吏部进程: PID文件存在但进程已死", "red")
+            cprint(f"  机研进程: PID文件存在但进程已死", "red")
             PID_FILE.unlink()
 
     elif args.once:
@@ -407,7 +407,7 @@ def cmd_libu(args):
         agent.run(once=True)
 
     else:
-        cprint("  使用 hermestrix libu --help 查看用法", "yellow")
+        cprint("  使用 hermestrix jiyan --help 查看用法", "yellow")
 
 
 # ============================================================
@@ -458,10 +458,10 @@ def main():
     g.add_argument("--monitor", "-m", nargs="?", const="5", type=int, metavar="SECS", help="实时监控")
 
     # libu
-    p_l = sub.add_parser("libu", help="吏部常驻进程")
+    p_l = sub.add_parser("jiyan", help="机研常驻进程")
     g = p_l.add_mutually_exclusive_group()
-    g.add_argument("--start", action="store_true", help="启动吏部进程")
-    g.add_argument("--stop", action="store_true", help="停止吏部进程")
+    g.add_argument("--start", action="store_true", help="启动机研进程")
+    g.add_argument("--stop", action="store_true", help="停止机研进程")
     g.add_argument("--status", action="store_true", help="查看运行状态")
     g.add_argument("--once", action="store_true", help="运行一次后退出")
     p_l.add_argument("-v", "--verbose", action="store_true", help="详细输出")
@@ -476,7 +476,7 @@ def main():
         print("  hermestrix evolution --status          # 进化引擎状态")
         print("  hermestrix task     --list             # 任务列表")
         print("  hermestrix health   --check            # 健康检查")
-        print("  hermestrix libu     --status           # 吏部进程状态")
+        print("  hermestrix jiyan     --status           # 机研进程状态")
         return
 
     # 分发
@@ -486,7 +486,7 @@ def main():
         "evolution": cmd_evolution,
         "task": cmd_task,
         "health": cmd_health,
-        "libu": cmd_libu,
+        "jiyan": cmd_jiyan,
     }
 
     try:

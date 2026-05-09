@@ -34,7 +34,7 @@ tools:
   - "scripts/role_dispatch.py"
 
 used_by_roles:
-  - "shangshu"
+  - "jiheng"
 
 effectiveness_score: 0.76
 confidence: "medium"
@@ -72,10 +72,10 @@ confidence: "medium"
 ```json
 {
   "dispatch_plan": {
-    "primary_role": "gongbu",
-    "supporting_roles": ["xingbu"],
+    "primary_role": "jizao",
+    "supporting_roles": ["xingce"],
     "consult_roles": [],
-    "execution_order": ["gongbu", "xingbu"],
+    "execution_order": ["jizao", "xingce"],
     "reasoning": "..."
   }
 }

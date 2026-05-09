@@ -49,9 +49,9 @@ tools:
   - "scripts/debug.py"
 
 used_by_roles:
-  - "shangshu"
-  - "gongbu"
-  - "zaochao"
+  - "jiheng"
+  - "jizao"
+  - "zaohuang"
 
 effectiveness_score: 0.82
 confidence: "high"

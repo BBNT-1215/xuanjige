@@ -25,8 +25,8 @@ tools:
   - "scripts/review.py"
 
 used_by_roles:
-  - "shangshu"
-  - "gongbu"
+  - "jiheng"
+  - "jizao"
 
 quality_tiers:
   excellent: [0.9, 1.0]

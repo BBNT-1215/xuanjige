@@ -126,13 +126,13 @@ def evolve_task(task_id):
     # 3. 记录吏部HR的执行
     try:
         record_role_execution(
-            role_id='libu_hr',
+            role_id='jiyan',
             task_type=_infer_task_type(task.get('title', '')),
             success=analysis['success'],
             duration_minutes=int(analysis['duration_min']),
             quality=analysis['todo_quality']
         )
-        evolved.append('role:libu_hr')
+        evolved.append('role:jiyan')
     except:
         pass
     

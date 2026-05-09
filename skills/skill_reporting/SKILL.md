@@ -42,7 +42,7 @@ tools:
 
 used_by_roles:
   - "data_analyst"
-  - "taizi"
+  - "chengzhi"
 
 effectiveness_score: 0.75
 confidence: "high"
