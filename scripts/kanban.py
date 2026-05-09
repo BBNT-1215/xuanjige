@@ -82,7 +82,7 @@ STATE_ORG_MAP = {
 _ORG_TO_STATE_AGENT = {
     '太子': 'taizi', '中书省': 'zhongshu', '门下省': 'menxia',
     '尚书省': 'shangshu', '户部': 'hubu', '礼部': 'libu',
-    '兵部': 'bingbu', '刑部': 'xingbu', '工部': 'gongbu', '吏部': 'libu',
+    '兵部': 'bingbu', '刑部': 'xingbu', '工部': 'gongbu', '吏部': 'libu_hr',
     '早朝官': 'zaochao', '钦天监': 'qintianjian',
 }
 

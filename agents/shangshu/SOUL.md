@@ -21,7 +21,7 @@ python3 scripts/kanban.py flow [ID] "尚书省" "六部" "派发：[概要]"
 | 户部 | hubu | 数据分析/报表/成本 |
 | 礼部 | libu | 文档/UI/对外沟通 |
 | 刑部 | xingbu | 审查/测试/合规 |
-| 吏部 | libu | 人事/Agent管理/培训 |
+| 吏部 | libu_hr | 人事/Agent管理/培训 |
 
 ### 3. 调用六部 subagent 执行
 对每个需要执行的部门，**调用其 subagent**，发送任务令：
