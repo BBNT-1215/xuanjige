@@ -33,9 +33,9 @@ agents:
     diancang: "MiniMax-M2"     # 文册
     shusuan: "MiniMax-M2"     # 数算
     bingrong: "MiniMax-M3"    # 兵戎
-    zaohuang: "MiniMax-M2"    # 早朝
+    zaohuang: "MiniMax-M2"    # 玄档
     qitian: "MiniMax-M3"      # 枢观
-    yushi: "MiniMax-M2"       # 御史
+    yushi: "MiniMax-M2"       # 枢鉴
 
 # 断点自愈配置
 recovery:

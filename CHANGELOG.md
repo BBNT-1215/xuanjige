@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 三省: `chengzhi`, `jiheng`, `shenyi`, `jiheng`
 - 六部: `shusuan`, `jizao`, `bingrong`, `xingce`, `diancang`, `jiyan`
 - 特殊: `zaohuang`, `qitian`
-- 扩展: `bishou` (笔受), `yushi` (御史), `jiedushi` (节度使), `silium` (司礼监), `xingke` (刑科)
+- 扩展: `bishou` (笔受), `yushi` (枢鉴), `jiedushi` (节度使), `silium` (司礼监), `xingke` (刑科)
 
 #### CLI工具链 (`hermestrix_cli.py`)
 - `hermestrix skill` — --list / --inspect / --search

@@ -62,7 +62,7 @@ Role  = 做事的人（Know-Who）
 | **兵部** | bingrong | skill_devops, skill_security, skill_monitoring | 部署运维、安全监控 |
 | **工部** | jizao | skill_coding, skill_architecture, skill_testing | 开发、架构、测试 |
 | **刑部** | xingce | skill_qa, skill_audit, skill_review | 质量审查、代码审计 |
-| **早朝官** | morning | skill_daily_briefing | 每日晨报 |
+| **玄档官** | morning | skill_daily_briefing | 每日晨报 |
 | **钦天监** | qintian | skill_trend_analysis, skill_prediction | 趋势预测、预判 |
 
 ### 2.3 完整流程融合图

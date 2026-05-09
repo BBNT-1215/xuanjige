@@ -484,12 +484,12 @@ body {
 }
 
 /* ========== ROOM SPECIAL STYLES ========== */
-/* 执事 - special red */
-.room[data-dept="执事"] {
+/* 玄档 - special red */
+.room[data-dept="玄档"] {
   border-color: #e74c3c;
   background: #2d1a0e;
 }
-.room[data-dept="执事"] .room-interior {
+.room[data-dept="玄档"] .room-interior {
   background: linear-gradient(180deg, #5a1a1a 0%, #2d1a0e 100%);
 }
 
@@ -499,7 +499,7 @@ body {
 }
 
 /* Supervisor - grey/dark */
-.room[data-dept="御史"] {
+.room[data-dept="枢鉴"] {
   border-color: #34495e;
 }
 
@@ -560,12 +560,12 @@ body {
 
 <div id="palace-map">
 
-  <!-- ======== 执事 · 情报枢纽 (Top Center) ======== -->
+  <!-- ======== 玄档 · 情报枢纽 (Top Center) ======== -->
   <div style="text-align:center; position:relative; margin-bottom:12px;">
-    <div class="room room-lg" data-dept="执事" data-name="执事 · 情报枢纽" id="room-zhishi">
+    <div class="room room-lg" data-dept="玄档" data-name="玄档 · 情报枢纽" id="room-zhishi">
       <div class="room-interior">
         <span class="pattern-dot"></span>
-        <span style="font-size:12px;color:#ffd700;font-family:'ZCOOL KuaiLe',cursive;">执事</span>
+        <span style="font-size:12px;color:#ffd700;font-family:'ZCOOL KuaiLe',cursive;">玄档</span>
         <span class="pattern-dot"></span>
       </div>
       <div class="room-content">
@@ -574,14 +574,14 @@ body {
           <div class="status-bubble idle" id="bubble-icon-zhishi">😐</div>
         </div>
         <div class="room-info">
-          <div class="role-name">执事</div>
+          <div class="role-name">玄档</div>
           <div class="task-count" id="tasks-zhishi">0 任务</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ======== 辅助 (枢观 · 承旨 · 御史) ======== -->
+  <!-- ======== 辅助 (枢观 · 承旨 · 枢鉴) ======== -->
   <div class="row" style="justify-content:space-between;max-width:800px;margin:0 auto;">
     <!-- 枢观 -->
     <div class="room room-md" data-dept="枢观" data-name="枢观 · 战略观察">
@@ -621,11 +621,11 @@ body {
       </div>
     </div>
 
-    <!-- 御史 -->
-    <div class="room room-md" data-dept="御史" data-name="御史 · 质量审计">
+    <!-- 枢鉴 -->
+    <div class="room room-md" data-dept="枢鉴" data-name="枢鉴 · 质量审计">
       <div class="room-interior">
         <span class="pattern-dot"></span>
-        <span style="font-size:12px;color:#34495e;font-family:'ZCOOL KuaiLe',cursive;">御史</span>
+        <span style="font-size:12px;color:#34495e;font-family:'ZCOOL KuaiLe',cursive;">枢鉴</span>
         <span class="pattern-dot"></span>
       </div>
       <div class="room-content">
@@ -634,7 +634,7 @@ body {
           <div class="status-bubble idle" id="bubble-icon-yushi">😐</div>
         </div>
         <div class="room-info">
-          <div class="role-name">御史</div>
+          <div class="role-name">枢鉴</div>
           <div class="task-count" id="tasks-yushi">0 任务</div>
         </div>
       </div>
@@ -855,10 +855,10 @@ function resolveState(s) { return STATE_MAP[s] || s; }
 
 // Role configs
 const ROLES = {
-  zhishi:   { name: '执事', dept: '执事' },
+  zhishi:   { name: '玄档', dept: '玄档' },
   qitian:   { name: '枢观', dept: '枢观' },
   chengzhi: { name: '承旨', dept: '承旨' },
-  yushi:    { name: '御史', dept: '御史' },
+  yushi:    { name: '枢鉴', dept: '枢鉴' },
   jiheng:   { name: '机衡', dept: '三省' },
   shenyi:   { name: '审议', dept: '三省' },
   jizao:    { name: '技造', dept: '六部' },

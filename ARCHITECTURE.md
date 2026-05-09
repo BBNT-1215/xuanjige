@@ -208,7 +208,7 @@ Knowledge库：静态知识库（静态型）
 ```
 xuanjige/
 ├── workflow/                   # 工作流引擎（真正运转的核心）
-│   ├── engine.py              # 核心调度引擎（承旨→机衡→六部→早朝→御史）
+│   ├── engine.py              # 核心调度引擎（承旨→机衡→六部→玄档→枢鉴）
 │   ├── task_queue.py          # 任务队列（状态机：待分拣→已派发→执行中→待审核→已完成）
 │   └── agent.py               # Agent基类（11个Agent统一run接口）
 ├── agents/                    # Role库（11个角色定义）
@@ -260,10 +260,10 @@ xuanjige/
 六部（执行层·临时Subagent）
   → 并行执行各自专业任务
     ↓
-早朝（情报汇总·临时Subagent）
+玄档（情报汇总·临时Subagent）
   → 整合执行结果
     ↓
-御史（质量审计·临时Subagent）
+枢鉴（质量审计·临时Subagent）
   → 质量兜底，通过则完成，失败则退回重做
     ↓
 任务完成
