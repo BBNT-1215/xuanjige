@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>玄机阁 · 众生相</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #1a0f0a;
+  color: #f5e6c8;
+  font-family: 'Noto Sans SC', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ========== PIXEL ART FONT HELPER ========== */
+.pixel-text {
+  font-family: 'ZCOOL KuaiLe', 'Noto Sans SC', cursive;
+  image-rendering: pixelated;
+}
+
+/* ========== HEADER ========== */
+#header {
+  background: linear-gradient(180deg, #2d1a0e 0%, #1a0f0a 100%);
+  border-bottom: 4px solid #8b6914;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+#header::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0; right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, #8b6914 0px, #8b6914 8px, #c9a84c 8px, #c9a84c 16px);
+}
+
+#header h1 {
+  font-size: 28px;
+  color: #ffd700;
+  text-shadow: 2px 2px 0 #8b6914, -1px -1px 0 #2d1a0e;
+  letter-spacing: 4px;
+}
+
+#header h1 span { color: #c9a84c; font-size: 18px; margin-left: 8px; }
+
+#stats-bar {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+}
+.stat-chip {
+  background: #2d1a0e;
+  border: 2px solid #8b6914;
+  border-radius: 4px;
+  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.stat-chip .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+}
+.stat-chip .dot.busy { background: #fbbf24; }
+.stat-chip .dot.think { background: #60a5fa; }
+.stat-chip .dot.idle { background: #4ade80; }
+.stat-chip .dot.mad { background: #f87171; }
+
+/* ========== PALACE CONTAINER ========== */
+#palace-wrap {
+  display: flex;
+  gap: 0;
+  min-height: calc(100vh - 70px);
+}
+
+/* ========== MAIN PALACE MAP ========== */
+#palace-map {
+  flex: 1;
+  background: 
+    radial-gradient(ellipse at 50% 50%, #2d1a0e 0%, #1a0f0a 100%);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Tile grid pattern overlay */
+#palace-map::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(139,105,20,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139,105,20,0.1) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+
+/* ========== BUILDING SECTIONS ========== */
+.building {
+  position: relative;
+  margin: 0 auto;
+  max-width: 900px;
+}
+
+/* Section labels */
+.section-label {
+  text-align: center;
+  font-size: 11px;
+  color: #8b6914;
+  letter-spacing: 6px;
+  margin: 8px 0 4px;
+  text-transform: uppercase;
+}
+
+/* ========== ROOMS ========== */
+.room {
+  position: relative;
+  background: #2d1a0e;
+  border: 3px solid #8b6914;
+  margin: 6px;
+  display: inline-block;
+  vertical-align: top;
+  overflow: visible;
+}
+
+/* Roof style border */
+.room::before {
+  content: attr(data-name);
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #c9a84c;
+  white-space: nowrap;
+  font-family: 'ZCOOL KuaiLe', cursive;
+  letter-spacing: 2px;
+  text-shadow: 1px 1px 0 #1a0f0a;
+}
+
+/* Room inner glow */
+.room::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 20px rgba(201,168,76,0.15);
+  pointer-events: none;
+}
+
+/* ========== ROW LAYOUTS ========== */
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin: 4px 0;
+}
+.row.centered { justify-content: center; }
+
+/* ========== ROOM SIZES ========== */
+.room-xl  { width: 200px; height: 130px; }
+.room-lg  { width: 160px; height: 120px; }
+.room-md  { width: 120px; height: 110px; }
+.room-sm  { width: 110px; height: 100px; }
+
+/* ========== ROOM INTERIORS ========== */
+/* Top decoration bar */
+.room-interior {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 28px;
+  background: linear-gradient(180deg, #3d2a14 0%, #2d1a0e 100%);
+  border-bottom: 2px solid #5a3a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+/* Decorative Chinese pattern dots */
+.room-interior .pattern-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: #8b6914;
+}
+
+/* Room content area */
+.room-content {
+  position: absolute;
+  top: 28px; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+}
+
+/* ========== PIXEL CHARACTER BASE ========== */
+.pixel-char {
+  position: relative;
+  width: 40px;
+  height: 48px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+
+/* Pixel character using box-shadow technique */
+.pixel-char::before {
+  content: '';
+  position: absolute;
+  width: 4px; height: 4px;
+  background: transparent;
+  /* Head */
+  box-shadow:
+    /* Head row 1 */
+    12px 0 0 #f5d5a0, 16px 0 0 #f5d5a0, 20px 0 0 #f5d5a0, 24px 0 0 #f5d5a0,
+    /* Head row 2 */
+    8px 4px 0 #f5d5a0, 12px 4px 0 #f5d5a0, 16px 4px 0 #f5d5a0, 20px 4px 0 #f5d5a0, 24px 4px 0 #f5d5a0, 28px 4px 0 #f5d5a0,
+    /* Hat row */
+    4px 8px 0 #8b6914, 8px 8px 0 #8b6914, 12px 8px 0 #8b6914, 16px 8px 0 #ffd700, 20px 8px 0 #ffd700, 24px 8px 0 #8b6914, 28px 8px 0 #8b6914, 32px 8px 0 #8b6914,
+    /* Face row 1 - eyes */
+    4px 12px 0 #f5d5a0, 8px 12px 0 #f5d5a0, 12px 12px 0 #2d1a0e, 16px 12px 0 #f5d5a0, 20px 12px 0 #f5d5a0, 24px 12px 0 #2d1a0e, 28px 12px 0 #f5d5a0, 32px 12px 0 #f5d5a0,
+    /* Face row 2 - mouth */
+    4px 16px 0 #f5d5a0, 8px 16px 0 #f5d5a0, 12px 16px 0 #f5d5a0, 16px 16px 0 #f5d5a0, 20px 16px 0 #f5d5a0, 24px 16px 0 #f5d5a0, 28px 16px 0 #f5d5a0, 32px 16px 0 #f5d5a0,
+    /* Neck */
+    16px 20px 0 #c9a84c, 20px 20px 0 #c9a84c,
+    /* Robe row 1 */
+    8px 24px 0 var(--robe-color, #c0392b), 12px 24px 0 var(--robe-color, #c0392b), 16px 24px 0 var(--robe-color, #c0392b), 20px 24px 0 var(--robe-color, #c0392b), 24px 24px 0 var(--robe-color, #c0392b), 28px 24px 0 var(--robe-color, #c0392b),
+    /* Robe row 2 */
+    8px 28px 0 var(--robe-color, #c0392b), 12px 28px 0 var(--robe-color, #c0392b), 16px 28px 0 var(--robe-color, #c0392b), 20px 28px 0 var(--robe-color, #c0392b), 24px 28px 0 var(--robe-color, #c0392b), 28px 28px 0 var(--robe-color, #c0392b),
+    /* Robe row 3 */
+    4px 32px 0 var(--robe-color, #c0392b), 8px 32px 0 var(--robe-color, #c0392b), 12px 32px 0 var(--robe-color, #c0392b), 16px 32px 0 var(--robe-color, #c0392b), 20px 32px 0 var(--robe-color, #c0392b), 24px 32px 0 var(--robe-color, #c0392b), 28px 32px 0 var(--robe-color, #c0392b), 32px 32px 0 var(--robe-color, #c0392b),
+    /* Robe row 4 - bottom */
+    0 36px 0 var(--robe-color, #c0392b), 4px 36px 0 var(--robe-color, #c0392b), 8px 36px 0 var(--robe-color, #c0392b), 12px 36px 0 var(--robe-color, #c0392b), 16px 36px 0 var(--robe-color, #c0392b), 20px 36px 0 var(--robe-color, #c0392b), 24px 36px 0 var(--robe-color, #c0392b), 28px 36px 0 var(--robe-color, #c0392b), 32px 36px 0 var(--robe-color, #c0392b), 36px 36px 0 var(--robe-color, #c0392b);
+  animation: char-idle 1.2s steps(1) infinite;
+}
+
+/* ========== CHARACTER STATE VARIATIONS ========== */
+
+/* IDLE - gentle bounce */
+.pixel-char.idle::before { animation: char-idle 1.4s ease-in-out infinite; }
+/* THINKING - bouncing with ? bubbles */
+.pixel-char.thinking::before { animation: char-think 0.8s ease-in-out infinite; }
+/* BUSY - fast working */
+.pixel-char.busy::before { animation: char-busy 0.4s steps(1) infinite; }
+/* MAD/FRUSTRATED - shaking violently */
+.pixel-char.mad::before { animation: char-mad 0.15s steps(2) infinite; }
+
+/* ========== CHARACTER COLOR VARIANTS ========== */
+/* Each role has a distinct robe color via CSS var */
+.pixel-char[data-role="chengzhi"]  { --robe-color: #7b68ee; } /* 紫色 */
+.pixel-char[data-role="jiheng"]    { --robe-color: #ffd700; } /* 金色 */
+.pixel-char[data-role="shenyi"]    { --robe-color: #c0392b; } /* 朱红 */
+.pixel-char[data-role="jizao"]    { --robe-color: #2980b9; } /* 蓝 */
+.pixel-char[data-role="xingce"]    { --robe-color: #8b4513; } /* 赭石 */
+.pixel-char[data-role="diancang"] { --robe-color: #27ae60; } /* 青绿 */
+.pixel-char[data-role="shusuan"]   { --robe-color: #e67e22; } /* 橙 */
+.pixel-char[data-role="bingrong"]  { --robe-color: #c0392b; } /* 红甲 */
+.pixel-char[data-role="jiyan"]     { --robe-color: #9b59b6; } /* 紫 */
+.pixel-char[data-role="qitian"]   { --robe-color: #1abc9c; } /* 青 */
+.pixel-char[data-role="yushi"]    { --robe-color: #34495e; } /* 玄青 */
+.pixel-char[data-role="zaohuang"] { --robe-color: #e74c3c; } /* 赤 */
+
+/* ========== STATUS BUBBLE ========== */
+.status-bubble {
+  position: absolute;
+  top: -16px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #1a0f0a;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  animation: bubble-pulse 2s ease-in-out infinite;
+}
+.status-bubble.idle   { background: #4ade80; }
+.status-bubble.thinking { background: #60a5fa; }
+.status-bubble.busy   { background: #fbbf24; }
+.status-bubble.mad    { background: #f87171; animation: bubble-shake 0.2s steps(2) infinite; }
+
+@keyframes bubble-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+}
+@keyframes bubble-shake {
+  0%, 100% { transform: translateX(0) rotate(0); }
+  25% { transform: translateX(-2px) rotate(-5deg); }
+  75% { transform: translateX(2px) rotate(5deg); }
+}
+
+/* ========== THOUGHT BUBBLE (for thinking state) ========== */
+.thought-bubble {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border: 2px solid #8b6914;
+  border-radius: 8px;
+  padding: 2px 5px;
+  font-size: 10px;
+  color: #2d1a0e;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.pixel-char.thinking .thought-bubble { opacity: 1; animation: float-up 1s ease-in-out infinite; }
+
+@keyframes float-up {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-4px); }
+}
+
+/* ========== CHARACTER ANIMATIONS ========== */
+@keyframes char-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes char-think {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+  60% { transform: translateY(-2px); }
+}
+@keyframes char-busy {
+  0%, 100% { transform: translateY(0) scale(1); }
+  25% { transform: translateY(-3px) scale(1.05); }
+  75% { transform: translateY(3px) scale(0.95); }
+}
+@keyframes char-mad {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
+/* ========== ROOM INFO ========== */
+.room-info {
+  font-size: 11px;
+  color: #c9a84c;
+  text-align: center;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+.room-info .role-name {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 13px;
+  color: #ffd700;
+}
+.room-info .task-count {
+  font-size: 10px;
+  color: #8b6914;
+}
+
+/* ========== DIVIDERS ========== */
+.divider {
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #8b6914, transparent);
+}
+.divider span {
+  color: #8b6914;
+  font-size: 10px;
+  letter-spacing: 4px;
+}
+
+/* ========== SIDE PANEL ========== */
+#side-panel {
+  width: 260px;
+  background: #2d1a0e;
+  border-left: 3px solid #8b6914;
+  padding: 16px 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#side-panel h3 {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  color: #ffd700;
+  font-size: 16px;
+  text-align: center;
+  border-bottom: 2px solid #5a3a1a;
+  padding-bottom: 8px;
+  letter-spacing: 3px;
+}
+
+/* Activity feed */
+.activity-feed {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 400px;
+}
+.activity-item {
+  font-size: 11px;
+  padding: 6px 8px;
+  border-left: 3px solid #8b6914;
+  margin-bottom: 4px;
+  background: #1a0f0a;
+  border-radius: 0 4px 4px 0;
+  animation: slide-in 0.3s ease-out;
+}
+.activity-item .time { color: #8b6914; font-size: 10px; }
+.activity-item .desc { color: #f5e6c8; }
+.activity-item .agent { color: #ffd700; font-weight: bold; }
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Legend */
+.legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.legend-dot.idle   { background: #4ade80; }
+.legend-dot.thinking { background: #60a5fa; }
+.legend-dot.busy   { background: #fbbf24; }
+.legend-dot.mad    { background: #f87171; }
+
+/* Task panel */
+.task-panel {
+  background: #1a0f0a;
+  border: 2px solid #5a3a1a;
+  border-radius: 6px;
+  padding: 8px;
+}
+.task-panel h4 {
+  font-size: 12px;
+  color: #c9a84c;
+  margin-bottom: 6px;
+}
+.task-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  padding: 3px 0;
+  border-bottom: 1px solid #3d2a14;
+  color: #f5e6c8;
+}
+.task-row:last-child { border: none; }
+.task-row span:first-child { color: #8b6914; }
+
+/* ========== FOOTER ========== */
+#footer {
+  background: #2d1a0e;
+  border-top: 3px solid #8b6914;
+  padding: 8px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: #8b6914;
+}
+#footer::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 0; right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, #8b6914 0px, #8b6914 8px, #c9a84c 8px, #c9a84c 16px);
+}
+
+/* ========== LOADING / EMPTY STATE ========== */
+.loading-hint {
+  text-align: center;
+  color: #8b6914;
+  font-size: 12px;
+  padding: 20px;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ========== DEPARTMENT LABELS ========== */
+.dept-label {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 14px;
+  color: #ffd700;
+  text-shadow: 1px 1px 0 #1a0f0a;
+  white-space: nowrap;
+  letter-spacing: 3px;
+}
+
+/* ========== ROOM SPECIAL STYLES ========== */
+/* Morning court - special red */
+.room[data-dept="早朝"] {
+  border-color: #e74c3c;
+  background: #2d1a0e;
+}
+.room[data-dept="早朝"] .room-interior {
+  background: linear-gradient(180deg, #5a1a1a 0%, #2d1a0e 100%);
+}
+
+/* Strategy room - blue tint */
+.room[data-dept="枢观"] {
+  border-color: #1abc9c;
+}
+
+/* Supervisor - grey/dark */
+.room[data-dept="御史"] {
+  border-color: #34495e;
+}
+
+/* Six departments - warm tones */
+.room[data-dept="六部"] {
+  border-color: #c9a84c;
+}
+
+/* San Sheng (三省) */
+.room[data-dept="三省"] {
+  border-color: #ffd700;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1100px) {
+  #palace-wrap { flex-direction: column; }
+  #side-panel { width: 100%; border-left: none; border-top: 3px solid #8b6914; }
+  .activity-feed { max-height: 150px; }
+}
+
+/* ========== AUTO-REFRESH INDICATOR ========== */
+.refresh-indicator {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  display: inline-block;
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #1a0f0a; }
+::-webkit-scrollbar-thumb { background: #8b6914; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<div id="header">
+  <h1 class="pixel-text">🏯 玄机阁 · 众生相 <span>实时监控</span></h1>
+  <div id="stats-bar">
+    <div class="stat-chip"><span class="dot idle" id="stat-idle"></span><span id="cnt-idle">0</span> 空闲</div>
+    <div class="stat-chip"><span class="dot think" id="stat-think"></span><span id="cnt-thinking">0</span> 思考</div>
+    <div class="stat-chip"><span class="dot busy" id="stat-busy"></span><span id="cnt-busy">0</span> 忙碌</div>
+    <div class="stat-chip"><span class="dot mad" id="stat-mad"></span><span id="cnt-mad">0</span> 抓狂</div>
+    <div class="stat-chip" style="font-size:11px; color:#8b6914;">
+      <span class="refresh-indicator"></span> <span id="last-update">--</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MAIN PALACE ============ -->
+<div id="palace-wrap">
+
+<div id="palace-map">
+
+  <!-- ======== 早朝 · 情报枢纽 (Top Center) ======== -->
+  <div style="text-align:center; position:relative; margin-bottom:8px;">
+    <div class="section-label">▲ 早朝 · 情报枢纽 ▲</div>
+    <div class="room room-lg" data-dept="早朝" data-name="早朝 · 情报枢纽" id="room-zaohuang">
+      <div class="room-interior">
+        <span class="pattern-dot"></span>
+        <span style="font-size:10px;color:#ffd700;font-family:'ZCOOL KuaiLe',cursive;">早朝</span>
+        <span class="pattern-dot"></span>
+        <span class="pattern-dot"></span>
+      </div>
+      <div class="room-content">
+        <div class="pixel-char idle" data-role="zaohuang" id="char-zaohuang">
+          <div class="thought-bubble" id="bubble-zaohuang"></div>
+          <div class="status-bubble idle" id="bubble-icon-zaohuang">😐</div>
+        </div>
+        <div class="room-info">
+          <div class="role-name">早朝</div>
+          <div class="task-count" id="tasks-zaohuang">0 任务</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== 枢观 · 承旨 · 御史 (Top Row) ======== -->
+  <div class="section-label">─ 辅助 ─</div>
+  <div class="row" style="justify-content:space-between;max-width:680px;margin:0 auto;">
+
+    <!-- 枢观 -->
+    <div class="room room-md" data-dept="枢观" data-name="枢观 · 战略观察">
+      <div class="room-interior"><span class="pattern-dot"></span><span style="font-size:10px;color:#1abc9c;font-family:'ZCOOL KuaiLe',cursive;">枢观</span><span class="pattern-dot"></span></div>
+      <div class="room-content">
+        <div class="pixel-char idle" data-role="qitian" id="char-qitian">
+          <div class="thought-bubble"></div>
+          <div class="status-bubble idle" id="bubble-icon-qitian">😐</div>
+        </div>
+        <div class="room-info">
+          <div class="role-name">枢观</div>
+          <div class="task-count" id="tasks-qitian">0 任务</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 承旨 -->
+    <div class="room room-md" data-dept="入口" data-name="承旨 · 消息分拣">
+      <div class="room-interior"><span class="pattern-dot"></span><span style="font-size:10px;color:#7b68ee;font-family:'ZCOOL KuaiLe',cursive;">承旨</span><span class="pattern-dot"></span></div>
+      <div class="room-content">
+        <div class="pixel-char idle" data-role="chengzhi" id="char-chengzhi">
+          <div class="thought-bubble"></div>
+          <div class="status-bubble idle" id="bubble-icon-chengzhi">😐</div>
+        </div>
+        <div class="room-info">
+          <div class="role-name">承旨</div>
+          <div class="task-count" id="tasks-chengzhi">0 任务</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 御史 -->
+    <div class="room room-md" data-dept="御史" data-name="御史 · 质量审计">
+      <div class="room-interior"><span class="pattern-dot"></span><span style="font-size:10px;color:#34495e;font-family:'ZCOOL KuaiLe',cursive;">御史</span><span class="pattern-dot"></span></div>
+      <div class="room-content">
+        <div class="pixel-char idle" data-role="yushi" id="char-yushi">
+          <div class="thought-bubble"></div>
+          <div class="status-bubble idle" id="bubble-icon-yushi">😐</div>
+        </div>
+        <div class="room-info">
+          <div class="role-name">御史</div>
+          <div class="task-count" id="tasks-yushi">0 任务</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ======== 三省 ======== -->
+  <div class="divider"><span>◆ 三 省 ◆</span></div>
+  <div class="row" style="justify-content:center;gap:20px;">
+
+    <!-- 机衡 -->
+    <div class="room room-lg" data-dept="三省" data-name="机衡 · 调度派发">
+      <div class="room-interior">
+        <span class="pattern-dot"></span>
+        <span style="font-size:11px;color:#ffd700;font-family:'ZCOOL KuaiLe',cursive;">机衡</span>
+        <span class="pattern-dot"></span>
+        <span class="pattern-dot"></span>
+        <span class="pattern-dot"></span>
+      </div>
+      <div class="room-content">
+        <div class="pixel-char idle" data-role="jiheng" id="char-jiheng">
+          <div class="thought-bubble"></div>
+          <div class="status-bubble idle" id="bubble-icon-jiheng">😐</div>
+        </div>
+        <div class="room-info">
+          <div class="role-name">机衡</div>
+          <div class="task-count" id="tasks-jiheng">0 任务</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 审议 -->
+    <div class="room room-lg" data-dept="三省" data-name="审议 · 审核封驳">
+      <div class="room-interior">
+        <span class="pattern-dot"></span>
+        <span style="font-size:11px;color:#c0392b;font-family:'ZCOOL KuaiLe',cursive;">审议</span>
+        <span class="pattern-dot"></span>
+        <span class="pattern-dot"></span>
+        <span class="pattern-dot"></span>
+      </div>
+      <div class="room-content">
+        <div class="pixel-char idle" data-role="shenyi" id="char-shenyi">
+          <div class="thought-bubble"></div>
+          <div class="status-bubble idle" id="bubble-icon-shenyi">😐</div>
+        </div>
+        <div class="room-info">
+          <div class="role-name">审议</div>
+          <div class="task-count" id="tasks-shenyi">0 任务</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ======== 六部 ======== -->
+  <div class="divider"><span>◆ 六 部 ◆</span></div>
+  <div class="row" style="flex-wrap:wrap;justify-content:center;">
+
+    <!-- 技造 -->
+    <div class="room room-md" data-dept="六部" data-name="技造 · 开发工程">
+      <div class="room-interior"><span class="pattern-dot"></span><span style="font-size:10px;color:#2980b9;font-family:'ZCOOL KuaiLe',cursive;">技造</span><span class="pattern-dot"></span></div>
+      <div class="room-content">
+        <div class="pixel-char idle" data-role="jizao" id="char-jizao">
+          <div class="thought-bubble"></div>
+          <div class="status-bubble idle" id="bubble-icon-jizao">😐</div>
+        </div>
+        <div class="room-info">
+          <div class="role-name">技造</div>
+          <div class="task-count" id="tasks-jizao">0 任务</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 刑策 -->
+    <div class="room room-md" data-dept="六部" data-name="刑策 · 质检审计">
+      <div class="room-interior"><span class="pattern-dot"></span><span style="font-size:10px;color:#8b4513;font-family:'ZCOOL KuaiLe',cursive;">刑策</span><span class="pattern-dot"></span></div>
+      <div class="room-content">
+        <div class="pixel-char idle" data-role="xingce" id="char-xingce">
+          <div class="thought-bubble"></div>
+          <div class="status-bubble idle" id="bubble-icon-xingce">😐</div>
+        </div>
+        <div class="room-info">
+          <div class="role-name">刑策</div>
+          <div class="task-count" id="tasks-xingce">0 任务</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 文册 -->
+    <div class="room room-md" data-dept="六部" data-name="文册 · 文档规范">
+      <div class="room-interior"><span class="pattern-dot"></span><span style="font-size:10px;color:#27ae60;font-family:'ZCOOL KuaiLe',cursive;">文册</span><span class="pattern-dot"></span></div>
+      <div class="room-content">
+        <div class="pixel-char idle" data-role="diancang" id="char-diancang">
+          <div class="thought-bubble"></div>
+          <div class="status-bubble idle" id="bubble-icon-diancang">😐</div>
+        </div>
+        <div class="room-info">
+          <div class="role-name">文册</div>
+          <div class="task-count" id="tasks-diancang">0 任务</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 数算 -->
+    <div class="room room-md" data-dept="六部" data-name="数算 · 数据分析">
+      <div class="room-interior"><span class="pattern-dot"></span><span style="font-size:10px;color:#e67e22;font-family:'ZCOOL KuaiLe',cursive;">数算</span><span class="pattern-dot"></span></div>
+      <div class="room-content">
+        <div class="pixel-char idle" data-role="shusuan" id="char-shusuan">
+          <div class="thought-bubble"></div>
+          <div class="status-bubble idle" id="bubble-icon-shusuan">😐</div>
+        </div>
+        <div class="room-info">
+          <div class="role-name">数算</div>
+          <div class="task-count" id="tasks-shusuan">0 任务</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 兵戎 -->
+    <div class="room room-md" data-dept="六部" data-name="兵戎 · 部署安全">
+      <div class="room-interior"><span class="pattern-dot"></span><span style="font-size:10px;color:#c0392b;font-family:'ZCOOL KuaiLe',cursive;">兵戎</span><span class="pattern-dot"></span></div>
+      <div class="room-content">
+        <div class="pixel-char idle" data-role="bingrong" id="char-bingrong">
+          <div class="thought-bubble"></div>
+          <div class="status-bubble idle" id="bubble-icon-bingrong">😐</div>
+        </div>
+        <div class="room-info">
+          <div class="role-name">兵戎</div>
+          <div class="task-count" id="tasks-bingrong">0 任务</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 机研 -->
+    <div class="room room-md" data-dept="六部" data-name="机研 · 进化引擎">
+      <div class="room-interior"><span class="pattern-dot"></span><span style="font-size:10px;color:#9b59b6;font-family:'ZCOOL KuaiLe',cursive;">机研</span><span class="pattern-dot"></span></div>
+      <div class="room-content">
+        <div class="pixel-char idle" data-role="jiyan" id="char-jiyan">
+          <div class="thought-bubble"></div>
+          <div class="status-bubble idle" id="bubble-icon-jiyan">😐</div>
+        </div>
+        <div class="room-info">
+          <div class="role-name">机研</div>
+          <div class="task-count" id="tasks-jiyan">0 任务</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- end #palace-map -->
+
+<!-- ============ SIDE PANEL ============ -->
+<div id="side-panel">
+  <h3>📊 状态总览</h3>
+
+  <!-- Stats -->
+  <div class="task-panel">
+    <h4>任务负载</h4>
+    <div class="task-row"><span>执行中</span><span id="panel-doing">0</span></div>
+    <div class="task-row"><span>待审核</span><span id="panel-review">0</span></div>
+    <div class="task-row"><span>已完成</span><span id="panel-done">0</span></div>
+    <div class="task-row"><span>总任务</span><span id="panel-total">0</span></div>
+  </div>
+
+  <!-- Legend -->
+  <div class="task-panel">
+    <h4>图例</h4>
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot idle"></span>空闲</div>
+      <div class="legend-item"><span class="legend-dot thinking"></span>思考</div>
+      <div class="legend-item"><span class="legend-dot busy"></span>忙碌</div>
+      <div class="legend-item"><span class="legend-dot mad"></span>抓狂</div>
+    </div>
+  </div>
+
+  <!-- Activity feed -->
+  <h3 style="margin-top:4px;">📜 流转记录</h3>
+  <div class="activity-feed" id="activity-feed">
+    <div class="loading-hint">等待任务流转...</div>
+  </div>
+</div>
+
+</div><!-- end #palace-wrap -->
+
+<!-- ============ FOOTER ============ -->
+<div id="footer">
+  <span>玄机阁 v2.0 · Hermestrix 多Agent协作系统</span>
+  <span id="system-time">--</span>
+</div>
+
+<script>
+// ============================================================
+// STATE MACHINE
+// ============================================================
+const STATE_MAP = {
+  // old names → display
+  Zhongshu: '机衡', Menxia: '审议',
+  Taizi: '承旨', Shangshu: '机衡',
+  Doing: '执行', Review: '待回奏',
+  Done: '完成', Blocked: '阻塞'
+};
+
+function resolveState(s) { return STATE_MAP[s] || s; }
+
+// Role configs
+const ROLES = {
+  zaohuang: { name: '早朝', dept: '早朝' },
+  qitian:  { name: '枢观', dept: '枢观' },
+  chengzhi: { name: '承旨', dept: '承旨' },
+  yushi:   { name: '御史', dept: '御史' },
+  jiheng:  { name: '机衡', dept: '三省' },
+  shenyi:  { name: '审议', dept: '三省' },
+  jizao:   { name: '技造', dept: '六部' },
+  xingce:  { name: '刑策', dept: '六部' },
+  diancang:{ name: '文册', dept: '六部' },
+  shusuan: { name: '数算', dept: '六部' },
+  bingrong:{ name: '兵戎', dept: '六部' },
+  jiyan:   { name: '机研', dept: '六部' },
+};
+
+// State → visual
+const STATE_VISUAL = {
+  idle:    { cls: 'idle',    emoji: '😐', thought: '' },
+  thinking: { cls: 'thinking', emoji: '💭', thought: '规划中…' },
+  busy:    { cls: 'busy',    emoji: '🔨', thought: '执行中…' },
+  mad:     { cls: 'mad',     emoji: '😤', thought: '阻塞!' },
+};
+
+// Task state to agent state
+function taskStateToAgentState(taskState) {
+  const s = resolveState(taskState);
+  if (s === '完成') return 'idle';
+  if (s === '执行' || s === '忙碌') return 'busy';
+  if (s === '待回奏' || s === '审核') return 'thinking';
+  if (s === '阻塞') return 'mad';
+  return 'idle';
+}
+
+const EMOJI_BY_STATE = { idle: '😐', thinking: '💭', busy: '🔨', mad: '😤' };
+
+// ============================================================
+// DATA FETCHING
+// ============================================================
+async function fetchJSON(url) {
+  try {
+    const r = await fetch(url + '?t=' + Date.now());
+    if (!r.ok) return null;
+    return r.json();
+  } catch { return null; }
+}
+
+let activityLog = [];
+
+function addActivity(agent, action, task) {
+  const time = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  activityLog.unshift({ time, agent: ROLES[agent]?.name || agent, action, task });
+  if (activityLog.length > 50) activityLog.pop();
+  renderActivity();
+}
+
+function renderActivity() {
+  const feed = document.getElementById('activity-feed');
+  if (activityLog.length === 0) {
+    feed.innerHTML = '<div class="loading-hint">等待任务流转...</div>';
+    return;
+  }
+  feed.innerHTML = activityLog.slice(0, 20).map(a => `
+    <div class="activity-item">
+      <div class="time">${a.time}</div>
+      <div><span class="agent">${a.agent}</span> <span class="desc">${a.action}</span></div>
+      <div class="desc" style="color:#5a3a1a;font-size:10px;">${a.task}</div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// CORE UPDATE LOOP
+// ============================================================
+async function update() {
+  const registry = await fetchJSON('/api/registry');
+  const tasks    = await fetchJSON('/api/tasks');
+
+  if (!registry) {
+    // Fallback: generate simulated activity for demo
+    simulateActivity();
+    return;
+  }
+
+  // Count task states
+  const counts = { Doing: 0, Review: 0, Done: 0 };
+  (tasks || []).forEach(t => {
+    const s = resolveState(t.state);
+    if (s === '执行' || s === '忙碌') counts.Doing++;
+    else if (s === '待回奏' || s === '审核') counts.Review++;
+    else if (s === '完成') counts.Done++;
+  });
+
+  document.getElementById('panel-doing').textContent  = counts.Doing;
+  document.getElementById('panel-review').textContent = counts.Review;
+  document.getElementById('panel-done').textContent  = counts.Done;
+  document.getElementById('panel-total').textContent = (tasks || []).length;
+
+  // Per-agent state
+  const agentStates = {};
+  (registry.roles || []).forEach(role => {
+    const id = role.id;
+    const agentTasks = (tasks || []).filter(t => t.agent === id || t.assignee === id);
+    const doing = agentTasks.filter(t => !['完成','done','Done'].includes(resolveState(t.state))).length;
+    const total = agentTasks.length;
+
+    // Show task count
+    const el = document.getElementById('tasks-' + id);
+    if (el) el.textContent = total + ' 任务';
+
+    // Determine state
+    let state = 'idle';
+    if (total === 0) state = 'idle';
+    else if (doing === 0) state = 'idle';
+    else if (doing >= 3) state = 'mad';
+    else if (doing >= 2) state = 'busy';
+    else state = 'thinking';
+
+    agentStates[id] = state;
+    updateCharacter(id, state);
+  });
+
+  // Stats bar
+  const st = { idle: 0, thinking: 0, busy: 0, mad: 0 };
+  Object.values(agentStates).forEach(s => st[s]++);
+  document.getElementById('cnt-idle').textContent      = st.idle;
+  document.getElementById('cnt-thinking').textContent  = st.thinking;
+  document.getElementById('cnt-busy').textContent      = st.busy;
+  document.getElementById('cnt-mad').textContent       = st.mad;
+
+  // Last update time
+  document.getElementById('last-update').textContent = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'});
+  document.getElementById('system-time').textContent = new Date().toLocaleString('zh-CN');
+}
+
+// ============================================================
+// CHARACTER UPDATE
+// ============================================================
+function updateCharacter(agentId, state) {
+  const charEl   = document.getElementById('char-' + agentId);
+  const bubbleEl = document.getElementById('bubble-icon-' + agentId);
+  if (!charEl) return;
+
+  charEl.className = 'pixel-char ' + state;
+
+  const visual = STATE_VISUAL[state] || STATE_VISUAL.idle;
+  if (bubbleEl) {
+    bubbleEl.className = 'status-bubble ' + state;
+    bubbleEl.textContent = visual.emoji;
+  }
+
+  // Thought bubble text
+  const thoughtEl = charEl.querySelector('.thought-bubble');
+  if (thoughtEl) thoughtEl.textContent = visual.thought;
+}
+
+// ============================================================
+// SIMULATION MODE (no backend)
+// ============================================================
+const SIM_STATES  = ['idle','thinking','busy','mad'];
+const SIM_AGENTS  = ['jizao','xingce','diancang','shusuan','bingrong','jiyan','jiheng','shenyi','chengzhi','yushi','qitian','zaohuang'];
+const SIM_TASKS   = ['重构认证模块','优化查询性能','修复安全漏洞','更新API文档','部署新版本','审查PR','数据分析','情报汇总','例行巡检'];
+const SIM_ACTIONS = ['执行中','待审核','已完成','阻塞中'];
+
+let simIdx = 0;
+function simulateActivity() {
+  const agent = SIM_AGENTS[Math.floor(Math.random() * SIM_AGENTS.length)];
+  const task  = SIM_TASKS[Math.floor(Math.random() * SIM_TASKS.length)];
+  const act   = SIM_ACTIONS[Math.floor(Math.random() * SIM_ACTIONS.length)];
+  addActivity(agent, act, task);
+
+  // Update a random character
+  const charEl   = document.getElementById('char-' + agent);
+  const bubbleEl = document.getElementById('bubble-icon-' + agent);
+  if (charEl && bubbleEl) {
+    const st = SIM_STATES[Math.floor(Math.random() * SIM_STATES.length)];
+    charEl.className = 'pixel-char ' + st;
+    bubbleEl.className = 'status-bubble ' + st;
+    bubbleEl.textContent = EMOJI_BY_STATE[st];
+    const thoughtEl = charEl.querySelector('.thought-bubble');
+    if (thoughtEl) thoughtEl.textContent = STATE_VISUAL[st]?.thought || '';
+  }
+
+  // Update counters
+  const counts = { idle: 0, thinking: 0, busy: 0, mad: 0 };
+  SIM_AGENTS.forEach(a => {
+    const c = document.getElementById('char-' + a);
+    if (c) {
+      SIM_AGENTS.forEach(cls => { if (c.classList.contains(cls)) counts[cls]++; });
+      const st = [...c.classList].find(cls => ['idle','thinking','busy','mad'].includes(cls)) || 'idle';
+      counts[st]++;
+    }
+  });
+
+  document.getElementById('last-update').textContent = new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'});
+  document.getElementById('system-time').textContent = new Date().toLocaleString('zh-CN');
+  document.getElementById('panel-total').textContent = Math.floor(Math.random() * 20) + 5;
+  document.getElementById('panel-doing').textContent  = Math.floor(Math.random() * 8) + 1;
+  document.getElementById('panel-review').textContent = Math.floor(Math.random() * 4);
+  document.getElementById('panel-done').textContent   = Math.floor(Math.random() * 15) + 3;
+
+  simIdx++;
+}
+
+// ============================================================
+// INIT & LOOP
+// ============================================================
+update();
+setInterval(update, 4000);
+setInterval(simulateActivity, 6000); // Add demo activity
+</script>
+</body>
+</html>

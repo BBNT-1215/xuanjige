@@ -21,6 +21,7 @@ _BASE = pathlib.Path(os.environ.get('HERMESTRIX_HOME',
 DATA_DIR = _BASE / 'data'
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 TASKS_FILE = DATA_DIR / 'tasks.json'
+REGISTRY_FILE = _BASE / 'agents' / 'registry.json'
 
 STATIC_DIR = pathlib.Path(__file__).parent / 'static'
 STATIC_DIR.mkdir(exist_ok=True)
@@ -35,8 +36,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/api/tasks':
             self.send_json(self._get_tasks())
+        elif self.path == '/api/registry':
+            self.send_json(self._get_registry())
         elif self.path == '/api/stats':
             self.send_json(self._get_stats())
+        elif self.path.startswith('/pixel'):
+            self.path = '/pixel/index.html'
+            super().do_GET()
         elif self.path == '/' or self.path == '/index.html':
             self.path = '/index.html'
             super().do_GET()
@@ -56,6 +62,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return json.loads(TASKS_FILE.read_text(encoding='utf-8'))
         except:
             return []
+
+    def _get_registry(self):
+        if not REGISTRY_FILE.exists():
+            return {"roles": []}
+        try:
+            return json.loads(REGISTRY_FILE.read_text(encoding='utf-8'))
+        except:
+            return {"roles": []}
 
     def _get_stats(self):
         tasks = self._get_tasks()
