@@ -14,6 +14,16 @@
 
 ---
 
+## 🙏 致谢
+
+**本项目直接受 [cft0808/edict](https://github.com/cft0808/edict)（15.7k ⭐）启发**—— edict 是目前最完整的三省六部制 AI Agent 实现，奠定了"制度性审核 + 实时看板"的核心范式。本项目在 edict 基础上进行 Hermes Agent 原生适配，并新增断点自愈、三库分离、进化闭环等工程实践。
+
+设计参考：
+- [cft0808/edict](https://github.com/cft0808/edict) — 三省六部制完整实现
+- [agent-governance-design skill](https://github.com/lijigang/ljg-skills) — 三省六部制方法论沉淀
+
+---
+
 ## 🤔 为什么是三省六部？
 
 大多数 Multi-Agent 框架的套路是：
