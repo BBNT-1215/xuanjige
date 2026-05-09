@@ -100,6 +100,7 @@ def main():
         if a == '--host' and i+1 < len(sys.argv):
             HOST = sys.argv[i+1]
 
+    socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer((HOST, PORT), Handler) as httpd:
         print(f"\n\n⚔️ 玄机阁 Dashboard")
         print(f"   http://{HOST}:{PORT}")
