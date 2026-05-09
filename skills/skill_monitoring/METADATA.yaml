@@ -1,0 +1,24 @@
+---
+name: "skill_monitoring"
+version: "1.0.0"
+created_at: "2026-05-09T00:00:00Z"
+updated_at: "2026-05-09T00:00:00Z"
+effectiveness_score: 0.70
+confidence: "medium"
+stats:
+  total_uses: 0
+  success_count: 0
+  avg_quality: 0.0
+verification:
+  status: "pending"
+domain: "operation"
+tier: "STANDARD"
+tools:
+  - "scripts/main.py"
+used_by_roles: []
+---
+
+## Metadata
+Skill: Monitoring
+Domain: operation
+Tier: STANDARD

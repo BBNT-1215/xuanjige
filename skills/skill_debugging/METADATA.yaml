@@ -1,0 +1,36 @@
+---
+name: "skill_debugging"
+version: "1.0.0"
+created_at: "2026-05-09T14:00:00Z"
+updated_at: "2026-05-09T14:00:00Z"
+
+effectiveness_score: 0.82
+confidence: "high"
+
+stats:
+  total_uses: 0
+  success_count: 0
+  failure_count: 0
+  avg_quality: 0.0
+
+verification:
+  status: "pending"
+  version_introduced: "1.0.0"
+  observations_required: 5
+  observations_collected: 0
+
+domain: "engineering"
+
+tools:
+  - "scripts/debug.py"
+
+used_by_roles:
+  - "shangshu"
+  - "gongbu"
+  - "zaochao"
+
+quality_tiers:
+  excellent: [0.9, 1.0]
+  good: [0.8, 0.9]
+  medium: [0.5, 0.8]
+  bad: [0.0, 0.5]

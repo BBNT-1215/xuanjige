@@ -3,9 +3,24 @@
   "updated_at": "2026-05-09T14:00:00Z",
   "total_roles": 12,
   "departments": {
-    "三省": ["taizi", "zhongshu", "menxia", "shangshu"],
-    "六部": ["libu_hr", "hubu", "bingbu", "gongbu", "xingbu", "libu"],
-    "特殊": ["zaochao", "qintianjian"]
+    "三省": [
+      "taizi",
+      "zhongshu",
+      "menxia",
+      "shangshu"
+    ],
+    "六部": [
+      "libu_hr",
+      "hubu",
+      "bingbu",
+      "gongbu",
+      "xingbu",
+      "libu"
+    ],
+    "特殊": [
+      "zaochao",
+      "qintianjian"
+    ]
   },
   "roles": [
     {
@@ -15,8 +30,14 @@
       "path": "agents/taizi",
       "is_permanent": true,
       "version": "1",
-      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
-      "skills_required": ["skill_routing", "skill_dispatch"],
+      "stats": {
+        "tasks_completed": 0,
+        "avg_quality": 0.0
+      },
+      "skills_required": [
+        "skill_routing",
+        "skill_dispatch"
+      ],
       "health_status": "ok"
     },
     {
@@ -26,8 +47,14 @@
       "path": "agents/zhongshu",
       "is_permanent": false,
       "version": "1",
-      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
-      "skills_required": ["skill_planning", "skill_doc_writing"],
+      "stats": {
+        "tasks_completed": 0,
+        "avg_quality": 0.0
+      },
+      "skills_required": [
+        "skill_planning",
+        "skill_doc_writing"
+      ],
       "health_status": "ok"
     },
     {
@@ -37,8 +64,14 @@
       "path": "agents/menxia",
       "is_permanent": false,
       "version": "1",
-      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
-      "skills_required": ["skill_review", "skill_risk_assessment"],
+      "stats": {
+        "tasks_completed": 0,
+        "avg_quality": 0.0
+      },
+      "skills_required": [
+        "skill_review",
+        "skill_risk_assessment"
+      ],
       "health_status": "ok"
     },
     {
@@ -48,8 +81,14 @@
       "path": "agents/shangshu",
       "is_permanent": false,
       "version": "5",
-      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
-      "skills_required": ["skill_skill_routing", "skill_role_dispatch"],
+      "stats": {
+        "tasks_completed": 0,
+        "avg_quality": 0.0
+      },
+      "skills_required": [
+        "skill_skill_routing",
+        "skill_role_dispatch"
+      ],
       "health_status": "ok"
     },
     {
@@ -59,8 +98,15 @@
       "path": "agents/libu_hr",
       "is_permanent": true,
       "version": "1",
-      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
-      "skills_required": ["skill_km", "skill_evolution", "skill_data_analysis"],
+      "stats": {
+        "tasks_completed": 0,
+        "avg_quality": 0.0
+      },
+      "skills_required": [
+        "skill_km",
+        "skill_evolution",
+        "skill_data_analysis"
+      ],
       "health_status": "ok"
     },
     {
@@ -70,8 +116,14 @@
       "path": "agents/hubu",
       "is_permanent": false,
       "version": "1",
-      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
-      "skills_required": ["skill_data_analysis", "skill_reporting"],
+      "stats": {
+        "tasks_completed": 0,
+        "avg_quality": 0.0
+      },
+      "skills_required": [
+        "skill_data_analysis",
+        "skill_reporting"
+      ],
       "health_status": "ok"
     },
     {
@@ -81,8 +133,15 @@
       "path": "agents/bingbu",
       "is_permanent": false,
       "version": "1",
-      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
-      "skills_required": ["skill_devops", "skill_security", "skill_monitoring"],
+      "stats": {
+        "tasks_completed": 0,
+        "avg_quality": 0.0
+      },
+      "skills_required": [
+        "skill_devops",
+        "skill_security",
+        "skill_monitoring"
+      ],
       "health_status": "ok"
     },
     {
@@ -92,8 +151,14 @@
       "path": "agents/gongbu",
       "is_permanent": false,
       "version": "1",
-      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
-      "skills_required": ["skill_coding", "skill_architecture"],
+      "stats": {
+        "tasks_completed": 0,
+        "avg_quality": 0.0
+      },
+      "skills_required": [
+        "skill_coding",
+        "skill_architecture"
+      ],
       "health_status": "ok"
     },
     {
@@ -103,8 +168,15 @@
       "path": "agents/xingbu",
       "is_permanent": false,
       "version": "1",
-      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
-      "skills_required": ["skill_qa", "skill_audit", "skill_code_review"],
+      "stats": {
+        "tasks_completed": 0,
+        "avg_quality": 0.0
+      },
+      "skills_required": [
+        "skill_qa",
+        "skill_audit",
+        "skill_code_review"
+      ],
       "health_status": "ok"
     },
     {
@@ -114,8 +186,14 @@
       "path": "agents/libu",
       "is_permanent": false,
       "version": "1",
-      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
-      "skills_required": ["skill_doc_writing", "skill_ui_design"],
+      "stats": {
+        "tasks_completed": 0,
+        "avg_quality": 0.0
+      },
+      "skills_required": [
+        "skill_doc_writing",
+        "skill_ui_design"
+      ],
       "health_status": "ok"
     },
     {
@@ -125,8 +203,13 @@
       "path": "agents/zaochao",
       "is_permanent": false,
       "version": "1",
-      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
-      "skills_required": ["skill_daily_briefing"],
+      "stats": {
+        "tasks_completed": 0,
+        "avg_quality": 0.0
+      },
+      "skills_required": [
+        "skill_daily_briefing"
+      ],
       "health_status": "ok"
     },
     {
@@ -136,9 +219,100 @@
       "path": "agents/qintianjian",
       "is_permanent": false,
       "version": "1",
-      "stats": {"tasks_completed": 0, "avg_quality": 0.0},
-      "skills_required": ["skill_trend_analysis", "skill_prediction"],
+      "stats": {
+        "tasks_completed": 0,
+        "avg_quality": 0.0
+      },
+      "skills_required": [
+        "skill_trend_analysis",
+        "skill_prediction"
+      ],
       "health_status": "ok"
+    },
+    {
+      "id": "bishou",
+      "name": "笔受",
+      "description": "文档起草与润色专家",
+      "domain": "documentation",
+      "tier": "STANDARD",
+      "status": "active",
+      "skills": {
+        "required": [
+          "skill_doc_writing"
+        ]
+      },
+      "collaborates_with": [
+        "qintianjian",
+        "libu"
+      ]
+    },
+    {
+      "id": "yushi",
+      "name": "御史",
+      "description": "质量审计与合规检查",
+      "domain": "governance",
+      "tier": "STANDARD",
+      "status": "active",
+      "skills": {
+        "required": [
+          "skill_code_review"
+        ]
+      },
+      "collaborates_with": [
+        "gongbu",
+        "xingbu"
+      ]
+    },
+    {
+      "id": "jiedushi",
+      "name": "节度使",
+      "description": "跨部门项目协调与资源调配",
+      "domain": "orchestration",
+      "tier": "POWERFUL",
+      "status": "active",
+      "skills": {
+        "required": [
+          "skill_routing"
+        ]
+      },
+      "collaborates_with": [
+        "shangshu",
+        "menxia"
+      ]
+    },
+    {
+      "id": "silium",
+      "name": "司礼监",
+      "description": "对外合作与第三方集成",
+      "domain": "operation",
+      "tier": "STANDARD",
+      "status": "active",
+      "skills": {
+        "required": [
+          "skill_devops"
+        ]
+      },
+      "collaborates_with": [
+        "gongbu",
+        "bingbu"
+      ]
+    },
+    {
+      "id": "xingke",
+      "name": "刑科",
+      "description": "安全漏洞扫描与威胁分析",
+      "domain": "security",
+      "tier": "POWERFUL",
+      "status": "active",
+      "skills": {
+        "required": [
+          "skill_security_audit"
+        ]
+      },
+      "collaborates_with": [
+        "yushi",
+        "xingbu"
+      ]
     }
   ]
 }
