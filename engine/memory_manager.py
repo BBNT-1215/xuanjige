@@ -167,9 +167,9 @@ class MemoryManager:
         if record.quality_tier == "good":
             path = RAW_DIR / f"{record.task_id}.json"
         elif record.quality_tier == "bad":
-            path = RAW_DIR / f"{record.task_id}.json"
+            path = COLD_DIR / f"{record.task_id}.json"
         else:
-            path = RAW_DIR / f"{record.task_id}.json"
+            path = RESOLVED_DIR / f"{record.task_id}.json"
 
         # 计算衰减权重
         record.decay_weight = self.calculate_decay_weight(
@@ -238,11 +238,12 @@ class MemoryManager:
     def _update_memory_index(self, record: TaskRecord):
         """更新记忆索引"""
         index = self._load_memory_index()
+        # 存储完整技能使用记录（含quality_score），供 _get_records_for_skill 使用
         index["tasks"][record.task_id] = {
             "task_type": record.task_type,
             "quality_tier": record.quality_tier,
             "completed_at": record.completed_at,
-            "skills_used": [s["skill_id"] for s in record.skills_used],
+            "skills_used": record.skills_used,  # List[Dict]，含 skill_id + quality_score
             "executing_roles": record.executing_roles
         }
         index["updated_at"] = self._now()
@@ -333,15 +334,28 @@ class MemoryManager:
         index = self._load_memory_index()
 
         for task_id, info in index.get("tasks", {}).items():
-            if skill_id in info.get("skills_used", []):
+            # 兼容新旧格式：skills_used 可能是 [str] 或 [Dict]
+            skills_raw = info.get("skills_used", [])
+            skill_ids = []
+            skill_quality_map = {}
+            for s in skills_raw:
+                if isinstance(s, str):
+                    skill_ids.append(s)
+                    skill_quality_map[s] = None
+                elif isinstance(s, dict):
+                    skill_ids.append(s.get("skill_id", ""))
+                    skill_quality_map[s.get("skill_id", "")] = s.get("quality_score")
+
+            if skill_id in skill_ids:
                 record = self.get_task_record(task_id)
                 if record:
+                    # 优先从 index 的 quality_score 获取，其次从 record 本身
+                    quality = skill_quality_map.get(skill_id)
+                    if quality is None:
+                        quality = record.quality_score
                     records.append({
                         "task_id": task_id,
-                        "quality_score": next(
-                            (s["quality_score"] for s in record.skills_used if s["skill_id"] == skill_id),
-                            0.5
-                        ),
+                        "quality_score": quality,
                         "completed_at": record.completed_at or record.created_at,
                         "decay_weight": record.decay_weight
                     })

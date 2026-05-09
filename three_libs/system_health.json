@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-05-09T06:30:07.231667+00:00",
+  "overall": "ok",
+  "checks": {
+    "skill_avg_effectiveness": {
+      "value": 0.823,
+      "status": "ok",
+      "threshold_warn": 0.6,
+      "threshold_critical": 0.4,
+      "description": "Skill平均评分"
+    },
+    "role_avg_quality": {
+      "value": 0.84,
+      "status": "ok",
+      "threshold_warn": 0.7,
+      "threshold_critical": 0.5,
+      "description": "Role平均质量"
+    },
+    "cold_storage_ratio": {
+      "value": 0.0,
+      "status": "ok",
+      "threshold_warn": 0.7,
+      "threshold_critical": 0.9,
+      "description": "冷存储占比"
+    },
+    "evolution_stagnation_days": {
+      "value": 0,
+      "status": "ok",
+      "threshold_warn": 7,
+      "threshold_critical": 14,
+      "description": "进化停滞天数"
+    },
+    "pending_verifications": {
+      "value": 0,
+      "status": "ok",
+      "threshold_warn": 10,
+      "threshold_critical": 20,
+      "description": "待验证进化数量"
+    },
+    "skill_conflict_rate": {
+      "value": 0.0,
+      "status": "ok",
+      "threshold_warn": 0.3,
+      "threshold_critical": 0.5,
+      "description": "Skill冲突率"
+    }
+  },
+  "alerts": [],
+  "recommendations": []
+}

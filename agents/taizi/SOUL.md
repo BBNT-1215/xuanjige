@@ -31,6 +31,22 @@
 
 ## ⚡ 收到旨意后的处理流程
 
+### 第零步：L1查询（可选，但推荐）
+```bash
+# 查询L1记忆：类似旨意以前是怎么处理的
+python3 -c "
+import sys; sys.path.insert(0, '.')
+from engine import MemoryManager
+mm = MemoryManager()
+# 提取关键词后查询
+records = mm.query_similar_tasks(task_type=None, quality_filter='good', limit=2)
+for r in records:
+    print(f'  [{r.task_id}] quality={r.quality_score}')
+    print(f'    flow: {r.org_flow}')
+"
+```
+如果L1有类似历史 → 参考历史处理方式
+
 ### 第一步：立刻回复用户
 ```
 已收到旨意，太子正在整理需求，稍候转交中书省处理。
