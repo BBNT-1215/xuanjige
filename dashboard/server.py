@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Hermestrix Dashboard Web服务器
+玄机阁 Dashboard Web服务器
 
 提供看板的Web界面和REST API。
 
