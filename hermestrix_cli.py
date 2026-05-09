@@ -309,7 +309,7 @@ def cmd_workflow(args):
 
     elif args.process:
         header("玄机阁 · 执行工作流")
-        result = engine.process_task(args.process)
+        result = engine.process_step(args.process)
         if result.get("ok"):
             cprint(f"  ✅ 流程执行成功", "green")
             cprint(f"  当前步骤: {result.get('step', 'unknown')}", "cyan")

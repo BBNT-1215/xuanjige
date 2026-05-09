@@ -1,22 +1,15 @@
 """
-玄机阁 · 工作流引擎
-====================
-核心调度器：驱动承旨→机衡→六部→早朝→御史的完整流程。
+玄机阁 · 工作流引擎（执行层）
+===============================
+状态机核心：只管状态流转，不做实际执行。
+实际执行由 Hermes 的 delegate_task 在 Skill 层完成。
 
 流程：
-  用户提交任务
-      ↓
-  承旨拆解分拣 → PENDING → ASSIGNED
-      ↓
-  机衡智能调度 → ASSIGNED → RUNNING
-      ↓
-  六部执行（可并行）
-      ↓
-  早朝汇总 → REVIEW → RUNNING（早朝）
-      ↓
-  御史审计 → REVIEW → DONE
-      ↓
-  记录归档
+  Skill层：submit() → process()循环
+    ↓
+  引擎层：管理状态（待分拣→已派发→执行中→待审核→已完成）
+    ↓
+  Hermes层：delegate_task 实际执行（技造/刑策/文册...）
 """
 
 import json
@@ -25,7 +18,6 @@ import datetime
 import time
 import threading
 import sys
-import os
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 
@@ -33,10 +25,26 @@ from workflow.task_queue import State, get_queue
 from workflow.agent import get_agent, AGENT_REGISTRY
 
 
+# Agent ID → 角色名（用于delegate_task的goal模板）
+AGENT_ROLE_NAMES = {
+    "jizao":    "技造",
+    "xingce":   "刑策",
+    "diancang": "文册",
+    "shusuan":  "数算",
+    "bingrong": "兵戎",
+    "jiyan":    "机研",
+    "qitian":   "枢观",
+    "zaohuang": "早朝",
+    "yushi":    "御史",
+    "chengzhi": "承旨",
+    "jiheng":   "机衡",
+}
+
+
 class WorkflowEngine:
     """
-    玄机阁工作流引擎
-    驱动整个多Agent协作体系运转
+    玄机阁工作流引擎（状态管理层）
+    实际执行由 Hermes Skill 层通过 delegate_task 完成
     """
 
     def __init__(self):
@@ -44,16 +52,18 @@ class WorkflowEngine:
         self.running = False
         self._thread = None
         self._log = []
-        self._callbacks = []  # 任务生命周期回调
-
-        # 订阅队列变更
+        self._callbacks = []
         self.queue.subscribe(self._on_task_state_change)
 
-    # ── 生命周期回调 ─────────────────────────────────
+    # ── 日志 ─────────────────────────────────────
 
-    def on_task(self, callback):
-        """注册任务生命周期监听器"""
-        self._callbacks.append(callback)
+    def log(self, msg: str):
+        entry = {"time": datetime.datetime.now().isoformat(), "msg": msg}
+        self._log.append(entry)
+        print(f"[引擎] {msg}")
+
+    def get_log(self) -> list:
+        return self._log[-100:]
 
     def _fire(self, event: str, task: dict):
         for cb in self._callbacks:
@@ -66,24 +76,12 @@ class WorkflowEngine:
         self.log(f"状态变更: {old_state} → {new_state} | {task.get('title','')}")
         self._fire("state_change", task)
 
-    # ── 日志 ─────────────────────────────────────
-
-    def log(self, msg: str):
-        entry = {"time": datetime.datetime.now().isoformat(), "msg": msg}
-        self._log.append(entry)
-        print(f"[引擎] {msg}")
-
-    def get_log(self) -> list:
-        return self._log[-100:]
-
-    # ── 核心流程 ─────────────────────────────────
+    # ── 核心API ─────────────────────────────────
 
     def submit(self, title: str, description: str = "",
                skills: list = None, tags: list = None,
                priority: int = 0) -> dict:
-        """
-        提交新任务，触发完整工作流。
-        """
+        """提交新任务（状态=PENDING）"""
         task = self.queue.create(
             title=title,
             description=description,
@@ -96,9 +94,16 @@ class WorkflowEngine:
         self._fire("submitted", task)
         return task
 
-    def process_task(self, task_id: str) -> dict:
+    def process_step(self, task_id: str) -> dict:
         """
-        单任务完整流程：承旨→机衡→执行→审核→完成
+        执行单个任务的当前状态→下一步状态。
+        状态转换规则：
+          PENDING  → ASSIGNED  （承旨分拣）
+          ASSIGNED → RUNNING    （机衡调度）
+          RUNNING  → REVIEW     （执行完成，提交审核）
+          REVIEW   → DONE       （御史通过）
+          REVIEW   → RUNNING     （御史退回重做）
+          BLOCKED  → RUNNING     （解除阻塞）
         """
         task = self.queue.get(task_id)
         if not task:
@@ -116,75 +121,91 @@ class WorkflowEngine:
             if not result.get("ok"):
                 return result
 
-            # 承旨路由结果写入description
             routing = result.get("result", {})
             target = routing.get("target", "jizao")
+            reason = routing.get("reason", "")
 
-            # 派发给机衡
+            # 派发给机衡，状态变为ASSIGNED
             self.queue.transition(task_id, State.ASSIGNED,
                                  agent_id="chengzhi",
-                                 msg=f"承旨分拣完成，路由至{target}")
+                                 msg=f"承旨分拣完成，路由至{target}（{reason}）")
 
-            # 将路由信息注入任务描述（供后续使用）
+            # 将路由信息注入任务，供后续使用
             task['description'] = json.dumps(routing, ensure_ascii=False)
+
             self.log(f"承旨分拣 → 目标Agent: {target}")
-            return {"ok": True, "step": "chengzhi", "next": target}
+            return {
+                "ok": True,
+                "step": "chengzhi",
+                "next_agent": target,
+                "state": State.ASSIGNED,
+                "routing": routing,
+                "message": f"承旨分拣完成，路由至{target}"
+            }
 
         # ── ASSIGNED: 机衡调度 ───────────────────
         elif state == State.ASSIGNED:
-            # 从任务描述中读取承旨的路由结果
             desc = task.get('description', '{}')
             if isinstance(desc, str):
                 try:
                     desc = json.loads(desc)
-                except:
+                except Exception:
                     desc = {"target": "jizao"}
 
             target = desc.get("target", "jizao")
-            agent = get_agent(target)
-            if not agent:
-                self.log(f"未找到Agent: {target}，默认技造")
-                agent = get_agent("jizao")
+            role_name = AGENT_ROLE_NAMES.get(target, target)
 
-            # 机衡派发给目标Agent，开始执行
+            # 机衡派发给目标Agent，状态变为RUNNING
             ok = self.queue.transition(task_id, State.RUNNING,
                                        agent_id=target,
-                                       msg=f"机衡调度至{agent.agent_name}")
+                                       msg=f"机衡调度至{role_name}")
             if not ok:
                 return {"ok": False, "error": "状态转换失败"}
 
-            self.log(f"机衡调度 → {agent.agent_name} 开始执行")
-            return {"ok": True, "step": "jiheng", "next": target}
+            self.log(f"机衡调度 → {role_name} 开始执行")
+            return {
+                "ok": True,
+                "step": "jiheng",
+                "next_agent": target,
+                "state": State.RUNNING,
+                "delegate": {
+                    "agent_id": target,
+                    "role_name": role_name,
+                    "task": task,
+                },
+                "message": f"请通过 delegate_task 指派{role_name}执行任务"
+            }
 
         # ── RUNNING: 执行 ────────────────────────
         elif state == State.RUNNING:
             assignee = task.get('assignee', 'jizao')
-            agent = get_agent(assignee)
-            if not agent:
-                agent = get_agent("jizao")
+            role_name = AGENT_ROLE_NAMES.get(assignee, assignee)
 
-            result = agent.run(task)
+            # 执行完成，提交审核
+            self.queue.transition(task_id, State.REVIEW,
+                                 agent_id=assignee,
+                                 msg=f"{role_name}执行完成，提交审核")
 
-            if result.get("ok"):
-                # 执行完成，提交给早朝汇总
-                self.queue.transition(task_id, State.REVIEW,
-                                     agent_id=assignee,
-                                     msg=f"{agent.agent_name}完成，提交审核")
-                self.log(f"{agent.agent_name}执行完成，提交早朝审核")
-                return {"ok": True, "step": agent.agent_id, "next": "zaohuang"}
-            else:
-                self.queue.block(task_id, assignee,
-                                reason=result.get("error", "执行失败"))
-                return result
+            self.log(f"{role_name}执行完成，提交早朝审核")
+            return {
+                "ok": True,
+                "step": assignee,
+                "next_agent": "zaohuang",
+                "state": State.REVIEW,
+                "message": f"{role_name}执行完成，等待早朝汇总"
+            }
 
         # ── REVIEW: 早朝+御史审核 ────────────────
         elif state == State.REVIEW:
-            # 早朝汇总
+            assignee = task.get('assignee', 'jizao')
+            role_name = AGENT_ROLE_NAMES.get(assignee, assignee)
+
+            # 早朝汇总（内嵌）
             zaohuang = get_agent("zaohuang")
             zu_result = zaohuang.run(task)
             self.log(f"早朝汇总: {zu_result.get('result')}")
 
-            # 御史审计
+            # 御史审计（内嵌）
             yushi = get_agent("yushi")
             yu_result = yushi.run(task)
 
@@ -193,41 +214,69 @@ class WorkflowEngine:
                                    msg="御史审计通过，任务完成")
                 self.log(f"御史审计通过，任务完成")
                 self._fire("completed", task)
-                return {"ok": True, "step": "yushi", "next": None}
+                return {
+                    "ok": True,
+                    "step": "yushi",
+                    "next_agent": None,
+                    "state": State.DONE,
+                    "message": "御史审计通过，任务完成"
+                }
             else:
                 # 审计失败，退回执行
                 self.queue.transition(task_id, State.RUNNING,
                                      agent_id="yushi",
                                      msg="御史审计不通过，退回重做")
-                return {"ok": True, "step": "yushi", "next": task.get("assignee", "jizao")}
+                return {
+                    "ok": True,
+                    "step": "yushi",
+                    "next_agent": assignee,
+                    "state": State.RUNNING,
+                    "delegate": {
+                        "agent_id": assignee,
+                        "role_name": role_name,
+                        "task": task,
+                        "retry": True,
+                    },
+                    "message": "御史审计不通过，退回重做"
+                }
 
         # ── BLOCKED: 解除阻塞 ────────────────────
         elif state == State.BLOCKED:
-            # 自动重试一次
             assignee = task.get("assignee", "jizao")
+            role_name = AGENT_ROLE_NAMES.get(assignee, assignee)
             self.queue.transition(task_id, State.RUNNING,
                                  agent_id=assignee,
                                  msg="解除阻塞，重新执行")
-            return {"ok": True, "step": "unblock", "next": assignee}
+            return {
+                "ok": True,
+                "step": "unblock",
+                "next_agent": assignee,
+                "state": State.RUNNING,
+                "delegate": {
+                    "agent_id": assignee,
+                    "role_name": role_name,
+                    "task": task,
+                    "retry": True,
+                },
+                "message": f"解除阻塞，{role_name}重新执行"
+            }
 
         else:
             return {"ok": False, "error": f"未知状态: {state}"}
 
-    # ── 引擎主循环 ─────────────────────────────────
+    # ── 引擎主循环（后台自动处理PENDING） ─────────
 
     def _loop(self):
-        """后台工作线程：持续处理PENDING任务"""
         while self.running:
             try:
                 pending = self.queue.pending_tasks()
                 if pending:
-                    for task in pending[:3]:  # 每次最多处理3个
+                    for task in pending[:3]:
                         if not self.running:
                             break
-                        self.process_task(task['id'])
-                        time.sleep(0.5)  # 防抖
+                        self.process_step(task['id'])
+                        time.sleep(0.5)
 
-                # 检查RUNNING任务是否超时（5分钟未完成则提示）
                 for task in self.queue.running_tasks():
                     updated = task.get('updated_at', '')
                     if updated:
@@ -236,7 +285,7 @@ class WorkflowEngine:
                             age = (datetime.datetime.now() - dt).total_seconds()
                             if age > 300:
                                 self.log(f"⚠️ 任务执行超时:「{task['title']}」(age={int(age)}s)")
-                        except:
+                        except Exception:
                             pass
 
                 time.sleep(2)
@@ -244,7 +293,6 @@ class WorkflowEngine:
                 self.log(f"引擎循环异常: {e}")
 
     def start(self):
-        """启动引擎（后台线程）"""
         if self.running:
             return
         self.running = True
@@ -253,14 +301,12 @@ class WorkflowEngine:
         self.log("玄机阁引擎启动 ✓")
 
     def stop(self):
-        """停止引擎"""
         self.running = False
         if self._thread:
             self._thread.join(timeout=3)
         self.log("玄机阁引擎停止")
 
     def status(self) -> dict:
-        """引擎状态"""
         stats = self.queue.stats()
         return {
             "running": self.running,
@@ -268,10 +314,7 @@ class WorkflowEngine:
             "agents": list(AGENT_REGISTRY.keys()),
         }
 
-    # ── 任务追踪 ─────────────────────────────────
-
     def trace(self, task_id: str) -> dict:
-        """获取任务完整流转记录"""
         task = self.queue.get(task_id)
         if not task:
             return {}
@@ -286,7 +329,6 @@ class WorkflowEngine:
         }
 
 
-# 全局单例
 _engine = None
 def get_engine() -> WorkflowEngine:
     global _engine
