@@ -319,3 +319,59 @@ xuanjige workflow --log                # 查看执行日志
 | v1.0 | 2026-05-09 | 初始三省六部体系 |
 | v2.0 | 2026-05-09 | 玄机阁命名重构v2.0 + Skill+Role双库进化架构 |
 | v3.0 | 2026-05-09 | 工作流引擎真正运转：workflow/ + CLI + 像素风面板 |
+| v3.1 | 2026-05-09 | MCP融合：MCP Server + xuanji-workflow Skill + delegate_task接入Hermes原生能力 |
+
+---
+
+## 七++、MCP融合架构（Hermes原生接入）
+
+### 三层架构
+
+```
+Hermes Agent（用户交互层）
+    ↓ 调用
+Skill层：xuanji-workflow（工作流编排）
+    ↓ workflow_submit/process/list/trace
+MCP Server（workflow-mcp/server.py - JSON-RPC over stdio）
+    ↓ 状态读写
+引擎层：workflow/engine.py（状态机）
+    ↓ 状态持久化
+TaskQueue（workflow/task_queue.py - tasks.json）
+    ↓ delegate指令
+Hermes层：delegate_task（实际执行）
+    ↓ 继承
+Hermes工具 + 技能库 + 角色库 + 记忆
+```
+
+### 关键：process_step 返回的 delegate 指令
+
+```json
+{
+  "step": "jiheng",
+  "next_agent": "jizao",
+  "delegate": {
+    "agent_id": "jizao",
+    "role_name": "技造",
+    "task": { ... }
+  },
+  "needs_execution": true
+}
+```
+
+当 Hermes 收到 `needs_execution: true` 时，执行：
+```
+delegate_task(
+  goal="作为技造Agent，完成任务...",
+  context={task, agent_id, role_name},
+  role="leaf"
+)
+```
+
+### 触发规则
+
+满足以下任一条件，使用玄机阁工作流：
+- 任务包含"规划+执行+验证"多阶段
+- 需要前端+后端+部署多技能协作
+- 用户说"帮我做个xxx"
+- 任务预计超过10分钟
+- 用户明确说"走玄机阁"
