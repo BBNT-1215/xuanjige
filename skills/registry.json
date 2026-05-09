@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "updated_at": "2026-05-09T14:30:00Z",
+  "total_skills": 3,
+  "skills": [
+    {
+      "id": "skill_routing",
+      "name": "旨意分拣",
+      "domain": "orchestration",
+      "tier": "STANDARD",
+      "path": "skills/skill_routing",
+      "effectiveness_score": 0.82,
+      "confidence": "high",
+      "status": "active",
+      "used_by_roles": ["taizi"]
+    },
+    {
+      "id": "skill_skill_routing",
+      "name": "Skill检索派发",
+      "domain": "orchestration",
+      "tier": "POWERFUL",
+      "path": "skills/skill_skill_routing",
+      "effectiveness_score": 0.78,
+      "confidence": "high",
+      "status": "active",
+      "used_by_roles": ["shangshu"]
+    },
+    {
+      "id": "skill_role_dispatch",
+      "name": "Role检索派发",
+      "domain": "orchestration",
+      "tier": "POWERFUL",
+      "path": "skills/skill_role_dispatch",
+      "effectiveness_score": 0.76,
+      "confidence": "medium",
+      "status": "active",
+      "used_by_roles": ["shangshu"]
+    }
+  ],
+  "domains": {
+    "orchestration": 3
+  }
+}

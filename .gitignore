@@ -13,15 +13,12 @@ venv/
 .eggs/
 *.log
 
-# 数据文件（版本化）
+# 数据文件（不追踪）
 data/
-three_libs/
-skills/
-roles/
-
-# 但保留模板文件
-!skills/SKILL.md.template
-!roles/ROLE.md.template
+three_libs/memory/
+three_libs/skills/
+three_libs/knowledge/
+three_libs/roles/
 
 .DS_Store
 *.swp

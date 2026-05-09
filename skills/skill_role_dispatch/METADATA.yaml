@@ -1,0 +1,35 @@
+---
+name: "skill_role_dispatch"
+version: "1.0.0"
+created_at: "2026-05-09T00:00:00Z"
+updated_at: "2026-05-09T12:00:00Z"
+
+effectiveness_score: 0.76
+confidence: "medium"
+
+stats:
+  total_uses: 23
+  success_count: 19
+  failure_count: 4
+  avg_quality: 0.76
+
+verification:
+  status: "verified"
+  version_introduced: "1.0.0"
+  observations_required: 5
+  observations_collected: 5
+  verification_confirmed_at: "2026-05-09T12:00:00Z"
+
+domain: "orchestration"
+
+tools:
+  - "scripts/role_dispatch.py"
+
+used_by_roles:
+  - "shangshu"
+
+quality_tiers:
+  excellent: [0.9, 1.0]
+  good: [0.8, 0.9]
+  medium: [0.5, 0.8]
+  bad: [0.0, 0.5]
