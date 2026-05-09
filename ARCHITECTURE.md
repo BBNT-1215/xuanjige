@@ -207,7 +207,11 @@ Knowledge库：静态知识库（静态型）
 
 ```
 xuanjige/
-├── agents/                    # Role库（17个角色定义）
+├── workflow/                   # 工作流引擎（真正运转的核心）
+│   ├── engine.py              # 核心调度引擎（承旨→机衡→六部→早朝→御史）
+│   ├── task_queue.py          # 任务队列（状态机：待分拣→已派发→执行中→待审核→已完成）
+│   └── agent.py               # Agent基类（11个Agent统一run接口）
+├── agents/                    # Role库（11个角色定义）
 │   ├── {role_id}/
 │   │   ├── SOUL.md          # 角色定义
 │   │   └── METADATA.yaml    # 角色元数据（v版本/统计/组合）
@@ -225,6 +229,10 @@ xuanjige/
 │   ├── recovery.py          # 断点自愈
 │   └── run_loop.py          # 主循环
 ├── dashboard/                # Web看板
+│   ├── server.py            # Web服务器（REST API + 静态文件）
+│   ├── index.html           # 7列任务看板
+│   └── pixel/
+│       └── index.html       # 像素风众生相监控面板
 ├── data/                    # 运行时数据
 │   ├── tasks.json           # 任务数据
 │   ├── skill_index.json     # Skill索引
@@ -232,6 +240,54 @@ xuanjige/
 │   ├── events.json          # 事件日志
 │   └── ...
 └── three_libs/             # 知识库（记忆/知识沉淀）
+```
+
+---
+
+## 七+、工作流引擎详解
+
+### 核心流程
+
+```
+用户提交任务
+    ↓
+承旨（消息分拣·常驻Agent）
+  → 拆解任务、关键词识别、路由目标
+    ↓
+机衡（调度派发·临时Subagent）
+  → 派发给目标执行Agent
+    ↓
+六部（执行层·临时Subagent）
+  → 并行执行各自专业任务
+    ↓
+早朝（情报汇总·临时Subagent）
+  → 整合执行结果
+    ↓
+御史（质量审计·临时Subagent）
+  → 质量兜底，通过则完成，失败则退回重做
+    ↓
+任务完成
+```
+
+### 状态机
+
+```
+PENDING(待分拣) → ASSIGNED(已派发) → RUNNING(执行中)
+                                      ↓
+                               REVIEW(待审核) ← 退回重做
+                                      ↓
+                                  DONE(已完成)
+```
+
+### CLI命令
+
+```bash
+xuanjige workflow --start              # 启动引擎（后台线程）
+xuanjige workflow --submit "任务标题"   # 提交新任务
+xuanjige workflow --process <ID>       # 执行完整流程
+xuanjige workflow --status              # 查看引擎状态
+xuanjige workflow --watch              # 实时监控模式
+xuanjige workflow --log                # 查看执行日志
 ```
 
 ---
@@ -261,5 +317,5 @@ xuanjige/
 | 版本 | 日期 | 变化 |
 |------|------|------|
 | v1.0 | 2026-05-09 | 初始三省六部体系 |
-| v2.0 | 2026-05-09 | 玄机阁命名重构：太子→承旨、中书省/尚书省→机衡、门下省→审议、六部全面重命名 |
-| v2.0 | 2026-05-09 | 重构为Skill+Role双库进化架构 |
+| v2.0 | 2026-05-09 | 玄机阁命名重构v2.0 + Skill+Role双库进化架构 |
+| v3.0 | 2026-05-09 | 工作流引擎真正运转：workflow/ + CLI + 像素风面板 |
