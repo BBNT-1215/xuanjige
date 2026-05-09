@@ -12,22 +12,17 @@ build/
 venv/
 .eggs/
 *.log
-data/tasks.json
-data/tasks.json.tmp
-data/events.json
-data/events.json.tmp
-data/audit_log.json
-data/recovery_log.json
-data/evolution_log.json
-data/skill_index.json
-data/role_index.json
-data/audit_log.json.tmp
-data/recovery_log.json.tmp
-three_libs/*/
-three_libs/*.json
-!three_libs/memory/.gitkeep
-!three_libs/skills/.gitkeep
-!three_libs/knowledge/.gitkeep
+
+# 数据文件（版本化）
+data/
+three_libs/
+skills/
+roles/
+
+# 但保留模板文件
+!skills/SKILL.md.template
+!roles/ROLE.md.template
+
 .DS_Store
 *.swp
 *.swo
