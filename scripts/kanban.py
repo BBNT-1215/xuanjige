@@ -82,15 +82,15 @@ STATE_ORG_MAP = {
 _ORG_TO_STATE_AGENT = {
     '太子': 'chengzhi', '中书省': 'jiheng', '门下省': 'shenyi',
     '尚书省': 'jiheng', '户部': 'shusuan', '礼部': 'libu',
-    '兵部': 'bingrong', '刑部': 'xingce', '工部': 'jizao', '吏部': 'jiyan',
-    '早朝官': 'zaohuang', '钦天监': 'qitian',
+    '兵部': 'bingrong', '刑部': 'xingce', '工部': 'jixuan', '吏部': 'jiyan',
+    '玄档官': 'zaohuang', '钦天监': 'qitian',
 }
 
 _AGENT_LABELS = {
     'main': '太子', 'chengzhi': '太子',
     'jiheng': '中书省', 'shenyi': '门下省', 'jiheng': '尚书省',
     'libu': '礼部', 'shusuan': '户部', 'bingrong': '兵部', 'xingce': '刑部',
-    'jizao': '工部', 'jiyan': '吏部', 'zaohuang': '早朝官',
+    'jixuan': '工部', 'jiyan': '吏部', 'zaohuang': '玄档官',
     'qitian': '钦天监',
 }
 
@@ -420,7 +420,7 @@ def cmd_get(task_id):
 
 
 def cmd_morning_brief():
-    """早朝播报"""
+    """玄档播报"""
     tasks = atomic_json_read(TASKS_FILE, [])
     today = datetime.date.today().isoformat()
 
@@ -428,7 +428,7 @@ def cmd_morning_brief():
     done_today = [t for t in tasks if t.get('state') == 'Done'
                   and t.get('updatedAt', '').startswith(today)]
 
-    print(f'\n🌅 Hermestrix 早朝播报 - {today}')
+    print(f'\n🌅 Hermestrix 玄档播报 - {today}')
     print(f'\n📊 昨日完成: {len(done_today)} 项任务')
     for t in done_today[:5]:
         print(f'  ✅ {t.get("title", "")[:50]}')

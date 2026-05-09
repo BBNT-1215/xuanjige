@@ -89,10 +89,10 @@ def execute_step(step_info: dict) -> dict:
         agent = get_agent("jiheng")
     elif step_id == "execute":
         routing = ctx.get("routing", {})
-        target  = routing.get("target", "jizao")
+        target  = routing.get("target", "jixuan")
         agent   = get_agent(target)
         if not agent:
-            agent = get_agent("jizao")
+            agent = get_agent("jixuan")
     elif step_id == "zaohuang":
         agent = get_agent("zaohuang")
     elif step_id == "yushi":

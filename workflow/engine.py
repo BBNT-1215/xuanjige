@@ -27,15 +27,15 @@ from workflow.agent import get_agent, AGENT_REGISTRY
 
 # Agent ID → 角色名（用于delegate_task的goal模板）
 AGENT_ROLE_NAMES = {
-    "jizao":    "技造",
+    "jixuan":    "技造",
     "xingce":   "刑策",
     "diancang": "文册",
     "shusuan":  "数算",
     "bingrong": "兵戎",
     "jiyan":    "机研",
     "qitian":   "枢观",
-    "zaohuang": "早朝",
-    "yushi":    "御史",
+    "zaohuang": "玄档",
+    "yushi":    "枢鉴",
     "chengzhi": "承旨",
     "jiheng":   "机衡",
 }
@@ -101,8 +101,8 @@ class WorkflowEngine:
           PENDING  → ASSIGNED  （承旨分拣）
           ASSIGNED → RUNNING    （机衡调度）
           RUNNING  → REVIEW     （执行完成，提交审核）
-          REVIEW   → DONE       （御史通过）
-          REVIEW   → RUNNING     （御史退回重做）
+          REVIEW   → DONE       （枢鉴通过）
+          REVIEW   → RUNNING     （枢鉴退回重做）
           BLOCKED  → RUNNING     （解除阻塞）
         """
         task = self.queue.get(task_id)
@@ -122,7 +122,7 @@ class WorkflowEngine:
                 return result
 
             routing = result.get("result", {})
-            target = routing.get("target", "jizao")
+            target = routing.get("target", "jixuan")
             reason = routing.get("reason", "")
 
             # 派发给机衡，状态变为ASSIGNED
@@ -150,9 +150,9 @@ class WorkflowEngine:
                 try:
                     desc = json.loads(desc)
                 except Exception:
-                    desc = {"target": "jizao"}
+                    desc = {"target": "jixuan"}
 
-            target = desc.get("target", "jizao")
+            target = desc.get("target", "jixuan")
             role_name = AGENT_ROLE_NAMES.get(target, target)
 
             # 机衡派发给目标Agent，状态变为RUNNING
@@ -178,7 +178,7 @@ class WorkflowEngine:
 
         # ── RUNNING: 执行 ────────────────────────
         elif state == State.RUNNING:
-            assignee = task.get('assignee', 'jizao')
+            assignee = task.get('assignee', 'jixuan')
             role_name = AGENT_ROLE_NAMES.get(assignee, assignee)
 
             # 执行完成，提交审核
@@ -186,46 +186,46 @@ class WorkflowEngine:
                                  agent_id=assignee,
                                  msg=f"{role_name}执行完成，提交审核")
 
-            self.log(f"{role_name}执行完成，提交早朝审核")
+            self.log(f"{role_name}执行完成，提交玄档审核")
             return {
                 "ok": True,
                 "step": assignee,
                 "next_agent": "zaohuang",
                 "state": State.REVIEW,
-                "message": f"{role_name}执行完成，等待早朝汇总"
+                "message": f"{role_name}执行完成，等待玄档汇总"
             }
 
-        # ── REVIEW: 早朝+御史审核 ────────────────
+        # ── REVIEW: 玄档+枢鉴审核 ────────────────
         elif state == State.REVIEW:
-            assignee = task.get('assignee', 'jizao')
+            assignee = task.get('assignee', 'jixuan')
             role_name = AGENT_ROLE_NAMES.get(assignee, assignee)
 
-            # 早朝汇总（内嵌）
+            # 玄档汇总（内嵌）
             zaohuang = get_agent("zaohuang")
             zu_result = zaohuang.run(task)
-            self.log(f"早朝汇总: {zu_result.get('result')}")
+            self.log(f"玄档汇总: {zu_result.get('result')}")
 
-            # 御史审计（内嵌）
+            # 枢鉴审计（内嵌）
             yushi = get_agent("yushi")
             yu_result = yushi.run(task)
 
             if yu_result.get("ok"):
                 self.queue.complete(task_id, "yushi",
-                                   msg="御史审计通过，任务完成")
-                self.log(f"御史审计通过，任务完成")
+                                   msg="枢鉴审计通过，任务完成")
+                self.log(f"枢鉴审计通过，任务完成")
                 self._fire("completed", task)
                 return {
                     "ok": True,
                     "step": "yushi",
                     "next_agent": None,
                     "state": State.DONE,
-                    "message": "御史审计通过，任务完成"
+                    "message": "枢鉴审计通过，任务完成"
                 }
             else:
                 # 审计失败，退回执行
                 self.queue.transition(task_id, State.RUNNING,
                                      agent_id="yushi",
-                                     msg="御史审计不通过，退回重做")
+                                     msg="枢鉴审计不通过，退回重做")
                 return {
                     "ok": True,
                     "step": "yushi",
@@ -237,12 +237,12 @@ class WorkflowEngine:
                         "task": task,
                         "retry": True,
                     },
-                    "message": "御史审计不通过，退回重做"
+                    "message": "枢鉴审计不通过，退回重做"
                 }
 
         # ── BLOCKED: 解除阻塞 ────────────────────
         elif state == State.BLOCKED:
-            assignee = task.get("assignee", "jizao")
+            assignee = task.get("assignee", "jixuan")
             role_name = AGENT_ROLE_NAMES.get(assignee, assignee)
             self.queue.transition(task_id, State.RUNNING,
                                  agent_id=assignee,

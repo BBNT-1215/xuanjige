@@ -24,7 +24,7 @@ class State:
     PENDING   = "待分拣"    # 承旨还未处理
     ASSIGNED  = "已派发"    # 机衡已路由
     RUNNING   = "执行中"    # 技造/刑策/文册/数算/兵戎/机研执行中
-    REVIEW    = "待审核"    # 早朝/御史审核
+    REVIEW    = "待审核"    # 玄档/枢鉴审核
     DONE      = "已完成"    # 流程结束
     BLOCKED   = "已阻塞"    # 卡住
     CANCELLED = "已取消"

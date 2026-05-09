@@ -110,8 +110,8 @@ def _create_default_metadata(role_id, soul_preview=""):
     role_names = {
         "chengzhi": "太子", "jiheng": "中书省", "shenyi": "门下省",
         "jiheng": "尚书省", "shusuan": "户部", "diancang": "礼部",
-        "bingrong": "兵部", "xingce": "刑部", "jizao": "工部",
-        "jiyan": "吏部", "zaohuang": "早朝官", "qitian": "钦天监"
+        "bingrong": "兵部", "xingce": "刑部", "jixuan": "工部",
+        "jiyan": "吏部", "zaohuang": "玄档官", "qitian": "钦天监"
     }
     
     return {

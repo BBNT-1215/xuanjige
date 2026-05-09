@@ -110,13 +110,13 @@ def handle_request(req, engine, queue,
                 "tools": [
                     {
                         "name": "workflow_submit",
-                        "description": "提交新任务到玄机阁（Kanban步骤链版）。任务会自动走完5步：承旨→机衡→六部执行→早朝汇总→御史审核，全自动推进，无需人工干预。",
+                        "description": "提交新任务到玄机阁（Kanban步骤链版）。任务会自动走完5步：承旨→机衡→六部执行→玄档汇总→枢鉴审核，全自动推进，无需人工干预。",
                         "inputSchema": {
                             "type": "object",
                             "properties": {
                                 "title": {"type": "string", "description": "任务标题"},
                                 "description": {"type": "string", "description": "任务描述"},
-                                "target_agent": {"type": "string", "description": "指定执行Agent（可选，默认jizao）", "default": "jizao"},
+                                "target_agent": {"type": "string", "description": "指定执行Agent（可选，默认jixuan）", "default": "jixuan"},
                             },
                             "required": ["title"],
                         },
@@ -214,7 +214,7 @@ def handle_request(req, engine, queue,
 def _wf_submit(create_root_task_fn, build_step_chain_fn, args):
     title       = args["title"]
     description  = args.get("description", "")
-    target      = args.get("target_agent", "jizao")
+    target      = args.get("target_agent", "jixuan")
 
     task_id = create_root_task_fn(title, description)
     build_step_chain_fn(task_id, title, routing={"target": target})

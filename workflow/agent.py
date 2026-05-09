@@ -128,9 +128,9 @@ class ChengzhiAgent(AgentBase):
         text = (title + " " + desc + " " + " ".join(tags)).lower()
 
         if any(k in text for k in ['前端', '页面', 'css', 'html', '界面', 'ui', 'dashboard', '面板']):
-            return {"target": "jizao", "reason": "前端开发任务", "skills": ["skill_coding", "skill_ui_design"]}
+            return {"target": "jixuan", "reason": "前端开发任务", "skills": ["skill_coding", "skill_ui_design"]}
         if any(k in text for k in ['后端', 'api', '服务', 'server', 'engine']):
-            return {"target": "jizao", "reason": "后端开发任务", "skills": ["skill_coding", "skill_architecture"]}
+            return {"target": "jixuan", "reason": "后端开发任务", "skills": ["skill_coding", "skill_architecture"]}
         if any(k in text for k in ['测试', '质检', 'qa', '检查', '审计']):
             return {"target": "xingce", "reason": "质检任务", "skills": ["skill_qa", "skill_audit"]}
         if any(k in text for k in ['文档', 'doc', '说明', '规范']):
@@ -147,7 +147,7 @@ class ChengzhiAgent(AgentBase):
             return {"target": "zaohuang", "reason": "情报汇总任务", "skills": ["skill_daily_briefing"]}
 
         # 默认技造
-        return {"target": "jizao", "reason": "默认路由至技造", "skills": ["skill_coding"]}
+        return {"target": "jixuan", "reason": "默认路由至技造", "skills": ["skill_coding"]}
 
 
 class JihengAgent(AgentBase):
@@ -163,7 +163,7 @@ class JihengAgent(AgentBase):
         routing = task.get('description', {})
 
         # routing info is embedded by chengzhi
-        target = routing.get('target', 'jizao') if isinstance(routing, dict) else 'jizao'
+        target = routing.get('target', 'jixuan') if isinstance(routing, dict) else 'jixuan'
 
         self.log(f"调度任务至 {target}")
 
@@ -174,9 +174,9 @@ class JihengAgent(AgentBase):
         }
 
 
-class JizaoAgent(AgentBase):
+class JixuanAgent(AgentBase):
     """技造·开发工程"""
-    agent_id = "jizao"
+    agent_id = "jixuan"
     agent_name = "技造"
     skills = ["skill_coding", "skill_architecture"]
 
@@ -276,9 +276,9 @@ class QitianAgent(AgentBase):
 
 
 class ZaohuangAgent(AgentBase):
-    """早朝·情报枢纽"""
+    """玄档·情报枢纽"""
     agent_id = "zaohuang"
-    agent_name = "早朝"
+    agent_name = "玄档"
     skills = ["skill_daily_briefing"]
 
     def run(self, task: dict) -> dict:
@@ -287,9 +287,9 @@ class ZaohuangAgent(AgentBase):
 
 
 class YushiAgent(AgentBase):
-    """御史·质量审计"""
+    """枢鉴·质量审计"""
     agent_id = "yushi"
-    agent_name = "御史"
+    agent_name = "枢鉴"
     skills = ["skill_code_review"]
 
     def run(self, task: dict) -> dict:
@@ -302,7 +302,7 @@ class YushiAgent(AgentBase):
 AGENT_REGISTRY = {
     "chengzhi": ChengzhiAgent,
     "jiheng":   JihengAgent,
-    "jizao":    JizaoAgent,
+    "jixuan":    JixuanAgent,
     "xingce":   XingceAgent,
     "diancang": DiancangAgent,
     "shusuan":  ShusuanAgent,

@@ -31,8 +31,8 @@ STEPS = [
     ("chengzhi",  "承旨",  "分拣任务，判定类型和路由"),
     ("jiheng",    "机衡",  "调度派发，确定执行Agent"),
     ("execute",   "执行",  "技造/刑策/文册/数算/兵戎/机研执行"),
-    ("zaohuang",  "早朝",  "情报汇总，整理执行结果"),
-    ("yushi",     "御史",  "质量审计，验收或打回"),
+    ("zaohuang",  "玄档",  "情报汇总，整理执行结果"),
+    ("yushi",     "枢鉴",  "质量审计，验收或打回"),
 ]
 STEP_BY_KEY = {s[0]: s for s in STEPS}
 STEP_NAMES  = {s[0]: s[1] for s in STEPS}
@@ -79,7 +79,7 @@ def build_step_chain(task_id: str, title: str,
     Args:
         task_id:   主任务ID（用于生成子任务ID前缀）
         title:     任务标题
-        routing:   承旨分拣结果 {target: "jizao", reason: "..."}
+        routing:   承旨分拣结果 {target: "jixuan", reason: "..."}
         board:     Kanban board name (默认当前board)
 
     Returns:
