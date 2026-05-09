@@ -1,0 +1,29 @@
+{
+  "id": "skill_data_analysis",
+  "name": "数据分析",
+  "domain": "数据",
+  "description": "数据分析、报表生成、趋势分析",
+  "method": "pandas",
+  "effectiveness": 0.6,
+  "success_count": 0,
+  "failure_count": 0,
+  "total_duration_minutes": 0,
+  "last_used": null,
+  "created_at": "2026-05-09T12:31:58",
+  "last_evolved": "2026-05-09T12:31:58",
+  "applicable_tasks": [
+    "数据分析",
+    "报表",
+    "统计"
+  ],
+  "inapplicable_tasks": [
+    "UI设计"
+  ],
+  "best_practices": [
+    "明确分析目标",
+    "可视化优先"
+  ],
+  "failure_patterns": [],
+  "version": 1,
+  "evolve_count": 0
+}

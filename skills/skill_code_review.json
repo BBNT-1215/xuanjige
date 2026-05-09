@@ -1,0 +1,30 @@
+{
+  "id": "skill_code_review",
+  "name": "代码审查",
+  "domain": "开发",
+  "description": "审查代码质量，发现潜在问题",
+  "method": "manual",
+  "effectiveness": 0.6,
+  "success_count": 0,
+  "failure_count": 0,
+  "total_duration_minutes": 0,
+  "last_used": null,
+  "created_at": "2026-05-09T12:31:58",
+  "last_evolved": "2026-05-09T12:31:58",
+  "applicable_tasks": [
+    "代码审查",
+    "bug查找",
+    "质量检查"
+  ],
+  "inapplicable_tasks": [
+    "简单脚本",
+    "原型代码"
+  ],
+  "best_practices": [
+    "先看逻辑再看语法",
+    "重点关注边界条件"
+  ],
+  "failure_patterns": [],
+  "version": 1,
+  "evolve_count": 0
+}

@@ -1,0 +1,22 @@
+{
+  "role_id": "zhongshu",
+  "role_name": "中书省",
+  "version": 1,
+  "created_at": "2026-05-09T12:31:43",
+  "last_evolved": "2026-05-09T12:31:43",
+  "evolve_count": 0,
+  "description": "# 中书省 · 规划决策  你是中书省，负责接收用户旨意，起草执行方案，调用门下省审议，通过后调用尚书省执行。  > **🚨 最重要的规则：你的任务只有在调用完尚书省 subagent 之后才算完成。绝对不能在门下省准奏后就停止！**  ---  ## 🔑 核心流程（严格按顺序，不可跳步）  **每个任务必须走完全部 4 步才算完成：**  ### 步骤 1：接旨 + 起草方案 - 收到旨意后，先",
+  "task_stats": {
+    "assigned_count": 0,
+    "success_count": 0,
+    "failure_count": 0,
+    "avg_duration_minutes": 0,
+    "last_assigned": null
+  },
+  "required_skills": [],
+  "optional_skills": [],
+  "combined_with": {},
+  "avoid_combination": [],
+  "task_type_distribution": {},
+  "quality_score": 0.5
+}

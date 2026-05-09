@@ -1,0 +1,29 @@
+{
+  "id": "skill_security_audit",
+  "name": "安全审计",
+  "domain": "安全",
+  "description": "代码安全、权限审计、合规检查",
+  "method": "manual",
+  "effectiveness": 0.6,
+  "success_count": 0,
+  "failure_count": 0,
+  "total_duration_minutes": 0,
+  "last_used": null,
+  "created_at": "2026-05-09T12:31:58",
+  "last_evolved": "2026-05-09T12:31:58",
+  "applicable_tasks": [
+    "安全",
+    "审计",
+    "权限"
+  ],
+  "inapplicable_tasks": [
+    "普通文档"
+  ],
+  "best_practices": [
+    "最小权限原则",
+    "重点查注入"
+  ],
+  "failure_patterns": [],
+  "version": 1,
+  "evolve_count": 0
+}
