@@ -21,5 +21,7 @@
     "通用": 3,
     "测试": 3
   },
-  "quality_score": 0.4222
+  "quality_score": 0.4222,
+  "name": "机研",
+  "department": "执行层"
 }

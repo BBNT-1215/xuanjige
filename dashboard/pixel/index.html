@@ -519,13 +519,13 @@ body {
   border-color: #34495e;
 }
 
-/* Six departments - gold tones */
-.room[data-dept="六部"] {
+/* 执行层 - gold tones */
+.room[data-dept="执行层"] {
   border-color: #c9a84c;
 }
 
-/* 三省 */
-.room[data-dept="三省"] {
+/* 协调层 */
+.room[data-dept="协调层"] {
   border-color: #ffd700;
 }
 
@@ -657,10 +657,10 @@ body {
     </div>
   </div>
 
-  <!-- ======== 三省 ======== -->
+  <!-- ======== 协调层 ======== -->
   <div class="row" style="justify-content:center;gap:24px;margin-top:12px;">
     <!-- 机衡 -->
-    <div class="room room-lg" data-dept="三省" data-name="机衡 · 调度派发">
+    <div class="room room-lg" data-dept="协调层" data-name="机衡 · 调度派发">
       <div class="room-interior">
         <span class="pattern-dot"></span>
         <span style="font-size:13px;color:#ffd700;font-family:'ZCOOL KuaiLe',cursive;">机衡</span>
@@ -679,7 +679,7 @@ body {
     </div>
 
     <!-- 审议 -->
-    <div class="room room-lg" data-dept="三省" data-name="审议 · 审核封驳">
+    <div class="room room-lg" data-dept="协调层" data-name="审议 · 审核封驳">
       <div class="room-interior">
         <span class="pattern-dot"></span>
         <span style="font-size:13px;color:#c0392b;font-family:'ZCOOL KuaiLe',cursive;">审议</span>
@@ -698,10 +698,10 @@ body {
     </div>
   </div>
 
-  <!-- ======== 六部 ======== -->
+  <!-- ======== 执行层 ======== -->
   <div class="row" style="flex-wrap:wrap;justify-content:center;margin-top:10px;">
     <!-- 技造 -->
-    <div class="room room-md" data-dept="六部" data-name="技造 · 开发工程">
+    <div class="room room-md" data-dept="执行层" data-name="技造 · 开发工程">
       <div class="room-interior">
         <span class="pattern-dot"></span>
         <span style="font-size:12px;color:#2980b9;font-family:'ZCOOL KuaiLe',cursive;">技造</span>
@@ -720,7 +720,7 @@ body {
     </div>
 
     <!-- 刑策 -->
-    <div class="room room-md" data-dept="六部" data-name="刑策 · 质检审计">
+    <div class="room room-md" data-dept="执行层" data-name="刑策 · 质检审计">
       <div class="room-interior">
         <span class="pattern-dot"></span>
         <span style="font-size:12px;color:#8b4513;font-family:'ZCOOL KuaiLe',cursive;">刑策</span>
@@ -739,7 +739,7 @@ body {
     </div>
 
     <!-- 文册 -->
-    <div class="room room-md" data-dept="六部" data-name="文册 · 文档规范">
+    <div class="room room-md" data-dept="执行层" data-name="文册 · 文档规范">
       <div class="room-interior">
         <span class="pattern-dot"></span>
         <span style="font-size:12px;color:#27ae60;font-family:'ZCOOL KuaiLe',cursive;">文册</span>
@@ -758,7 +758,7 @@ body {
     </div>
 
     <!-- 数算 -->
-    <div class="room room-md" data-dept="六部" data-name="数算 · 数据分析">
+    <div class="room room-md" data-dept="执行层" data-name="数算 · 数据分析">
       <div class="room-interior">
         <span class="pattern-dot"></span>
         <span style="font-size:12px;color:#e67e22;font-family:'ZCOOL KuaiLe',cursive;">数算</span>
@@ -777,7 +777,7 @@ body {
     </div>
 
     <!-- 兵戎 -->
-    <div class="room room-md" data-dept="六部" data-name="兵戎 · 部署安全">
+    <div class="room room-md" data-dept="执行层" data-name="兵戎 · 部署安全">
       <div class="room-interior">
         <span class="pattern-dot"></span>
         <span style="font-size:12px;color:#c0392b;font-family:'ZCOOL KuaiLe',cursive;">兵戎</span>
@@ -796,7 +796,7 @@ body {
     </div>
 
     <!-- 机研 -->
-    <div class="room room-md" data-dept="六部" data-name="机研 · 进化引擎">
+    <div class="room room-md" data-dept="执行层" data-name="机研 · 进化引擎">
       <div class="room-interior">
         <span class="pattern-dot"></span>
         <span style="font-size:12px;color:#9b59b6;font-family:'ZCOOL KuaiLe',cursive;">机研</span>
@@ -875,14 +875,14 @@ const ROLES = {
   qitian:   { name: '枢观', dept: '枢观' },
   chengzhi: { name: '承旨', dept: '承旨' },
   yushi:    { name: '枢鉴', dept: '枢鉴' },
-  jiheng:   { name: '机衡', dept: '三省' },
-  shenyi:   { name: '审议', dept: '三省' },
-  jizao:    { name: '技造', dept: '六部' },
-  xingce:   { name: '刑策', dept: '六部' },
-  diancang: { name: '文册', dept: '六部' },
-  shusuan:  { name: '数算', dept: '六部' },
-  bingrong: { name: '兵戎', dept: '六部' },
-  jiyan:    { name: '机研', dept: '六部' },
+  jiheng:   { name: '机衡', dept: '协调层' },
+  shenyi:   { name: '审议', dept: '协调层' },
+  jizao:    { name: '技造', dept: '执行层' },
+  xingce:   { name: '刑策', dept: '执行层' },
+  diancang: { name: '文册', dept: '执行层' },
+  shusuan:  { name: '数算', dept: '执行层' },
+  bingrong: { name: '兵戎', dept: '执行层' },
+  jiyan:    { name: '机研', dept: '执行层' },
 };
 
 // State → visual

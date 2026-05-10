@@ -18,5 +18,7 @@
   "combined_with": {},
   "avoid_combination": [],
   "task_type_distribution": {},
-  "quality_score": 0.5
+  "quality_score": 0.5,
+  "name": "刑策",
+  "department": "执行层"
 }
