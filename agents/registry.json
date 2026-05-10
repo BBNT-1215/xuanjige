@@ -6,11 +6,11 @@
     "入口": [
       "chengzhi"
     ],
-    "三省": [
+    "协调层": [
       "jiheng",
       "shenyi"
     ],
-    "六部": [
+    "执行层": [
       "jizao",
       "xingce",
       "diancang",
@@ -45,7 +45,7 @@
     {
       "id": "jiheng",
       "name": "机衡",
-      "department": "三省",
+      "department": "协调层",
       "path": "agents/jiheng",
       "is_permanent": false,
       "version": "5",
@@ -62,7 +62,7 @@
     {
       "id": "shenyi",
       "name": "审议",
-      "department": "三省",
+      "department": "协调层",
       "path": "agents/shenyi",
       "is_permanent": false,
       "version": "1",
@@ -79,7 +79,7 @@
     {
       "id": "jizao",
       "name": "技造",
-      "department": "六部",
+      "department": "执行层",
       "path": "agents/jizao",
       "is_permanent": false,
       "version": "1",
@@ -96,7 +96,7 @@
     {
       "id": "xingce",
       "name": "刑策",
-      "department": "六部",
+      "department": "执行层",
       "path": "agents/xingce",
       "is_permanent": false,
       "version": "1",
@@ -114,7 +114,7 @@
     {
       "id": "diancang",
       "name": "文册",
-      "department": "六部",
+      "department": "执行层",
       "path": "agents/diancang",
       "is_permanent": false,
       "version": "1",
@@ -131,7 +131,7 @@
     {
       "id": "shusuan",
       "name": "数算",
-      "department": "六部",
+      "department": "执行层",
       "path": "agents/shusuan",
       "is_permanent": false,
       "version": "1",
@@ -148,7 +148,7 @@
     {
       "id": "bingrong",
       "name": "兵戎",
-      "department": "六部",
+      "department": "执行层",
       "path": "agents/bingrong",
       "is_permanent": false,
       "version": "1",
@@ -166,7 +166,7 @@
     {
       "id": "jiyan",
       "name": "机研",
-      "department": "六部",
+      "department": "执行层",
       "path": "agents/jiyan",
       "is_permanent": true,
       "version": "1",

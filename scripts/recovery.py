@@ -93,7 +93,7 @@ def check_task(task_id):
     # 检查：流程日志显示某部门卡住
     if flow_log:
         last_flow = flow_log[-1]
-        if last_flow.get('to') in ['尚书省', '六部'] and state in ['Doing', 'Assigned']:
+        if last_flow.get('to') in ['调度', '执行层'] and state in ['Doing', 'Assigned']:
             # 检查是否有产出
             if not t.get('output'):
                 return {"risk": "medium", "reason": f"{last_flow.get('to')} 已接令但无产出"}

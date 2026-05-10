@@ -25,21 +25,21 @@ roles/
 ---
 name: "role_id"
 role_name: "角色名"
-department: "三省|六部|特殊"
+department: "协调层|执行层|特殊"
 version: "1"
 created_at: "2026-05-09T00:00:00Z"
 updated_at: "2026-05-09T12:00:00Z"
 
 description: "角色一句话描述"
 
-# Skill依赖声明（来自三省六部流程）
+# Skill依赖声明（来自玄机阁流程）
 skills:
   required:
     - "skill_routing"
   optional:
     - "skill_analysis"
 
-# Role协作关系（来自三省六部流程）
+# Role协作关系（来自玄机阁流程）
 collaborates_with:
   upstream: ["jiheng"]
   downstream: ["xingce"]
@@ -88,8 +88,8 @@ evolution_history:
   "total_roles": 11,
   "departments": {
     "入口": ["chengzhi"],
-    "三省": ["jiheng", "shenyi"],
-    "六部": ["jizao", "xingce", "diancang", "shusuan", "bingrong", "jiyan"],
+    "协调层": ["jiheng", "shenyi"],
+    "执行层": ["jizao", "xingce", "diancang", "shusuan", "bingrong", "jiyan"],
     "辅助": ["qitian", "zaohuang", "yushi"]
   },
   "roles": [
@@ -107,7 +107,7 @@ evolution_history:
     {
       "id": "jiheng",
       "name": "机衡",
-      "department": "三省",
+      "department": "协调层",
       "path": "agents/jiheng",
       "is_permanent": false,
       "version": "5",
@@ -118,7 +118,7 @@ evolution_history:
     {
       "id": "shenyi",
       "name": "审议",
-      "department": "三省",
+      "department": "协调层",
       "path": "agents/shenyi",
       "is_permanent": false,
       "version": "1",
@@ -129,7 +129,7 @@ evolution_history:
     {
       "id": "jiyan",
       "name": "机研",
-      "department": "六部",
+      "department": "执行层",
       "path": "agents/jiyan",
       "is_permanent": true,
       "version": "1",

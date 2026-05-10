@@ -73,24 +73,24 @@ def now_iso():
 
 # ── 状态映射 ──────────────────────────────────────────────
 STATE_ORG_MAP = {
-    'Taizi': '太子', 'Zhongshu': '中书省', 'Menxia': '门下省',
-    'Assigned': '尚书省', 'Next': '尚书省',
-    'Doing': '执行中', 'Review': '尚书省', 'Done': '完成', 'Blocked': '阻塞',
-    'PendingConfirm': '尚书省', 'Pending': '中书省',
+    'Taizi': '太子', 'Zhongshu': '机衡', 'Menxia': '审议',
+    'Assigned': '调度', 'Next': '调度',
+    'Doing': '执行中', 'Review': '调度', 'Done': '完成', 'Blocked': '阻塞',
+    'PendingConfirm': '调度', 'Pending': '机衡',
 }
 
 _ORG_TO_STATE_AGENT = {
-    '太子': 'chengzhi', '中书省': 'jiheng', '门下省': 'shenyi',
-    '尚书省': 'jiheng', '户部': 'shusuan', '礼部': 'libu',
-    '兵部': 'bingrong', '刑部': 'xingce', '工部': 'jixuan', '吏部': 'jiyan',
+    '太子': 'chengzhi', '机衡': 'jiheng', '审议': 'shenyi',
+    '调度': 'jiheng', '数算': 'shusuan', '文册': 'libu',
+    '兵戎': 'bingrong', '刑策': 'xingce', '技造': 'jixuan', '机研': 'jiyan',
     '玄档官': 'zaohuang', '钦天监': 'qitian',
 }
 
 _AGENT_LABELS = {
     'main': '太子', 'chengzhi': '太子',
-    'jiheng': '中书省', 'shenyi': '门下省', 'jiheng': '尚书省',
-    'libu': '礼部', 'shusuan': '户部', 'bingrong': '兵部', 'xingce': '刑部',
-    'jixuan': '工部', 'jiyan': '吏部', 'zaohuang': '玄档官',
+    'jiheng': '机衡', 'shenyi': '审议', 'jiheng': '调度',
+    'libu': '文册', 'shusuan': '数算', 'bingrong': '兵戎', 'xingce': '刑策',
+    'jixuan': '技造', 'jiyan': '机研', 'zaohuang': '玄档官',
     'qitian': '钦天监',
 }
 
@@ -263,11 +263,11 @@ def cmd_flow(task_id, from_dept, to_dept, remark):
         if not t:
             print(f'[看板] 任务 {task_id} 不存在', flush=True)
             return tasks
-        # 流转时同步更新状态：尚书省 → Review，其他部门 → Doing
+        # 流转时同步更新状态：调度 → Review，其他部门 → Doing
         dept_lower = to_dept.lower()
-        if dept_lower == '尚书省':
+        if dept_lower == '调度':
             new_state = 'Review'
-        elif dept_lower in ('中书省', '门下省', '太子'):
+        elif dept_lower in ('机衡', '审议', '太子'):
             new_state = dept_lower  # 这些部门对应自己的state名
         else:
             new_state = 'Doing'

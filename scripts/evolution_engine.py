@@ -123,7 +123,7 @@ def evolve_task(task_id):
     # 2. 根据任务类型自动记录技能执行
     _auto_record_skill_execution(task, analysis)
     
-    # 3. 记录吏部HR的执行
+    # 3. 记录机研HR的执行
     try:
         record_role_execution(
             role_id='jiyan',

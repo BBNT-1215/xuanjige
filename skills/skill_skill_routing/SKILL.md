@@ -40,10 +40,10 @@ confidence: "high"
 
 ## Overview
 从Skill库中检索最适合当前任务的技能组合。
-是尚书省派发的核心能力：拿到任务后，决定用哪些Skill来完成。
+是调度派发的核心能力：拿到任务后，决定用哪些Skill来完成。
 
 ## When to Use
-- 尚书省接收到任务派发指令时
+- 调度接收到任务派发指令时
 - 需要确定任务执行方案时
 - 需要决定派发给哪个部门时
 
@@ -72,7 +72,7 @@ confidence: "high"
     {"skill_id": "skill_code_review", "score": 0.82, "reasoning": "配合代码开发使用"}
   ],
   "recommended_department": "jizao",
-  "reasoning": "任务类型为代码开发，工部执行，skill_coding为主，skill_code_review辅助"
+  "reasoning": "任务类型为代码开发，技造执行，skill_coding为主，skill_code_review辅助"
 }
 ```
 
@@ -80,13 +80,13 @@ confidence: "high"
 
 | Skill领域 | 派发部门 |
 |-----------|---------|
-| skill_coding / skill_architecture | 工部 |
-| skill_testing / skill_qa / skill_code_review | 刑部 |
-| skill_doc_writing / skill_ui_design | 礼部 |
-| skill_data_analysis / skill_reporting | 户部 |
-| skill_devops / skill_security / skill_monitoring | 兵部 |
-| skill_km / skill_evolution | 吏部 |
-| skill_routing / skill_planning | 太子/中书省 |
+| skill_coding / skill_architecture | 技造 |
+| skill_testing / skill_qa / skill_code_review | 刑策 |
+| skill_doc_writing / skill_ui_design | 文册 |
+| skill_data_analysis / skill_reporting | 数算 |
+| skill_devops / skill_security / skill_monitoring | 兵戎 |
+| skill_km / skill_evolution | 机研 |
+| skill_routing / skill_planning | 太子/机衡 |
 
 ## Script Interfaces
 
@@ -99,7 +99,7 @@ python3 skills/skill_skill_routing/scripts/skill_routing.py --task-type "系统�
 ## Best Practices
 1. 优先查询L1历史：有同类任务时参考历史方案
 2. 评分相近时应用效率公理：选更简单的
-3. 返回的结果要包含 reasoning，供尚书省决策
+3. 返回的结果要包含 reasoning，供调度决策
 
 ## Common Pitfalls
 1. 只看评分不看上下文：task_type不同，评分高的Skill可能不适用

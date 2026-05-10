@@ -4,7 +4,7 @@
 
 ## 项目愿景 / Project Vision
 
-玄机阁是一个自我进化的 AI Agent 协作操作系统，以中国古代三省六部制为组织隐喻，构建能够稳定执行、持续自我进化、感知自身健康的工程产品级多Agent协作框架。
+玄机阁是一个自我进化的 AI Agent 协作操作系统，以中国古代官制为组织隐喻，构建能够稳定执行、持续自我进化、感知自身健康的工程产品级多Agent协作框架。
 
 XuanJiGe is a self-evolving AI Agent orchestration operating system. Using the ancient Chinese Three Departments and Six Ministries bureaucracy as its organizational metaphor, it builds an engineering-grade multi-Agent collaboration framework capable of stable execution, continuous self-evolution, and real-time self-healing.
 

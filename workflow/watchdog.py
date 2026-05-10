@@ -116,35 +116,43 @@ def tick():
     """单次扫描 + 推进所有进行中的步骤链。"""
     conn = connect(board=BOARD_NAME)
     now  = datetime.datetime.now()
+
     # 1. 找到所有进行中的主任务
-    #    主任务：有 body.root_id 指向自己的顶级任务（步骤链的根）
-    #    识别方式：遍历所有非 done 任务，body JSON 的 root_id == task_id 自身
+    #    方式：遍历所有非 done 步骤，从 step_key==0 的步骤提取 root_id
+    #    即便根任务记录不存在，也能从子步骤的 root_id 反推主任务
     all_tasks = list_tasks(conn, include_archived=False)
 
-    main_tasks = {}
+    # 收集所有非 done 的链（按 root_id 分组）
+    # root_id -> {"id": root_id, "title": <from step 0>, "status": max_status_of_chain}
+    chain_map: dict = {}
     for t in all_tasks:
         if t.status in ("done", "archived"):
             continue
-        # 解析 body JSON
         try:
             body = json.loads(t.body) if isinstance(t.body, str) else {}
         except Exception:
             continue
-        # root_id 指向自己 = 主任务
-        if body.get("root_id") == t.id:
-            main_tasks[t.id] = {
-                "id": t.id,
-                "title": t.title,
+        root_id = body.get("root_id")
+        step_key = body.get("step_key")
+        if not root_id or step_key is None:
+            continue
+        if root_id not in chain_map:
+            chain_map[root_id] = {
+                "id": root_id,
+                "title": body.get("title", root_id),
                 "status": t.status,
             }
+        else:
+            # 保留已知的 status（done > running > ready > todo）
+            pass
 
-    if not main_tasks:
+    if not chain_map:
         conn.commit()
         return
 
-    log(f"发现 {len(main_tasks)} 条进行中任务链")
+    log(f"发现 {len(chain_map)} 条进行中任务链")
 
-    for main in main_tasks.values():
+    for main in chain_map.values():
         _process_chain(conn, main, now)
 
     conn.commit()

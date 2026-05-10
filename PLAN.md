@@ -29,23 +29,23 @@ Hermestrix/
 | Skill×Role | 无关联 | Role声明Skill依赖，Skill被Role调用 | 未建立引用关系 |
 | 进化机制 | 手动测试 | 任务完成→自动进化→库更新 | 闭环未完成 |
 | Skill规模 | 10个 | 100+个 | 需批量扩展 |
-| 三省六部融合 | 初步集成 | Skill/Role深度融入流程 | 需体系化融合 |
+| 玄机阁融合 | 初步集成 | Skill/Role深度融入流程 | 需体系化融合 |
 
 ---
 
-## 二、核心融合思路：Skill/Role × 三省六部
+## 二、核心融合思路：Skill/Role × 玄机阁
 
 ### 2.1 融合哲学
 
 ```
-传统三省六部：人 → 职位 → 执行
+传统玄机阁：人 → 职位 → 执行
 Hermestrix：  旨意 → Skill → Role → 执行
 
 Skill = 做事的方法（Know-How）
 Role  = 做事的人（Know-Who）
 
  Skill被Role调用，Role的职责由Skill定义
- 三省六部是Role的集合，Skill是执行单元的技能库
+ 玄机阁是Role的集合，Skill是执行单元的技能库
 ```
 
 ### 2.2 各部Role × Skill映射
@@ -53,15 +53,15 @@ Role  = 做事的人（Know-Who）
 | 部门 | Role | 核心Skill | 说明 |
 |------|------|-----------|------|
 | **太子** | chengzhi | skill_routing, skill_dispatch | 任务分拣、路由决策 |
-| **中书省** | jiheng | skill_planning, skill_doc_writing | 方案起草、文档输出 |
-| **门下省** | shenyi | skill_review, skill_risk_assessment | 审议、风险评估 |
-| **尚书省** | jiheng | skill_skill_routing, skill_role_dispatch | Skill/Role检索、派发 |
-| **吏部** | jiyan | skill_km, skill_evolution | 三库管理、进化引擎 |
-| **户部** | shusuan | skill_data_analysis, skill_reporting | 数据分析、财务报表 |
-| **礼部** | diancang | skill_doc_writing, skill_ui_design | 文档撰写、UI设计 |
-| **兵部** | bingrong | skill_devops, skill_security, skill_monitoring | 部署运维、安全监控 |
-| **工部** | jizao | skill_coding, skill_architecture, skill_testing | 开发、架构、测试 |
-| **刑部** | xingce | skill_qa, skill_audit, skill_review | 质量审查、代码审计 |
+| **机衡** | jiheng | skill_planning, skill_doc_writing | 方案起草、文档输出 |
+| **审议** | shenyi | skill_review, skill_risk_assessment | 审议、风险评估 |
+| **调度** | jiheng | skill_skill_routing, skill_role_dispatch | Skill/Role检索、派发 |
+| **机研** | jiyan | skill_km, skill_evolution | 三库管理、进化引擎 |
+| **数算** | shusuan | skill_data_analysis, skill_reporting | 数据分析、财务报表 |
+| **文册** | diancang | skill_doc_writing, skill_ui_design | 文档撰写、UI设计 |
+| **兵戎** | bingrong | skill_devops, skill_security, skill_monitoring | 部署运维、安全监控 |
+| **技造** | jizao | skill_coding, skill_architecture, skill_testing | 开发、架构、测试 |
+| **刑策** | xingce | skill_qa, skill_audit, skill_review | 质量审查、代码审计 |
 | **玄档官** | morning | skill_daily_briefing | 每日晨报 |
 | **钦天监** | qintian | skill_trend_analysis, skill_prediction | 趋势预测、预判 |
 
@@ -73,44 +73,44 @@ Role  = 做事的人（Know-Who）
     ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  太子 Agent（Permanent）                                     │
-│  skill_routing → 判断旨意类型 → 路由到中书省 or 直接处理     │
+│  skill_routing → 判断旨意类型 → 路由到机衡 or 直接处理     │
 └──────────────────────────┬──────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  中书省 Agent（Temporary Subagent）                          │
+│  机衡 Agent（Temporary Subagent）                          │
 │  skill_planning → 起草方案                                  │
 │  ├── 方案中声明需要哪些Skill → 查询Skill库                   │
 │  └── 方案中声明需要哪些Role → 查询Role库                     │
-│  提交门下省审议                                             │
+│  提交审议审议                                             │
 └──────────────────────────┬──────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  门下省 Agent（Temporary Subagent）                          │
+│  审议 Agent（Temporary Subagent）                          │
 │  skill_review → 四维审议                                    │
 │  ├── Skill可行性（skill库有没有？）                          │
 │  ├── Role完整性（有没有能执行的人？）                        │
 │  └── 风险评估（skill_risk_assessment）                       │
-│  准奏 → 交尚书省                                            │
+│  准奏 → 交调度                                            │
 └──────────────────────────┬──────────────────────────────────┘
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  尚书省 Agent（Temporary Subagent）                          │
+│  调度 Agent（Temporary Subagent）                          │
 │  skill_skill_routing → 从Skill库检索最优技能组合             │
 │  skill_role_dispatch → 从Role库检索最优角色组合              │
 │                                                              │
-│  派发给六部：                                               │
-│  ├── 派工部（携带skill_coding）                             │
-│  ├── 派刑部（携带skill_qa）                                 │
-│  ├── 派吏部咨询（携带skill_km）                             │
+│  派发给执行层：                                               │
+│  ├── 派技造（携带skill_coding）                             │
+│  ├── 派刑策（携带skill_qa）                                 │
+│  ├── 派机研咨询（携带skill_km）                             │
 └──────────────────────────┬──────────────────────────────────┘
                            │
               ┌────────────┴────────────┐
               ▼                         ▼
 ┌──────────────────────┐   ┌──────────────────────┐
-│  六部 Subagent执行    │   │  吏部 Agent（Permanent）│
+│  执行层 Subagent执行    │   │  机研 Agent（Permanent）│
 │  执行Skill方法        │   │  监听任务完成事件     │
 │  产出执行结果         │   │  触发进化引擎        │
 └──────────┬───────────┘   │  更新Skill评分       │
@@ -118,11 +118,11 @@ Role  = 做事的人（Know-Who）
            │               └──────────────────────┘
            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  尚书省汇总 → 回报中书省 → 回奏太子 → 呈报用户               │
+│  调度汇总 → 回报机衡 → 回奏太子 → 呈报用户               │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### 2.4 Skill进化 × 三省六部闭环
+### 2.4 Skill进化 × 玄机阁闭环
 
 ```
 任务完成
@@ -130,7 +130,7 @@ Role  = 做事的人（Know-Who）
     ├── EventBus.emit('task.completed', task_id, quality)
     │
     ▼
-吏部 Agent（Permanent，常驻进程）
+机研 Agent（Permanent，常驻进程）
     │
     ├── 读取任务执行记录
     ├── 分析使用的Skill（哪些有效？哪些失败？）
@@ -153,7 +153,7 @@ Role  = 做事的人（Know-Who）
     └── 生成进化报告 → 写入 three_libs/
     │
     ▼
-下次尚书省检索时：
+下次调度检索时：
     ├── Skill评分高的被优先推荐
     ├── Role组合更优的被使用
     └── 进化后的Skill/Role自动生效
@@ -165,8 +165,8 @@ Role  = 做事的人（Know-Who）
 # roles/jiheng/METADATA.yaml
 skills:
   required:
-    - skill_skill_routing   # 尚书省必须会用Skill检索
-    - skill_role_dispatch    # 尚书省必须会用Role派发
+    - skill_skill_routing   # 调度必须会用Skill检索
+    - skill_role_dispatch    # 调度必须会用Role派发
 
 skills:
   optional:
@@ -186,7 +186,7 @@ skills:
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐
 │                           Hermestrix Framework v3                        │
-│                    Skill × Role × 三省六部 深度融合                        │
+│                    Skill × Role × 玄机阁 深度融合                        │
 │                                                                          │
 │  ┌──────────────┐                                                        │
 │  │   旨意入口   │                                                        │
@@ -215,9 +215,9 @@ skills:
 │         │     └─────────────────────────────────────────────┘               │
 │         │                                                            │
 │  ┌──────▼──────────────────────────────────────────────────────────┐      │
-│  │                    三省六部执行层                               │      │
+│  │                    玄机阁执行层                               │      │
 │  │  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐            │      │
-│  │  │ 中书省  │→ │ 门下省 │→ │ 尚书省 │→ │ 六部   │            │      │
+│  │  │ 机衡  │→ │ 审议 │→ │ 调度 │→ │ 执行层   │            │      │
 │  │  │(subagent)│ │(subagent)│ │(subagent)│ │(subagent群)│          │      │
 │  │  └────────┘  └────────┘  └────┬───┘  └────────┘            │      │
 │  │                                │                              │      │
@@ -226,7 +226,7 @@ skills:
 │  └──────────────────────────────────────────────────────────────────┘      │
 │                                                                          │
 │  ┌────────────────────────────────────────────────────────────────────┐  │
-│  │  吏部 Agent（Permanent）= 三库守护者 + 进化执行者                    │  │
+│  │  机研 Agent（Permanent）= 三库守护者 + 进化执行者                    │  │
 │  │  基础设施：看板 │ 事件总线 │ 断点自愈 │ 三库                         │  │
 │  └────────────────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────────────────┘
@@ -247,7 +247,7 @@ hermestrix/
 │   ├── jiheng/
 │   ├── jiheng/
 │   ├── shenyi/
-│   ├── jiyan/           # 吏部（Permanent Agent）
+│   ├── jiyan/           # 机研（Permanent Agent）
 │   ├── shusuan/
 │   ├── bingrong/
 │   ├── jizao/
@@ -276,7 +276,7 @@ hermestrix/
 │
 ├── agents/               # Agent实现
 │   ├── permanent/         # 常驻Agent
-│   │   ├── libu_agent.py  # 吏部常驻进程
+│   │   ├── libu_agent.py  # 机研常驻进程
 │   │   └── chengzhi_agent.py # 太子常驻进程（可选）
 │   └── templates/         # Agent模板
 │
@@ -413,9 +413,9 @@ python3 scripts/review.py quick <path>
 
 **roles/jiheng/SOUL.md：**
 ```markdown
-# 尚书省 · 执行调度
+# 调度 · 执行调度
 
-你是尚书省，以subagent方式被中书省调用...
+你是调度，以subagent方式被机衡调用...
 
 [现有内容...]
 ```
@@ -424,10 +424,10 @@ python3 scripts/review.py quick <path>
 ```yaml
 ---
 name: "jiheng"
-role_name: "尚书省"
-department: "三省"
+role_name: "调度"
+department: "协调层"
 
-description: "从Skill库和Role库检索最优组合，派发给六部执行，汇总结果"
+description: "从Skill库和Role库检索最优组合，派发给执行层执行，汇总结果"
 
 skills:
   required:
@@ -437,9 +437,9 @@ skills:
     - skill_data_analysis   # 可选数据分析辅助
 
 collaborates_with:
-  - jiheng    # 上游：中书省
-  - xingce      # 下游：刑部质量审查
-  - jiyan     # 咨询：吏部技能查询
+  - jiheng    # 上游：机衡
+  - xingce      # 下游：刑策质量审查
+  - jiyan     # 咨询：机研技能查询
 
 stats:
   tasks_completed: 12
@@ -461,8 +461,8 @@ evolution:
   "roles": [
     {
       "id": "jiheng",
-      "name": "尚书省",
-      "department": "三省",
+      "name": "调度",
+      "department": "协调层",
       "path": "roles/jiheng",
       "is_permanent": false,
       "version": "3",
@@ -478,7 +478,7 @@ evolution:
 
 ---
 
-## 六、三省六部 × Skill/Role 深度融合细则
+## 六、玄机阁 × Skill/Role 深度融合细则
 
 ### 6.1 各部Role的Skill配置
 
@@ -503,32 +503,32 @@ evolution:
 旨意入口（太子）
     ↓ [skill_routing] 判断旨意类型
     ↓
-中书省起草方案
+机衡起草方案
     ↓ [skill_planning] 生成方案
     ↓ [查询Skill库] 确认需要的Skill是否存在
     ↓ [查询Role库] 确认需要的Role是否可用
     ↓
-门下省审议
+审议审议
     ↓ [skill_review] 四维审议
     ↓ [skill_risk_assessment] 评估风险
     ↓
-尚书省派发
+调度派发
     ↓ [skill_skill_routing] 检索最优Skill组合
     ↓ [skill_role_dispatch] 检索最优Role组合
-    ↓ [派发给六部] 携带对应Skill执行
+    ↓ [派发给执行层] 携带对应Skill执行
     ↓
-六部执行
+执行层执行
     ↓ [使用各自Skill执行]
     ↓
-任务完成 → [吏部监听] → [进化引擎] → [Skill/Role库更新]
+任务完成 → [机研监听] → [进化引擎] → [Skill/Role库更新]
     ↓
-尚书省汇总 → 回奏
+调度汇总 → 回奏
 ```
 
-### 6.3 吏部常驻进程的进化职责
+### 6.3 机研常驻进程的进化职责
 
 ```
-吏部 Agent（Permanent）职责：
+机研 Agent（Permanent）职责：
 
 1. 三库守护
    - 维护Skill注册表（registry.json）
@@ -559,9 +559,9 @@ evolution:
 
 ## 七、分阶段实施计划
 
-### Phase 1：骨架建立（三省六部 × Skill/Role融合核心）
+### Phase 1：骨架建立（玄机阁 × Skill/Role融合核心）
 
-**目标：** Skill+Role融入三省六部流程，核心闭环跑通
+**目标：** Skill+Role融入玄机阁流程，核心闭环跑通
 
 #### Week 1 Day 1-2：Skill库v2 + Skill标准建立
 
@@ -570,8 +570,8 @@ evolution:
 □ 定义 SKILL.md 标准格式（参考claude-skills）
 □ 编写3个核心Skill：
   - skill_routing（太子用：任务分拣）
-  - skill_skill_routing（尚书省用：Skill检索）
-  - skill_role_dispatch（尚书省用：Role检索+派发）
+  - skill_skill_routing（调度用：Skill检索）
+  - skill_role_dispatch（调度用：Role检索+派发）
 □ 为每个Skill编写scripts/工具
 □ 重构 skill_library.py → SkillManager类
 □ 实现 SkillManager.query_best() 算法
@@ -596,7 +596,7 @@ evolution:
 - 返回推荐Role组合 + 置信度
 ```
 
-#### Week 1 Day 5：进化引擎v2 + 吏部深度集成
+#### Week 1 Day 5：进化引擎v2 + 机研深度集成
 
 ```
 任务：
@@ -605,7 +605,7 @@ evolution:
 □ 实现 Skill评分自动更新（基于quality_score）
 □ 实现 最佳实践自动提取
 □ 实现 Role统计自动更新
-□ 吏部Agent读取METADATA校验Skill依赖
+□ 机研Agent读取METADATA校验Skill依赖
 
 验收：
 - 完成一个任务 → 30秒内Skill评分更新
@@ -675,20 +675,20 @@ evolution:
   → 拒绝执行，报错"缺少必要Skill: xxx"
   → 提示用户先安装或创建该Skill
 
-这个校验在尚书省派发前执行（MENXIA审议阶段也做预检）
+这个校验在调度派发前执行（MENXIA审议阶段也做预检）
 ```
 
 ### 8.2 进化触发时机
 
 ```
 自动触发（推荐）：
-  task.done → EventBus → 吏部监听 → 进化引擎 → 库更新
+  task.done → EventBus → 机研监听 → 进化引擎 → 库更新
 
 手动触发（调试用）：
   $ hermestrix evolution run --task-id JJ-xxx
 
 定期扫描（兜底）：
-  吏部常驻进程每小时扫描未归档任务
+  机研常驻进程每小时扫描未归档任务
 ```
 
 ### 8.3 Skill自动结晶
@@ -706,7 +706,7 @@ evolution:
   4. 生成 scripts/ 工具（如有）
   5. 写入 skills/
   6. 更新 registry.json
-  7. 通知尚书省"Skill xxx已加入Skill库"
+  7. 通知调度"Skill xxx已加入Skill库"
   8. 下次任务可直接检索使用
 
 注意：自动结晶的Skill初始 effectiveness_score = 0.5（需通过使用逐步提升）
@@ -721,10 +721,10 @@ evolution:
 ```
 □ Skill库可按标准创建/检索/执行
 □ Role库含完整METADATA + Skill依赖声明
-□ 尚书省执行时校验Skill依赖（缺失则报错）
+□ 调度执行时校验Skill依赖（缺失则报错）
 □ 进化引擎自动触发，Skill评分更新
-□ 吏部常驻进程稳定运行
-□ 完整流程跑通：旨意 → 太子 → 中书省 → 门下省 → 尚书省 → 六部 → 吏部进化
+□ 机研常驻进程稳定运行
+□ 完整流程跑通：旨意 → 太子 → 机衡 → 审议 → 调度 → 执行层 → 机研进化
 □ GitHub提交
 ```
 
@@ -761,4 +761,4 @@ evolution:
 ---
 
 *Plan版本：v3.1 | 更新：2026-05-09 | 状态：待评审*
-*核心变化：Skill/Role与三省六部深度融合，各部Role声明Skill依赖，流程中嵌入检索节点*
+*核心变化：Skill/Role与玄机阁深度融合，各部Role声明Skill依赖，流程中嵌入检索节点*

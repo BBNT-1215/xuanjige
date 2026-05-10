@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "xuanjige"
 version = "0.1.0"
-description = "Self-evolving AI Agent orchestration OS based on Chinese三省六部 bureaucracy — 玄机阁"
+description = "Self-evolving AI Agent orchestration OS based on Chinese玄机阁 bureaucracy — 玄机阁"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
@@ -13,7 +13,7 @@ authors = [
     { name = "BBNT-1215", email = "xuanjige@example.com" }
 ]
 keywords = [
-    "ai", "agent", "multi-agent", "三省六部", "玄机阁", "xuanjige",
+    "ai", "agent", "multi-agent", "玄机阁", "玄机阁", "xuanjige",
     "self-evolving", "workflow", "bureaucracy", "orchestration"
 ]
 classifiers = [

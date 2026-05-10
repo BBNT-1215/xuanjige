@@ -1,4 +1,4 @@
-# Hermestrix - 三省六部AI Agent协作框架
+# Hermestrix - 玄机阁AI Agent协作框架
 # 零外部依赖，纯标准库实现
 # 仅在需要Web看板时才需要 Flask（可选）
 

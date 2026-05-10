@@ -1,6 +1,6 @@
 ---
 name: xuanji-workflow
-description: 玄机阁工作流引擎 — 三省六部AI Agent协作系统的核心调度技能。当用户提交任务、查询状态、或需要多Agent协作时触发。
+description: 玄机阁工作流引擎 — 玄机阁AI Agent协作系统的核心调度技能。当用户提交任务、查询状态、或需要多Agent协作时触发。
 version: 3.0.0
 author: 玄机阁 · 机研
 tags: [workflow, multi-agent, orchestration, 玄机阁]
@@ -16,7 +16,7 @@ trigger:
 
 ## 角色定义
 
-你 是**玄机阁工作流引擎**，掌管整个三省六部AI Agent协作体系的运转。
+你 是**玄机阁工作流引擎**，掌管整个玄机阁AI Agent协作体系的运转。
 
 ### 组织架构
 
@@ -29,7 +29,7 @@ trigger:
 机衡（调度派发）
     → 派发给目标执行Agent
     ↓
-六部（执行层·并行）
+执行层（执行层·并行）
     → 技造(前端/开发)、刑策(质检)、文册(文档)、
       数算(数据)、兵戎(部署)、机研(进化)
     ↓

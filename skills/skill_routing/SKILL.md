@@ -41,7 +41,7 @@ confidence: "high"
 # skill_routing · 旨意分拣
 
 ## Overview
-对用户输入的旨意进行分类，判断应该走三省六部流程还是直接处理。
+对用户输入的旨意进行分类，判断应该走玄机阁流程还是直接处理。
 是太子 Agent 的核心 Skill，决定每个旨意的命运起点。
 
 ## When to Use
@@ -69,7 +69,7 @@ confidence: "high"
 {
   "route": "jiheng",
   "confidence": 0.88,
-  "reasoning": "旨意包含'构建'关键词，匹配系统建设类型，应走中书省起草"
+  "reasoning": "旨意包含'构建'关键词，匹配系统建设类型，应走机衡起草"
 }
 ```
 

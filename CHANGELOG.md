@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `health_monitor.py` — 6维度系统健康监控（自动阈值推断）
 - `decay_service.py` — 记忆衰减管理（90天半衰期+180天冷存储+垃圾回收）
 - `evolution.py` — EvolutionEngine进化引擎 + EvolutionVerifier验证闭环
-- `libu_agent.py` — 吏部常驻进程（EventBus监听+定时健康检查+衰减管理）
+- `libu_agent.py` — 机研常驻进程（EventBus监听+定时健康检查+衰减管理）
 
 #### Skill库（14个）
 - orchestration: `skill_routing`, `skill_skill_routing`, `skill_role_dispatch`
@@ -24,9 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - operation: `skill_devops`, `skill_monitoring`, `skill_incident_response`, `skill_database_optimization`, `skill_api_gateway`
 
 #### Role库（17个）
-- 三省: `chengzhi`, `jiheng`, `shenyi`, `jiheng`
-- 六部: `shusuan`, `jizao`, `bingrong`, `xingce`, `diancang`, `jiyan`
-- 特殊: `zaohuang`, `qitian`
+- 协调层: `chengzhi`, `jiheng`, `shenyi`, `jiheng`
+- 执行层: `shusuan`, `jizao`, `bingrong`, `xingce`, `diancang`, `jiyan`
+- 扩展: `bishou` (笔受), `yushi` (枢鉴), `jiedushi` (节度使), `silium` (司礼监), `xingke` (刑科)
 - 扩展: `bishou` (笔受), `yushi` (枢鉴), `jiedushi` (节度使), `silium` (司礼监), `xingke` (刑科)
 
 #### CLI工具链 (`hermestrix_cli.py`)

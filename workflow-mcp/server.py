@@ -110,7 +110,7 @@ def handle_request(req, engine, queue,
                 "tools": [
                     {
                         "name": "workflow_submit",
-                        "description": "提交新任务到玄机阁（Kanban步骤链版）。任务会自动走完5步：承旨→机衡→六部执行→玄档汇总→枢鉴审核，全自动推进，无需人工干预。",
+                        "description": "提交新任务到玄机阁（Kanban步骤链版）。任务会自动走完5步：承旨→机衡→执行层执行→玄档汇总→枢鉴审核，全自动推进，无需人工干预。",
                         "inputSchema": {
                             "type": "object",
                             "properties": {

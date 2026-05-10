@@ -108,10 +108,10 @@ def scan_roles():
 def _create_default_metadata(role_id, soul_preview=""):
     """为新角色创建默认METADATA"""
     role_names = {
-        "chengzhi": "太子", "jiheng": "中书省", "shenyi": "门下省",
-        "jiheng": "尚书省", "shusuan": "户部", "diancang": "礼部",
-        "bingrong": "兵部", "xingce": "刑部", "jixuan": "工部",
-        "jiyan": "吏部", "zaohuang": "玄档官", "qitian": "钦天监"
+        "chengzhi": "太子", "jiheng": "机衡", "shenyi": "审议",
+        "jiheng": "调度", "shusuan": "数算", "diancang": "文册",
+        "bingrong": "兵戎", "xingce": "刑策", "jixuan": "技造",
+        "jiyan": "机研", "zaohuang": "玄档官", "qitian": "钦天监"
     }
     
     return {
@@ -310,7 +310,7 @@ def recommend_combination(task_type=None, complexity="medium"):
     role_ids = [r[0] for r in roles]
     
     # 分离主角色和辅助角色
-    # 主角色：尚书省必须，核心执行部门
+    # 主角色：调度必须，核心执行部门
     primary = ["jiheng"] if "jiheng" in role_ids else [role_ids[0]]
     supporting = [r for r in role_ids[1:n] if r != "jiheng"]
     

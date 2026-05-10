@@ -1,6 +1,6 @@
 # Hermestrix v3.0 最终工程方案
 
-> Skill · Role · Memory × 三省六部 深度融合体系
+> Skill · Role · Memory × 玄机阁 深度融合体系
 > 版本：v3.0 | 状态：执行就绪 | 创建：2026-05-09
 
 ---
@@ -12,7 +12,7 @@
 3. [三层记忆系统](#三四层记忆系统)
 4. [Skill库体系](#四skill库体系)
 5. [Role库体系](#五role库体系)
-6. [三省六部融合执行流程](#六三省六部融合执行流程)
+6. [玄机阁融合执行流程](#六玄机阁融合执行流程)
 7. [进化引擎](#七进化引擎)
 8. [常驻Agent](#八常驻agent)
 9. [基础设施](#九基础设施)
@@ -29,7 +29,7 @@
 ```
 Hermestrix 是一个自我进化的 AI Agent 协作操作系统。
 
-它以中国古代三省六部制为组织隐喻，
+它以中国古代玄机阁框架为组织隐喻，
 以 Skill 为 Know-How（做事的方法），
 以 Role 为 Know-Who（做事的人），
 以 Memory 为 Know-What（积累的经验），
@@ -57,7 +57,7 @@ Hermestrix 是一个自我进化的 AI Agent 协作操作系统。
   所有进化必须可验证，不验证的进化等于噪音积累。
 
 组织原则：
-  三省六部不是固定流程，而是 Skill×Role 组合的动态调度场。
+  玄机阁不是固定流程，而是 Skill×Role 组合的动态调度场。
   流程的灵活性和组织的稳定性共存。
 ```
 
@@ -66,13 +66,13 @@ Hermestrix 是一个自我进化的 AI Agent 协作操作系统。
 ```
 v1/v2方案的问题：
   - Skill/Role/Memory 各自独立，没有形成闭环
-  - 三省六部只是"角色扮演"，没有真正嵌入系统
+  - 玄机阁只是"角色扮演"，没有真正嵌入系统
   - 进化没有验证机制，可能"学坏"
   - 没有健康监控，问题扩散了才发现
 
 v3.0方案的改进：
-  - Skill/Role/Memory 在三省六部每一步中显式调用
-  - 三省六部是调度层，Skill库和Role库是执行资源层
+  - Skill/Role/Memory 在玄机阁每一步中显式调用
+  - 玄机阁是调度层，Skill库和Role库是执行资源层
   - 进化有验证闭环（观察窗口+回滚机制）
   - 有系统健康监控（主动告警而非被动发现）
 ```
@@ -86,7 +86,7 @@ v3.0方案的改进：
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              Hermestrix v3.0                                │
-│                   Skill × Role × Memory × 三省六部 融合体系                   │
+│                   Skill × Role × Memory × 玄机阁 融合体系                   │
 │                                                                             │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
 │  │                        旨意入口层                                    │   │
@@ -96,7 +96,7 @@ v3.0方案的改进：
 │                                     ▼                                          │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
 │  │                    太子 Agent（Permanent）                            │   │
-│  │         职责：分拣旨意 → 判断路由 → 触发三省六部流程                  │   │
+│  │         职责：分拣旨意 → 判断路由 → 触发玄机阁流程                  │   │
 │  │         Skill：skill_routing（分拣）+ skill_dispatch（派发）         │   │
 │  │         Memory：L1查询（类似旨意历史）→ L2查询（路由成功率统计）      │   │
 │  └────────────────────────────────┬────────────────────────────────────┘   │
@@ -105,7 +105,7 @@ v3.0方案的改进：
 │              │                                           │                    │
 │              ▼                                           ▼                    │
 │  ┌─────────────────────────┐               ┌─────────────────────────┐     │
-│  │      中书省 Agent       │               │      直接处理           │     │
+│  │      机衡 Agent       │               │      直接处理           │     │
 │  │  (Temporary Subagent)   │               │  (Simple tasks)         │     │
 │  │  skill_planning         │               └─────────────────────────┘     │
 │  │  skill_doc_writing       │                                                │
@@ -113,15 +113,15 @@ v3.0方案的改进：
 │               │                                                              │
 │               ▼                                                              │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                      门下省 Agent（Temporary）                          │   │
+│  │                      审议 Agent（Temporary）                          │   │
 │  │              职责：四维审议 + Skill可用性预检 + 风险评估              │   │
 │  │              Skill：skill_review + skill_risk_assessment               │   │
 │  └────────────────────────────────┬────────────────────────────────────┘   │
 │                                     │                                          │
 │                                     ▼                                          │
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │                      尚书省 Agent（Temporary）                         │   │
-│  │                   职责：Skill检索 + Role检索 + 派发六部                │   │
+│  │                      调度 Agent（Temporary）                         │   │
+│  │                   职责：Skill检索 + Role检索 + 派发执行层                │   │
 │  │              Skill：skill_skill_routing + skill_role_dispatch          │   │
 │  │         Memory：L1查询（同类型任务最优方案）→ L2查询（评分/统计）       │   │
 │  └────────────────────────────────┬────────────────────────────────────┘   │
@@ -130,7 +130,7 @@ v3.0方案的改进：
 │              │                     │                     │                    │
 │              ▼                     ▼                     ▼                    │
 │  ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐           │
-│  │   工部 Subagent   │ │   刑部 Subagent  │ │   吏部咨询       │           │
+│  │   技造 Subagent   │ │   刑策 Subagent  │ │   机研咨询       │           │
 │  │   skill_coding   │ │   skill_qa       │ │   skill_km       │           │
 │  └────────┬─────────┘ └────────┬─────────┘ └──────────────────┘           │
 │           │                    │                                          │
@@ -143,8 +143,8 @@ v3.0方案的改进：
 │              ┌─────────────────────┴─────────────────────┐                   │
 │              ▼                                           ▼                    │
 │  ┌─────────────────────────┐               ┌─────────────────────────┐     │
-│  │   吏部 Agent（Permanent）│               │   尚书省汇总            │     │
-│  │   三库守护者 + 进化引擎  │               │   回奏中书省            │     │
+│  │   机研 Agent（Permanent）│               │   调度汇总            │     │
+│  │   三库守护者 + 进化引擎  │               │   回奏机衡            │     │
 │  └───────────┬─────────────┘               └─────────────────────────┘     │
 │              │                                                              │
 │              ▼                                                              │
@@ -181,30 +181,30 @@ v3.0方案的改进：
 太子分拣 ──L1查询──→ 类似旨意历史
     │              ──L2查询──→ 路由成功率
     ▼
-中书省起草 ──L1查询──→ 类似方案
+机衡起草 ──L1查询──→ 类似方案
     │              ──L3查询──→ 流程规则
     ▼
-门下省审议 ──Skill预检──→ required Skills是否存在
+审议审议 ──Skill预检──→ required Skills是否存在
     │           ──风险评估──→ skill_risk_assessment
     ▼
-尚书省派发 ──L1查询──→ 同类型任务最优方案
+调度派发 ──L1查询──→ 同类型任务最优方案
     │           ──L2 Skill查询──→ effectiveness 评分
     │           ──L2 Role查询──→ stats + 协作关系
     ▼
-六部执行 ──使用携带Skill──→ 产出结果 + quality_score
+执行层执行 ──使用携带Skill──→ 产出结果 + quality_score
     │
     ▼
 EventBus: task.completed
     │
     ▼
-吏部进化 ──写入L1──→ 原始记录
+机研进化 ──写入L1──→ 原始记录
     │      ──冲突解决──→ resolved记录
     │      ──更新L2 Skill──→ effectiveness + 开启验证窗口
     │      ──更新L2 Role──→ stats + 协作关系
     │      ──健康检查──→ 异常则告警
     │      ──衰减更新──→ 旧记忆权重调整
     ▼
-L2更新完成 ──下次检索时生效──→ 尚书省派发决策
+L2更新完成 ──下次检索时生效──→ 调度派发决策
 ```
 
 ---
@@ -277,13 +277,13 @@ memory/
   "outcome": {
     "result": "体系首次完整运行成功",
     "artifacts": ["commit:7eb8520", "task:JJ-20260509-003"],
-    "summary": "三省六部流程跑通，Skill/Role检索生效"
+    "summary": "玄机阁流程跑通，Skill/Role检索生效"
   },
 
   "reflection": {
     "what_worked": [
       "skill_routing检索出了正确的路由",
-      "吏部常驻进程自动触发了进化"
+      "机研常驻进程自动触发了进化"
     ],
     "what_failed": [
       "flow命令状态机有小bug，需要Review状态才能done"
@@ -441,7 +441,7 @@ memory/
 ```
 knowledge/
 ├── rules/
-│   ├── workflow_sanshengliubu.json    # 三省六部执行流程规则
+│   ├── workflow_sanshengliubu.json    # 玄机阁执行流程规则
 │   ├── skill_selection.json           # Skill选择决策树
 │   ├── role_assignment.json            # Role派发决策表
 │   └── evolution_policy.json           # 进化策略配置
@@ -600,7 +600,7 @@ confidence: "high"
 # skill_routing · 旨意分拣
 
 ## Overview
-对用户输入的旨意进行分类，判断应该走三省六部流程还是直接处理。
+对用户输入的旨意进行分类，判断应该走玄机阁流程还是直接处理。
 是太子 Agent 的核心 Skill。
 
 ## When to Use
@@ -827,13 +827,13 @@ roles/
 ```yaml
 ---
 name: "jiheng"
-role_name: "尚书省"
-department: "三省"
+role_name: "调度"
+department: "协调层"
 version: "4"
 created_at: "2026-05-09T00:00:00Z"
 updated_at: "2026-05-09T12:00:00Z"
 
-description: "从Skill库和Role库检索最优组合，派发给六部执行，汇总结果"
+description: "从Skill库和Role库检索最优组合，派发给执行层执行，汇总结果"
 
 # Skill依赖声明
 skills:
@@ -846,14 +846,14 @@ skills:
 # Role协作关系
 collaborates_with:
   upstream:           # 上游（流程前置角色）
-    - jiheng       # 中书省
+    - jiheng       # 机衡
   downstream:        # 下游（执行后汇总）
-    - xingce         # 刑部（质量审查）
+    - xingce         # 刑策（质量审查）
   consult:           # 咨询（不参与主流程）
-    - jiyan        # 吏部（Skill/Role查询）
+    - jiyan        # 机研（Skill/Role查询）
   parallel:          # 并行执行
-    - bingrong         # 兵部
-    - jizao         # 工部
+    - bingrong         # 兵戎
+    - jizao         # 技造
 
 # 执行统计
 stats:
@@ -875,13 +875,13 @@ constraints:
 capabilities:
   - "Skill库检索与派发"
   - "Role组合优化"
-  - "六部任务协调"
+  - "执行层任务协调"
   - "执行结果汇总"
 
 limitations:
   - "不直接执行具体业务"
-  - "不参与六部具体开发工作"
-  - "不绕过中书省直接接旨"
+  - "不参与执行层具体开发工作"
+  - "不绕过机衡直接接旨"
 
 # 进化历史
 evolution_history:
@@ -902,16 +902,16 @@ evolution_history:
   "total_roles": 12,
 
   "departments": {
-    "三省": ["chengzhi", "jiheng", "shenyi", "jiheng"],
-    "六部": ["jiyan", "shusuan", "bingrong", "jizao", "xingce", "diancang"],
+    "协调层": ["chengzhi", "jiheng", "shenyi", "jiheng"],
+    "执行层": ["jiyan", "shusuan", "bingrong", "jizao", "xingce", "diancang"],
     "特殊": ["morning", "qintian"]
   },
 
   "roles": [
     {
       "id": "jiheng",
-      "name": "尚书省",
-      "department": "三省",
+      "name": "调度",
+      "department": "协调层",
       "path": "roles/jiheng",
       "is_permanent": false,
       "version": "4",
@@ -930,7 +930,7 @@ def validate_role_skill_dependencies(role_id):
     """
     执行前校验：Role声明的required Skills是否都在Skill库中
 
-    在尚书省派发前调用（MENXIA审议阶段也做预检）
+    在调度派发前调用（MENXIA审议阶段也做预检）
     """
     role_meta = load_metadata(role_id)
     registry = load_skill_registry()
@@ -951,7 +951,7 @@ def validate_role_skill_dependencies(role_id):
 
 ---
 
-## 六、三省六部融合执行流程
+## 六、玄机阁融合执行流程
 
 ### 6.1 各部 Role × Skill 配置
 
@@ -979,19 +979,19 @@ def validate_role_skill_dependencies(role_id):
   L3: get_workflow_rules('routing')    → 路由规则
   → 输出：路由方向
 
-中书省（起草）
+机衡（起草）
   L1: query_similar_tasks(task_type)     → 类似方案历史
   L3: get_workflow_rules('planning')    → 起草规则
   → 查询Skill库：需要的Skill是否存在
   → 输出：方案草案
 
-门下省（审议）
-  L1: query_role_history('jiheng')     → 中书省历史表现
+审议（审议）
+  L1: query_role_history('jiheng')     → 机衡历史表现
   Skill预检：validate_role_skill_dependencies('jiheng')
   L3: get_workflow_rules('review')      → 审议规则
   → 输出：准奏/驳回
 
-尚书省（派发）
+调度（派发）
   L1: query_similar_tasks(task_type)     → 同类最优方案
   L2: get_all_skill_effectiveness()     → 各Skill评分
   L2: get_all_role_stats()              → 各Role统计
@@ -999,10 +999,10 @@ def validate_role_skill_dependencies(role_id):
   L3: get_axiom('001_efficiency_first') → 效率优先公理
   → 输出：派发决策
 
-六部（执行）
+执行层（执行）
   携带对应Skill → 执行 → 产出quality_score
 
-吏部（进化）
+机研（进化）
   L1: archive(task_record)              → 写入原始记录
   → 冲突检测 → 解决
   → L2: update_skill_stats()
@@ -1018,28 +1018,28 @@ def validate_role_skill_dependencies(role_id):
 
 │ 时间  │ 角色      │ 操作                         │ 检索/更新
 │ 11:36 │ 太子      │ 分拣旨意                     │ L1查询→同类型任务
-│       │           │ → 路由到中书省               │ 置信度0.85
+│       │           │ → 路由到机衡               │ 置信度0.85
 ├───────┼───────────┼──────────────────────────────┼─────────────────
-│ 11:36 │ 中书省    │ 起草扩展方案                 │ L1查询→类似方案
+│ 11:36 │ 机衡    │ 起草扩展方案                 │ L1查询→类似方案
 │       │           │ 查询Skill库：哪些Skill缺失    │ 现有12/目标100
-│       │           │ 提交门下省                   │ 需新增88个
+│       │           │ 提交审议                   │ 需新增88个
 ├───────┼───────────┼──────────────────────────────┼─────────────────
-│ 11:37 │ 门下省    │ 四维审议                     │ Skill可用性✓
+│ 11:37 │ 审议    │ 四维审议                     │ Skill可用性✓
 │       │           │ - 可行性：Skill标准已定义     │ 风险：中等
 │       │           │ - 完整性：可分批执行         │ 资源：需人力
 │       │           │ 准奏                         │
 ├───────┼───────────┼──────────────────────────────┼─────────────────
-│ 11:37 │ 尚书省    │ 检索Skill库                  │ L2查询→评分排序
+│ 11:37 │ 调度    │ 检索Skill库                  │ L2查询→评分排序
 │       │           │ - skill_domain_classify×    │ 选engineering优先
 │       │           │ 检索Role组合                 │ L2→jizao+shusuan协作好
-│       │           │ 派发：工部(主)+户部(数据)    │ 派发成功
+│       │           │ 派发：技造(主)+数算(数据)    │ 派发成功
 ├───────┼───────────┼──────────────────────────────┼─────────────────
-│ 11:38 │ 工部      │ 执行：批量创建Skill          │ 使用skill_domain_classify
-│ 11:38 │ 户部      │ 执行：数据分析支持           │ 使用skill_data_analysis
+│ 11:38 │ 技造      │ 执行：批量创建Skill          │ 使用skill_domain_classify
+│ 11:38 │ 数算      │ 执行：数据分析支持           │ 使用skill_data_analysis
 ├───────┼───────────┼──────────────────────────────┼─────────────────
 │ 11:40 │ 任务完成  │ EventBus.task.completed      │ quality=0.85(good)
 ├───────┼───────────┼──────────────────────────────┼─────────────────
-│ 11:40 │ 吏部      │ 归档L1                       │ 写入raw/good/
+│ 11:40 │ 机研      │ 归档L1                       │ 写入raw/good/
 │       │           │ 冲突检测→无矛盾              │
 │       │           │ 更新L2 Skill                 │ skill_domain_classify+1
 │       │           │ 更新L2 Role                 │ jizao.stats+1
@@ -1341,15 +1341,15 @@ class HealthMonitor:
 
 | Agent | 类型 | 职责 | 触发方式 |
 |-------|------|------|---------|
-| **吏部 Agent** | Permanent | 三库守护 + 进化执行 | EventBus + 定时 |
+| **机研 Agent** | Permanent | 三库守护 + 进化执行 | EventBus + 定时 |
 | **太子 Agent** | Permanent（可选） | 旨意分拣（替代Hermes内置分拣） | 消息入口 |
 
-### 8.2 吏部常驻进程
+### 8.2 机研常驻进程
 
 ```python
 #!/usr/bin/env python3
 """
-吏部 Agent 常驻进程
+机研 Agent 常驻进程
 
 职责：
 1. 监听 EventBus，响应任务完成事件
@@ -1380,7 +1380,7 @@ from engine.event_bus import EventBus
 
 class LibuAgent:
     """
-    吏部 Agent
+    机研 Agent
 
     三库守护者，进化引擎执行者
     """
@@ -1434,7 +1434,7 @@ class LibuAgent:
                 task_record['quality_score']
             )
 
-        print(f"[吏部] 任务 {task_record['task_id']} 归档完成，"
+        print(f"[机研] 任务 {task_record['task_id']} 归档完成，"
               f"质量 {task_record['quality_score']:.2f}")
 
     def on_task_failed(self, event):
@@ -1452,7 +1452,7 @@ class LibuAgent:
         report = self.health.check_all()
 
         if report['overall'] != 'ok':
-            print(f"[吏部⚠️] 系统健康度: {report['overall']}")
+            print(f"[机研⚠️] 系统健康度: {report['overall']}")
             for alert in report['alerts']:
                 print(f"  - [{alert['level']}] {alert['message']}")
 
@@ -1470,7 +1470,7 @@ class LibuAgent:
     def run(self):
         """主循环"""
         self.running = True
-        print(f"[吏部] 常驻进程启动，轮询间隔 {self.poll_interval}s")
+        print(f"[机研] 常驻进程启动，轮询间隔 {self.poll_interval}s")
 
         while self.running:
             # 1. 轮询EventBus
@@ -1486,12 +1486,12 @@ class LibuAgent:
 
     def stop(self):
         self.running = False
-        print("[吏部] 常驻进程停止")
+        print("[机研] 常驻进程停止")
 
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser(description='吏部 Agent 常驻进程')
+    parser = argparse.ArgumentParser(description='机研 Agent 常驻进程')
     parser.add_argument('--poll-interval', type=int, default=5,
                         help='EventBus轮询间隔（秒）')
     parser.add_argument('--health-interval', type=int, default=3600,
@@ -1516,7 +1516,7 @@ if __name__ == '__main__':
 ```
 职责：
 - 任务创建、状态流转、进度追踪
-- 与三省六部流程绑定
+- 与玄机阁流程绑定
 - 产出任务记录供L1归档
 
 状态机：
@@ -1584,7 +1584,7 @@ hermestrix/
 │
 ├── agents/                     # Agent实现
 │   └── permanent/
-│       └── diancang_agent.py      # 吏部常驻进程
+│       └── diancang_agent.py      # 机研常驻进程
 │
 ├── three_libs/                 # 三库（持久化）
 │   ├── memory/
@@ -1617,7 +1617,7 @@ hermestrix/
 
 ### Phase 1：核心骨架（Week 1）
 
-**目标：三省六部 + Skill/Role/Memory 融合闭环跑通**
+**目标：玄机阁 + Skill/Role/Memory 融合闭环跑通**
 
 #### Day 1-2：记忆系统v2
 
@@ -1661,15 +1661,15 @@ hermestrix/
 □ 定义 METADATA.yaml 格式
 □ 开发3个核心Skill：
   - skill_routing（太子用）
-  - skill_skill_routing（尚书省用）
-  - skill_role_dispatch（尚书省用）
+  - skill_skill_routing（调度用）
+  - skill_role_dispatch（调度用）
 □ 为每个Skill编写 scripts/ 工具
 □ 实现 skill_cli.py
 □ 创建 skills/registry.json
 □ 实现 skill_manager.py（SkillManager类）
 ```
 
-#### Day 5：Role库v2 + 三省六部融合
+#### Day 5：Role库v2 + 玄机阁融合
 
 ```
 □ 定义 METADATA.yaml 格式
@@ -1684,7 +1684,7 @@ hermestrix/
 
 ### Phase 2：进化闭环（Week 2）
 
-**目标：进化验证 + 健康监控 + 吏部常驻进程**
+**目标：进化验证 + 健康监控 + 机研常驻进程**
 
 ```
 □ 实现 EvolutionVerifier
@@ -1696,7 +1696,7 @@ hermestrix/
   - 记录任务依赖链
   - AB测试对比
 
-□ 实现吏部常驻进程 diancang_agent.py
+□ 实现机研常驻进程 diancang_agent.py
   - EventBus 监听
   - 定时健康检查
   - 定时衰减管理
@@ -1784,7 +1784,7 @@ hermestrix/
 ```
 □ EvolutionVerifier 验证/回滚正常工作
 □ 健康监控检测到异常时告警
-□ 吏部常驻进程稳定运行
+□ 机研常驻进程稳定运行
 □ 端到端：完成任务 → 30秒内L2更新 → 下次检索生效
 ```
 
