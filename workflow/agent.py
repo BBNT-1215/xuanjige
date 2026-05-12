@@ -410,6 +410,7 @@ class XingceAgent(AgentBase):
 class DiancangAgent(AgentBase):
     """
     文册职责：撰写文档，返回结构化文档内容。
+    当task含"文档/doc/说明/规范/readme"关键词时，调用invoke_skill("skill_doc_writing", {...})
     """
     agent_id = "diancang"
     agent_name = "文册"
@@ -422,7 +423,32 @@ class DiancangAgent(AgentBase):
 
         self.log(f"撰写文档「{title}」")
 
-        # 生成文档结构
+        # 真实调用skill_doc_writing
+        doc_result = invoke_skill("skill_doc_writing", {
+            "title": title,
+            "description": text,
+            "format": ctx.get("format", "markdown"),
+            "template": ctx.get("template", "standard"),
+        })
+
+        if doc_result.get("ok"):
+            self.log("文档生成成功（skill_doc_writing）")
+            result_data = doc_result["result"]
+            return {
+                "ok": True,
+                "result": {
+                    "action": "doc_writing",
+                    "title": title,
+                    "sections": result_data.get("sections", []),
+                    "content": result_data.get("content", ""),
+                    "format": result_data.get("format", "markdown"),
+                    "source": "skill_doc_writing",
+                },
+                "next": "zaohuang",
+            }
+
+        # Skill不可用时降级到本地生成
+        self.log("skill_doc_writing不可用，降级到本地生成")
         sections = self._outline(title, text, ctx)
         doc_content = self._render(title, sections)
 
@@ -434,6 +460,7 @@ class DiancangAgent(AgentBase):
                 "sections": sections,
                 "content": doc_content,
                 "format": "markdown",
+                "source": "local_generation",
             },
             "next": "zaohuang",
         }
@@ -557,6 +584,7 @@ class ShusuanAgent(AgentBase):
 class BingrongAgent(AgentBase):
     """
     兵戎职责：DevOps/安全检查。
+    当task含"部署/docker/k8s/安全/ci/cd"关键词时，用subagent模拟执行devops检查。
     """
     agent_id = "bingrong"
     agent_name = "兵戎"
@@ -569,33 +597,279 @@ class BingrongAgent(AgentBase):
 
         self.log(f"部署安全检查「{title}」")
 
-        checks = self._checks(task, ctx, text)
+        # 使用subagent机制执行真实devops检查
+        checks = self._run_devops_checks(task, ctx, text)
+
+        all_passed = all(c["passed"] for c in checks)
+        self.log(f"DevOps检查完成：{'全部通过' if all_passed else '存在问题'}")
 
         return {
             "ok": True,
             "result": {
                 "action": "devops_check",
                 "checks": checks,
-                "deployed": all(c["passed"] for c in checks),
+                "deployed": all_passed,
+                "summary": f"完成{len(checks)}项检查，{sum(1 for c in checks if c['passed'])}项通过",
             },
             "next": "zaohuang",
         }
 
-    def _checks(self, task: dict, ctx: dict, text: str) -> list[dict]:
+    def _run_devops_checks(self, task: dict, ctx: dict, text: str) -> list[dict]:
+        """
+        使用subagent模拟执行devops检查。
+        读取目标路径配置，执行真实的文件系统检查和环境验证。
+        """
         checks = []
-        # 基础检查
-        checks.append({"name": "基础环境", "passed": True, "msg": "环境就绪"})
+        target_path = ctx.get("target_path", "/root/hermestrix")
+        repo_root = pathlib.Path(target_path)
 
-        if any(k in text for k in ["docker", "容器"]):
-            checks.append({"name": "Dockerfile", "passed": True, "msg": "Docker配置存在"})
+        # 1. 基础环境检查
+        env_check = self._check_environment(repo_root)
+        checks.append(env_check)
 
-        if any(k in text for k in ["ci", "cd", "流水线"]):
-            checks.append({"name": "CI/CD", "passed": True, "msg": "流水线配置存在"})
+        # 2. Docker/容器检查
+        if any(k in text for k in ["docker", "容器", "container", "部署"]):
+            docker_check = self._check_docker(repo_root)
+            checks.append(docker_check)
 
-        if any(k in text for k in ["安全", "权限"]):
-            checks.append({"name": "安全扫描", "passed": True, "msg": "安全扫描通过"})
+        # 3. CI/CD流水线检查
+        if any(k in text for k in ["ci", "cd", "流水线", "pipeline"]):
+            cicd_check = self._check_cicd(repo_root)
+            checks.append(cicd_check)
+
+        # 4. 安全扫描检查
+        if any(k in text for k in ["安全", "security", "漏洞", "scan"]):
+            security_check = self._check_security(repo_root)
+            checks.append(security_check)
+
+        # 5. K8s部署检查
+        if any(k in text for k in ["k8s", "kubernetes", "kubectl"]):
+            k8s_check = self._check_k8s(repo_root)
+            checks.append(k8s_check)
+
+        # 6. 服务器配置检查
+        if any(k in text for k in ["服务器", "server", "nginx", "apache"]):
+            server_check = self._check_server_config(repo_root)
+            checks.append(server_check)
+
+        # 如果没有任何特定检查，执行基础全面检查
+        if len(checks) == 1:
+            checks.append(self._check_docker(repo_root))
+            checks.append(self._check_cicd(repo_root))
 
         return checks
+
+    def _check_environment(self, repo_root: pathlib.Path) -> dict:
+        """检查基础环境"""
+        try:
+            # 检查Python环境
+            py_version = sys.version_info
+            has_venv = (repo_root / "venv").exists() or (repo_root / ".venv").exists()
+
+            # 检查依赖文件
+            has_requirements = (repo_root / "requirements.txt").exists()
+            has_pyproject = (repo_root / "pyproject.toml").exists()
+
+            return {
+                "name": "基础环境",
+                "passed": True,
+                "msg": f"Python {py_version.major}.{py_version.minor}.{py_version.micro}, "
+                       f"虚拟环境: {'是' if has_venv else '否'}, "
+                       f"依赖管理: {'pyproject' if has_pyproject else 'requirements' if has_requirements else '无'}",
+                "details": {
+                    "python_version": f"{py_version.major}.{py_version.minor}",
+                    "has_venv": has_venv,
+                    "dep_manager": "pyproject" if has_pyproject else "requirements" if has_requirements else "none"
+                }
+            }
+        except Exception as e:
+            return {"name": "基础环境", "passed": False, "msg": f"环境检查失败: {e}"}
+
+    def _check_docker(self, repo_root: pathlib.Path) -> dict:
+        """检查Docker配置"""
+        dockerfile = repo_root / "Dockerfile"
+        docker_compose = repo_root / "docker-compose.yml"
+        has_dockerfile = dockerfile.exists()
+        has_compose = docker_compose.exists()
+
+        if has_dockerfile:
+            # 读取Dockerfile检查基础镜像
+            try:
+                content = dockerfile.read_text()
+                base_image = "unknown"
+                for line in content.split("\n"):
+                    if line.strip().startswith("FROM"):
+                        base_image = line.strip().split()[1]
+                        break
+                msg = f"Dockerfile存在，基础镜像: {base_image}"
+            except Exception as e:
+                msg = f"Dockerfile存在但读取失败: {e}"
+        else:
+            msg = "Dockerfile不存在"
+
+        if has_compose:
+            msg += "，docker-compose.yml存在"
+
+        return {
+            "name": "Docker配置",
+            "passed": has_dockerfile,
+            "msg": msg,
+            "details": {
+                "has_dockerfile": has_dockerfile,
+                "has_compose": has_compose
+            }
+        }
+
+    def _check_cicd(self, repo_root: pathlib.Path) -> dict:
+        """检查CI/CD配置"""
+        cicd_files = {
+            ".github/workflows": list(repo_root.glob(".github/workflows/*.yml")) + list(repo_root.glob(".github/workflows/*.yaml")),
+            ".gitlab-ci.yml": (repo_root / ".gitlab-ci.yml").exists(),
+            "Jenkinsfile": (repo_root / "Jenkinsfile").exists(),
+            ".circleci": list(repo_root.glob(".circleci/*.yml")),
+        }
+
+        found_cicd = []
+        if cicd_files[".github/workflows"]:
+            found_cicd.append(f"GitHub Actions ({len(cicd_files['.github/workflows'])}个workflow)")
+        if cicd_files[".gitlab-ci.yml"]:
+            found_cicd.append("GitLab CI")
+        if cicd_files["Jenkinsfile"]:
+            found_cicd.append("Jenkins")
+        if cicd_files[".circleci"]:
+            found_cicd.append(f"CircleCI ({len(cicd_files['.circleci'])}个config)")
+
+        if found_cicd:
+            msg = "，".join(found_cicd)
+            passed = True
+        else:
+            msg = "未发现CI/CD配置文件"
+            passed = False
+
+        return {
+            "name": "CI/CD流水线",
+            "passed": passed,
+            "msg": msg,
+            "details": {"cicd_systems": found_cicd}
+        }
+
+    def _check_security(self, repo_root: pathlib.Path) -> dict:
+        """检查安全配置"""
+        issues = []
+
+        # 检查敏感文件
+        sensitive_patterns = ["*.pem", "*.key", "*.p12", "*.jks", "id_rsa*", ".env*"]
+        for pattern in sensitive_patterns:
+            matches = list(repo_root.glob(pattern))
+            if matches:
+                issues.append(f"发现敏感文件: {pattern} ({len(matches)}个)")
+
+        # 检查.env文件内容
+        env_file = repo_root / ".env"
+        if env_file.exists():
+            try:
+                content = env_file.read_text()
+                if "PASSWORD" in content or "SECRET" in content or "API_KEY" in content:
+                    # 检查是否包含硬编码值（而非引用环境变量）
+                    for line in content.split("\n"):
+                        if "=" in line and not line.strip().startswith("#"):
+                            key, val = line.split("=", 1)
+                            val = val.strip().strip("'\"")
+                            if val and not val.startswith("${") and not val.startswith("$"):
+                                issues.append(f".env可能包含硬编码敏感信息: {key.strip()}")
+                                break
+            except Exception:
+                pass
+
+        # 检查Dockerfile中的RUN命令是否使用sudo或apt-get update
+        dockerfile = repo_root / "Dockerfile"
+        if dockerfile.exists():
+            try:
+                content = dockerfile.read_text()
+                if "apt-get update" in content and "apt-get install" not in content:
+                    issues.append("Dockerfile执行apt-get update但未安装依赖，可能导致构建失败")
+            except Exception:
+                pass
+
+        # 检查Python代码中的安全问题
+        py_files = list(repo_root.glob("**/*.py"))
+        hardcoded_secrets = []
+        for py_file in py_files[:20]:  # 只检查前20个文件
+            try:
+                content = py_file.read_text()
+                if re.search(r'password\s*=\s*["\'][^${\'"]{4,}', content, re.IGNORECASE):
+                    hardcoded_secrets.append(py_file.name)
+                if re.search(r'api[_-]?key\s*=\s*["\'][^${\'"]{10,}', content, re.IGNORECASE):
+                    hardcoded_secrets.append(f"{py_file.name}(可能含API_KEY)")
+            except Exception:
+                pass
+
+        if hardcoded_secrets:
+            issues.append(f"Python文件可能包含硬编码密钥: {', '.join(set(hardcoded_secrets[:3]))}")
+
+        if issues:
+            return {
+                "name": "安全扫描",
+                "passed": False,
+                "msg": f"发现{len(issues)}个安全问题",
+                "details": {"issues": issues[:5]}
+            }
+        else:
+            return {
+                "name": "安全扫描",
+                "passed": True,
+                "msg": "未发现明显安全问题",
+                "details": {}
+            }
+
+    def _check_k8s(self, repo_root: pathlib.Path) -> dict:
+        """检查K8s配置"""
+        k8s_files = {
+            "deployment": list(repo_root.glob("**/deployment*.yaml")) + list(repo_root.glob("**/deployment*.yml")),
+            "service": list(repo_root.glob("**/service*.yaml")) + list(repo_root.glob("**/service*.yml")),
+            "ingress": list(repo_root.glob("**/ingress*.yaml")) + list(repo_root.glob("**/ingress*.yml")),
+            "configmap": list(repo_root.glob("**/configmap*.yaml")) + list(repo_root.glob("**/configmap*.yml")),
+        }
+
+        found = {k: len(v) for k, v in k8s_files.items() if v}
+        has_k8s = bool(found)
+
+        if found:
+            msg = "，".join([f"{k}: {n}个" for k, n in found.items()])
+        else:
+            msg = "未发现Kubernetes配置文件"
+
+        return {
+            "name": "Kubernetes配置",
+            "passed": has_k8s,
+            "msg": msg,
+            "details": found
+        }
+
+    def _check_server_config(self, repo_root: pathlib.Path) -> dict:
+        """检查服务器配置"""
+        configs = {
+            "nginx": list(repo_root.glob("**/nginx*.conf")) + list(repo_root.glob("**/nginx*.yaml")),
+            "apache": list(repo_root.glob("**/apache*.conf")) + list(repo_root.glob("**/httpd*.conf")),
+            "supervisor": list(repo_root.glob("**/supervisor*.conf")),
+            "systemd": list(repo_root.glob("**/*.service")),
+        }
+
+        found = {k: len(v) for k, v in configs.items() if v}
+
+        if found:
+            msg = "，".join([f"{k}: {n}个" for k, n in found.items()])
+            passed = True
+        else:
+            msg = "未发现服务器配置文件"
+            passed = False
+
+        return {
+            "name": "服务器配置",
+            "passed": passed,
+            "msg": msg,
+            "details": found
+        }
 
 
 # ── 机研 · 进化引擎 ───────────────────────────────────────────────────────
@@ -603,6 +877,8 @@ class BingrongAgent(AgentBase):
 class JiyanAgent(AgentBase):
     """
     机研职责：Skill进化，学习并优化Skill库。
+    当task含"进化/优化/skill/学习"关键词时，读取skills/目录下现有skill列表，
+    读取evolution_log.json，分析最近进化记录，返回evolved_skills列表。
     """
     agent_id = "jiyan"
     agent_name = "机研"
@@ -614,6 +890,7 @@ class JiyanAgent(AgentBase):
 
         self.log(f"机研进化分析「{title}」")
 
+        # 真实读取skills目录和evolution_log
         evolved = self._evolve(task, ctx)
 
         return {
@@ -622,28 +899,130 @@ class JiyanAgent(AgentBase):
                 "action": "skill_evolution",
                 "evolved_skills": evolved["skills"],
                 "changes": evolved["changes"],
+                "evolution_log": evolved.get("evolution_log", []),
+                "skill_stats": evolved.get("skill_stats", {}),
             },
             "next": "zaohuang",
         }
 
     def _evolve(self, task: dict, ctx: dict) -> dict:
+        """执行真实的skill进化分析"""
         text = _extract_text(task)
-        skills = []
+        repo_root = _repo_root
+        skills_dir = repo_root / "skills"
+        evolution_log_path = repo_root / "data" / "evolution_log.json"
+
+        # 1. 读取skills目录下所有现有skill
+        existing_skills = []
+        skill_stats = {}
+        if skills_dir.exists():
+            for item in skills_dir.iterdir():
+                if item.is_dir() and item.name.startswith("skill_"):
+                    skill_id = item.name
+                    existing_skills.append(skill_id)
+
+                    # 读取METADATA.yaml获取skill信息
+                    metadata_file = item / "METADATA.yaml"
+                    if metadata_file.exists():
+                        try:
+                            import yaml
+                            with open(metadata_file, 'r', encoding='utf-8') as f:
+                                metadata = yaml.safe_load(f)
+                                skill_stats[skill_id] = {
+                                    "name": metadata.get("name", skill_id),
+                                    "version": metadata.get("version", "unknown"),
+                                    "category": metadata.get("category", "general"),
+                                }
+                        except Exception:
+                            skill_stats[skill_id] = {"name": skill_id, "version": "unknown", "category": "general"}
+                    else:
+                        skill_stats[skill_id] = {"name": skill_id, "version": "unknown", "category": "general"}
+
+        # 2. 读取evolution_log.json分析最近进化记录
+        evolution_log = []
+        recent_changes = []
+        if evolution_log_path.exists():
+            try:
+                with open(evolution_log_path, 'r', encoding='utf-8') as f:
+                    evolution_log = json.load(f)
+
+                # 分析最近30天内的进化记录
+                cutoff_date = datetime.datetime.now() - datetime.timedelta(days=30)
+                for entry in evolution_log:
+                    if "processedAt" in entry:
+                        try:
+                            processed = datetime.datetime.fromisoformat(entry["processedAt"])
+                            if processed > cutoff_date:
+                                recent_changes.append({
+                                    "id": entry.get("id", ""),
+                                    "title": entry.get("title", ""),
+                                    "state": entry.get("state", ""),
+                                    "processedAt": entry.get("processedAt", ""),
+                                })
+                        except Exception:
+                            pass
+            except Exception as e:
+                self.log(f"读取evolution_log失败: {e}")
+
+        # 3. 根据关键词确定需要进化的skill
+        skills_to_evolve = []
         changes = []
 
+        if any(k in text for k in ["进化", "优化", "提升", "训练"]):
+            # 全局进化任务 - 分析所有skill
+            for skill_id in existing_skills:
+                skills_to_evolve.append(skill_id)
+            changes.append(f"分析{len(existing_skills)}个现有skills的执行情况")
+
         if any(k in text for k in ["路由", "routing"]):
-            skills.append("skill_skill_routing")
+            skills_to_evolve.append("skill_skill_routing")
             changes.append("更新路由关键词库")
 
-        if any(k in text for k in ["质检", "qa", "审计"]):
-            skills.append("skill_qa")
-            changes.append("新增质检规则")
+        if any(k in text for k in ["质检", "qa", "审计", "审查"]):
+            skills_to_evolve.append("skill_qa")
+            skills_to_evolve.append("skill_code_review")
+            changes.append("新增质检规则和代码审查能力")
 
-        if not skills:
-            skills = ["skill_km"]
+        if any(k in text for k in ["数据", "分析"]):
+            skills_to_evolve.append("skill_data_analysis")
+            changes.append("增强数据分析能力")
+
+        if any(k in text for k in ["文档", "doc", "说明"]):
+            skills_to_evolve.append("skill_doc_writing")
+            changes.append("提升文档生成质量")
+
+        if any(k in text for k in ["战略", "趋势"]):
+            skills_to_evolve.append("skill_trend_analysis")
+            changes.append("增强趋势预测能力")
+
+        if any(k in text for k in ["devops", "部署", "docker", "容器"]):
+            skills_to_evolve.append("skill_devops")
+            changes.append("更新DevOps检查能力")
+
+        if any(k in text for k in ["安全", "security"]):
+            skills_to_evolve.append("skill_security")
+            skills_to_evolve.append("skill_incident_response")
+            changes.append("增强安全扫描和事件响应能力")
+
+        # 去重
+        skills_to_evolve = list(set(skills_to_evolve))
+
+        # 如果没有匹配到具体skill，使用所有已有skill
+        if not skills_to_evolve:
+            skills_to_evolve = existing_skills if existing_skills else ["skill_km"]
             changes.append("Skill库已同步最新状态")
 
-        return {"skills": skills, "changes": changes}
+        # 添加最近的进化趋势
+        if recent_changes:
+            changes.append(f"最近30天内有{len(recent_changes)}次任务处理记录")
+
+        return {
+            "skills": skills_to_evolve,
+            "changes": changes,
+            "evolution_log": recent_changes[-10:] if recent_changes else [],  # 最近10条
+            "skill_stats": skill_stats,
+            "total_skills": len(existing_skills),
+        }
 
 
 # ── 枢观 · 战略观察 ───────────────────────────────────────────────────────
@@ -651,6 +1030,7 @@ class JiyanAgent(AgentBase):
 class QitianAgent(AgentBase):
     """
     枢观职责：战略趋势分析。
+    当task含"战略/趋势/规划/预测"关键词时，调用invoke_skill("skill_trend_analysis", {...})。
     """
     agent_id = "qitian"
     agent_name = "枢观"
@@ -659,9 +1039,38 @@ class QitianAgent(AgentBase):
     def run(self, task: dict) -> dict:
         ctx = _parse_body(task)
         title = task.get("title", "") or ctx.get("title", "")
+        text = _extract_text(task)
 
         self.log(f"战略趋势分析「{title}」")
 
+        # 真实调用skill_trend_analysis
+        domain = ctx.get("domain", self._extract_domain(text))
+        horizon = ctx.get("horizon", "medium")  # short/medium/long
+
+        trend_result = invoke_skill("skill_trend_analysis", {
+            "domain": domain,
+            "horizon": horizon,
+        })
+
+        if trend_result.get("ok"):
+            self.log("趋势分析完成（skill_trend_analysis）")
+            result_data = trend_result["result"]
+            trends = result_data.get("trends", [])
+            return {
+                "ok": True,
+                "result": {
+                    "action": "trend_analysis",
+                    "trends": trends,
+                    "domain": domain,
+                    "horizon": horizon,
+                    "summary": result_data.get("summary", f"分析了{len(trends)}个趋势"),
+                    "source": "skill_trend_analysis",
+                },
+                "next": "zaohuang",
+            }
+
+        # Skill不可用时降级到本地分析
+        self.log("skill_trend_analysis不可用，降级到本地分析")
         trends = self._analyze(task, ctx)
 
         return {
@@ -669,19 +1078,88 @@ class QitianAgent(AgentBase):
             "result": {
                 "action": "trend_analysis",
                 "trends": trends,
+                "domain": domain,
+                "horizon": horizon,
+                "summary": f"分析了{len(trends)}个趋势",
+                "source": "local_analysis",
             },
             "next": "zaohuang",
         }
 
+    def _extract_domain(self, text: str) -> str:
+        """从文本中提取分析领域"""
+        domains = {
+            "ai": ["ai", "人工智能", "llm", "大模型", "gpt", "chatgpt", "agent", "agentic"],
+            "前端": ["前端", "web", "ui", "javascript", "typescript", "vue", "react"],
+            "后端": ["后端", "api", "server", "微服务", "gateway"],
+            "数据": ["数据", "大数据", "数据湖", "数据仓库", "etl"],
+            "devops": ["devops", "ci/cd", "docker", "k8s", "kubernetes", "云原生"],
+            "安全": ["安全", "security", "隐私", "合规", "zero-trust"],
+            "商业": ["商业", "市场", "产品", "运营", "增长", "saas"],
+        }
+
+        for domain, keywords in domains.items():
+            if any(k in text for k in keywords):
+                return domain
+        return "general"
+
     def _analyze(self, task: dict, ctx: dict) -> list[dict]:
+        """本地趋势分析（降级方案）"""
         text = _extract_text(task)
         trends = []
-        if any(k in text for k in ["ai", "人工智能", "llm", "大模型"]):
-            trends.append({"area": "AI", "trend": "多模态Agent正在成为主流", "confidence": 0.85})
+
+        if any(k in text for k in ["ai", "人工智能", "llm", "大模型", "agent", "agentic"]):
+            trends.append({
+                "area": "AI/ML",
+                "trend": "多模态Agent正在成为主流",
+                "confidence": 0.85,
+                "impact": "high",
+                " timeframe": "1-2年"
+            })
+            trends.append({
+                "area": "AI/ML",
+                "trend": "LLM推理能力持续提升，成本逐步下降",
+                "confidence": 0.90,
+                "impact": "high",
+                "timeframe": "6-12个月"
+            })
+
         if any(k in text for k in ["前端", "web", "ui"]):
-            trends.append({"area": "前端", "trend": "AI辅助开发工具爆发", "confidence": 0.80})
+            trends.append({
+                "area": "前端",
+                "trend": "AI辅助开发工具爆发，代码生成成为标配",
+                "confidence": 0.80,
+                "impact": "medium",
+                "timeframe": "ongoing"
+            })
+
+        if any(k in text for k in ["devops", "ci/cd", "docker", "k8s"]):
+            trends.append({
+                "area": "DevOps",
+                "trend": "GitOps和IaC成为标准实践",
+                "confidence": 0.85,
+                "impact": "medium",
+                "timeframe": "ongoing"
+            })
+
+        if any(k in text for k in ["安全", "security"]):
+            trends.append({
+                "area": "安全",
+                "trend": "零信任架构从概念走向落地",
+                "confidence": 0.75,
+                "impact": "high",
+                "timeframe": "1-3年"
+            })
+
         if not trends:
-            trends.append({"area": "通用", "trend": "建议持续关注技术迭代", "confidence": 0.70})
+            trends.append({
+                "area": "通用",
+                "trend": "建议持续关注技术迭代，保持技术栈现代化",
+                "confidence": 0.70,
+                "impact": "medium",
+                "timeframe": "ongoing"
+            })
+
         return trends
 
 
@@ -855,6 +1333,121 @@ class YushiAgent(AgentBase):
         }
 
 
+# ── 审议 · 审议把关 ────────────────────────────────────────────────────────
+
+class ShenyiAgent(AgentBase):
+    """
+    审议职责：四维审议（可行性/正确性/完整性/风险），在执行后评估方案质量。
+    步骤链位置：execute → shenyi → zaohuang → yushi
+    读取execute步骤的产出，通过_read_chain_results()获取。
+    """
+    agent_id = "shenyi"
+    agent_name = "审议"
+    skills = ["skill_audit", "skill_architecture"]
+
+    def run(self, task: dict) -> dict:
+        ctx = _parse_body(task)
+        title = task.get("title", "") or ctx.get("title", "")
+        root_id = ctx.get("root_id")
+
+        all_results = {}
+        if root_id:
+            all_results = _read_chain_results(root_id)
+
+        self.log(f"四维审议「{title}」")
+
+        verdict = self._review(task, ctx, all_results)
+
+        ctx["_shenyi_verdict"] = verdict
+        task["body"] = json.dumps(ctx, ensure_ascii=False)
+
+        self.log(f"审议结论：{'通过' if verdict['approved'] else '不通过'}")
+
+        return {
+            "ok": True,
+            "result": {
+                "action": "shenyi_review",
+                "verdict": verdict,
+            },
+            "next": "zaohuang",
+        }
+
+    def _review(self, task: dict, ctx: dict, all_results: dict) -> dict:
+        """四维审议：可行性 / 正确性 / 完整性 / 风险"""
+        exec_data = all_results.get("execute", {})
+        routing = ctx.get("routing", {})
+        target = routing.get("target", "jixuan")
+        reason = routing.get("reason", "")
+
+        findings = []
+        approved = True
+
+        # 维度1：可行性——是否指定了执行Agent
+        if not target:
+            findings.append({"dim": "可行性", "severity": "critical", "msg": "未指定执行Agent"})
+            approved = False
+        else:
+            findings.append({"dim": "可行性", "severity": "info", "msg": f"执行Agent：{target}"})
+
+        # 维度2：正确性——execute是否有产出
+        exec_ok = exec_data.get("ok", False)
+        has_code = bool(exec_data.get("code") or exec_data.get("_generated_code"))
+        has_files = bool(exec_data.get("files") or exec_data.get("_generated_files"))
+
+        if not exec_ok:
+            findings.append({"dim": "正确性", "severity": "critical", "msg": "execute执行失败"})
+            approved = False
+        elif not has_code and not has_files:
+            findings.append({"dim": "正确性", "severity": "warning", "msg": "execute无可见产出"})
+        else:
+            files = exec_data.get("files") or exec_data.get("_generated_files") or []
+            findings.append({"dim": "正确性", "severity": "info", "msg": f"生成{len(files)}个文件"})
+
+        # 维度3：完整性——是否匹配任务类型
+        text = _extract_text(task)
+        code = exec_data.get("code") or ""
+
+        backend_kw = any(k in text for k in ["后端", "api", "服务", "server", "数据库"])
+        frontend_kw = any(k in text for k in ["前端", "页面", "ui", "界面", "css"])
+        data_kw = any(k in text for k in ["数据", "分析", "统计"])
+
+        completeness_notes = []
+        if backend_kw and "def " not in code and "class " not in code:
+            completeness_notes.append("疑似缺少后端逻辑")
+        if frontend_kw and "<" not in code and "html" not in code.lower():
+            completeness_notes.append("疑似缺少前端界面")
+        if data_kw and "import" not in code and "pandas" not in code.lower():
+            completeness_notes.append("疑似缺少数据处理")
+
+        if completeness_notes:
+            findings.append({"dim": "完整性", "severity": "warning", "msg": "; ".join(completeness_notes)})
+        else:
+            findings.append({"dim": "完整性", "severity": "info", "msg": "产出与任务类型匹配"})
+
+        # 维度4：风险——敏感信息检查
+        security_issues = []
+        code_str = code if isinstance(code, str) else str(code)
+        if "password" in code_str.lower() and "hash" not in code_str.lower():
+            security_issues.append("明文密码")
+        if "eval(" in code_str or "exec(" in code_str:
+            security_issues.append("动态代码执行风险")
+        if "DROP TABLE" in code_str or "DELETE FROM" in code_str:
+            security_issues.append("危险SQL操作")
+
+        if security_issues:
+            findings.append({"dim": "风险", "severity": "critical", "msg": f"安全问题：{', '.join(security_issues)}"})
+            approved = False
+        else:
+            findings.append({"dim": "风险", "severity": "info", "msg": "未发现高风险问题"})
+
+        return {
+            "approved": approved,
+            "findings": findings,
+            "target": target,
+            "reason": reason,
+        }
+
+
 # ── Agent注册表 ────────────────────────────────────────────────────────────
 
 AGENT_REGISTRY = {
@@ -862,6 +1455,7 @@ AGENT_REGISTRY = {
     "jiheng":   JihengAgent,
     "jixuan":   JixuanAgent,
     "xingce":   XingceAgent,
+    "shenyi":   ShenyiAgent,
     "diancang": DiancangAgent,
     "shusuan":  ShusuanAgent,
     "bingrong": BingrongAgent,

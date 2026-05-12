@@ -5,177 +5,72 @@
 </p>
 
 <p align="center">
-  基于玄机阁框架 · Skill × Role 双库进化 · 三层记忆系统 · 健康实时自愈
+  基于三省六部制 · Skill × Role 双库进化 · 制度性审核 · 断点自愈
 </p>
 
 <p align="center">
-  <a href="#-架构">🏛️ 架构</a> ·
-  <a href="#-快速开始">🚀 快速开始</a> ·
-  <a href="#-核心特性">✨ 特性</a> ·
-  <a href="#-项目结构">📁 结构</a> ·
-  <a href="#-玄机阁与玄机阁框架对照">⚖️ 对照</a>
+  <a href="#-快速开始"><img src="https://img.shields.io/badge/Python-3.10+-blue.svg" alt="Python"></a>
+  <a href="#-快速开始"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License"></a>
+  <a href="https://github.com/BBNT-1215/xuanjige/stargazers"><img src="https://img.shields.io/github/stars/BBNT-1215/xuanjige?style=flat" alt="Stars"></a>
+  <a href="https://github.com/BBNT-1215/xuanjige/issues"><img src="https://img.shields.io/github/issues/BBNT-1215/xuanjige" alt="Issues"></a>
 </p>
 
 ---
 
-## 🙏 致谢
+## 🏛️ 一句话介绍
 
-**本项目直接受 [cft0808/edict](https://github.com/cft0808/edict)（15.7k ⭐）启发**—— edict 是目前最完整的玄机阁框架 AI Agent 实现，奠定了"制度性审核 + 实时看板"的核心范式。本项目在 edict 基础上进行 Hermes Agent 原生适配，并新增断点自愈、三库分离、进化闭环等工程实践。
-
-设计参考：
-- [cft0808/edict](https://github.com/cft0808/edict) — 玄机阁框架完整实现
-- [agent-governance-design skill](https://github.com/lijigang/ljg-skills) — 玄机阁框架方法论沉淀
+> 玄机阁是一套**制度驱动的 AI Agent 协作操作系统**——借鉴 1400 年前三省六部的制度智慧，让 AI Agent 协作从"自由聊天"进化为"制度化运转"，实现可量化、可审计、可进化的自我进化体系。
 
 ---
 
-## 🤔 为什么是玄机阁？
+## ✨ 核心差异化对比
 
-大多数 Multi-Agent 框架的套路是：
-
-> *"来，你们几个 AI 自己聊，聊完把结果给我。"*
-
-然后你拿到一坨不知道经过了什么处理的结果，无法复现，无法审计，无法干预。
-
-**玄机阁的思路完全不同** —— 我们在存在 1400 年的玄机阁框架度上，为 AI Agent 加上了可量化、可进化、可自愈的记忆与调度系统：
-
-```
-用户 → 太子(分拣) → 机衡(规划) → 审议(审核) → 调度(派发) → 执行层(执行)
-                                                          ↓
-                                                    玄机阁进化引擎
-                                                    Skill库 · Role库
-                                                    健康监控 · 衰减管理
-```
-
-这不是花哨的 metaphor，这是**真正的分权制衡 + 系统进化**：
-
-| | CrewAI | MetaGPT | AutoGen | **玄机阁** |
+| 特性 | CrewAI | AutoGen | MetaGPT | **玄机阁** |
 |:---:|:---:|:---:|:---:|:---:|
-| **制度性审核** | ❌ | ⚠️ | ⚠️ | **✅ 审议专职·可封驳** |
-| **Skill进化闭环** | ❌ | ❌ | ❌ | **✅ 量化评分·自动验证** |
-| **Role进化闭环** | ❌ | ❌ | ❌ | **✅ 质量追踪·动态更新** |
-| **健康实时监控** | ❌ | ❌ | ❌ | **✅ 六维度自动告警** |
+| **制度性审核** | ❌ | ⚠️ 基础 | ⚠️ 基础 | **✅ 专职审议·可封驳** |
+| **真实 Skill 执行** | ⚠️ LLM调用 | ⚠️ LLM调用 | ⚠️ LLM调用 | **✅ 可进化技能卡片** |
+| **Skill 进化闭环** | ❌ | ❌ | ❌ | **✅ 量化评分·自动验证** |
+| **Role 进化闭环** | ❌ | ❌ | ❌ | **✅ 质量追踪·动态组合** |
+| **实时看板** | ⚠️ 需集成 | ❌ | ❌ | **✅ 7列Kanban·像素风** |
+| **断点自愈** | ❌ | ❌ | ❌ | **✅ 自动检测+恢复** |
 | **三层记忆系统** | ❌ | ❌ | ❌ | **✅ L1任务·L2进化·L3知识** |
 | **记忆衰减管理** | ❌ | ❌ | ❌ | **✅ 90天半衰·180天冷存储** |
-| **断点自愈** | ❌ | ❌ | ❌ | **✅ 自动检测+恢复** |
-| **零外部依赖** | 中 | 高 | 中 | **✅ 纯Python** |
+| **零外部依赖** | 中 | 高 | 高 | **✅ 纯Python** |
+| **多 Agent 协作** | ✅ | ✅ | ✅ | **✅ 11个专业Agent** |
 
-> **核心差异：制度性审核 + Skill/Role双库进化 + 健康实时自愈 + 零外部依赖**
-
----
-
-## ⚖️ 玄机阁与玄机阁框架对照
-
-| 维度 | 传统玄机阁框架 | 玄机阁 |
-|---|---|---|
-| **记忆载体** | 人脑（官员脑子里） | 三层可检索记忆系统（L1任务/L2进化/L3知识） |
-| **经验传承** | 师徒/官员交替（人走经验失传） | Skill库量化卡片（可传承、可进化） |
-| **派发依据** | 官员经验与直觉 | L1历史相似案例 + L2 Skill有效性 + L2 Role质量 + L3领域知识 |
-| **质量监督** | 枢鉴审计（滞后+主观） | 健康监控实时预警（六维度自动化） |
-| **进化机制** | 换人（被动） | 进化引擎（主动）—— 评分变化→5次观察窗口→确认或回滚 |
-| **通信机制** | 奏折同步流转（一步卡住全停） | 事件总线异步并行（高效解耦） |
-| **记忆衰减** | 无 | 90天半衰期 → 180天冷存储 → 自动垃圾回收 |
-| **系统自愈** | 无 | 刑策监控断点信号，自动触发恢复流程 |
-
-**一句话**：传统玄机阁是人的官僚体系，**玄机阁是能让 AI Agent 自己积累经验、自动进化、实时自愈的操作系统**。
+> **一句话总结**：CrewAI/AutoGen/MetaGPT 是"让 AI 自己聊"，玄机阁是"让 AI 按制度办事"。
 
 ---
 
-## ⚖️ XuanJiGe vs Traditional Three Departments and Six Ministries
+## 🚀 快速开始
 
-| Dimension | Traditional Three Departments and Six Ministries | XuanJiGe |
-|---|---|---|
-| **Memory** | Human brains (officials' minds) | Three-tier searchable memory system (L1 Task / L2 Evolution / L3 Knowledge) |
-| **Experience Transfer** | Master-apprentice / official succession (knowledge lost with people) | Skill library with quantified cards (transferable, evolvable) |
-| **Dispatch Basis** | Officials' experience and intuition | L1 similar cases + L2 Skill effectiveness + L2 Role quality + L3 domain knowledge |
-| **Quality Oversight** | Censor impeachment (lagged + subjective) | Real-time health monitoring (6-dimension automated) |
-| **Evolution Mechanism** | Personnel change (passive) | Evolution engine (proactive) — score change → 5-observation window → confirm or rollback |
-| **Communication** | Synchronous memorial流转 (one bottleneck stalls all) | Event bus async parallel (efficient decoupled) |
-| **Memory Decay** | None | 90-day half-life → 180-day cold storage → automatic garbage collection |
-| **Self-healing** | None | Xingbu monitors breakpoints, auto-triggers recovery |
-
-**One-liner**: Traditional Three Departments and Six Ministries is a human bureaucracy; **XuanJiGe is an operating system that lets AI Agents accumulate experience, evolve automatically, and self-heal in real time.**
-
----
-
-## 🏛️ 架构 / Architecture
-
-```
-                           ┌───────────────────────────────────┐
-                           │          👑 用户                  │
-                           │     飞书 · CLI · 任意消息渠道     │
-                           └─────────────────┬─────────────────┘
-                                             │ 下旨
-                           ┌─────────────────▼─────────────────┐
-                           │       🤴 承旨 (chengzhi)           │
-                           │    分拣：闲聊直接回 / 旨意建任务   │
-                           └─────────────────┬─────────────────┘
-                                             │ 传旨
-                           ┌─────────────────▼─────────────────┐
-                           │       📜 机衡 (jiheng)           │
-                           │  接旨 → Skill/Role检索 → 派发执行层  │
-                           └─────────────────┬─────────────────┘
-                                             │ 提交审核
-                           ┌─────────────────▼─────────────────┐
-                           │       🔍 审议 (shenyi)            │
-                           │    审议方案 → 准奏 / 封驳 🚫        │
-                           └───┬───────────────────────────────┘
-                               │ 准奏 ✅
-                    ┌──────────┴──────────┐
-                    ▼                     ▼
-        ┌───────────────────┐ ┌───────────────────┐
-        │    执行层（执行层）    │ │  机研（进化层）    │
-        │  技造：开发         │ │  三库守护          │
-        │  刑策：质检         │ │  Skill进化执行     │
-        │  文册：文档         │ │  健康实时监控      │
-        │  数算：数据分析     │ └───────────────────┘
-        │  兵戎：部署/安全    │
-        └───────────────────┘
-```
-
-### 各省部职责 / Departments
-
-| 部门 | Agent ID | 职责 | 擅长领域 |
-|------|----------|------|---------|
-| 🤴 **承旨** | `chengzhi` | 消息分拣、旨意整理 | 闲聊识别、旨意提炼、标题概括 |
-| 📜 **机衡** | `jiheng` | 接旨、检索、派发 | Skill/Role检索、任务调度、结果整合 |
-| 🔍 **审议** | `shenyi` | 审议、把关、封驳 | 质量评审、风险识别、标准把控 |
-| ⚙️ **技造** | `jizao` | 开发、工程、架构 | 功能开发、Bug修复、架构设计 |
-| ⚖️ **刑策** | `xingce` | 质检、测试、审计 | 安全扫描、合规检查、代码审计 |
-| 📝 **文册** | `diancang` | 文档、规范、内容 | 技术文档、API 文档、规范制定 |
-| 💰 **数算** | `shusuan` | 数据分析、资源管理 | 数据处理、报表生成、成本分析 |
-| ⚔️ **兵戎** | `bingrong` | 部署、安全、监控 | Docker/K8s、安全巡检、监控配置 |
-| 🔬 **机研** | `jiyan` | 三库管理、进化引擎 | Skill进化、Role追踪、健康监控 |
-| **玄档** | `zaohuang` | 每日简报、情报汇总 | 定时播报、数据汇总 |
-| 🔭 **枢观** | `qitian` | 趋势分析、战略观察 | 竞品追踪、技术预测 |
-| 📋 **枢鉴** | `yushi` | 质量审计、合规检查 | 质量红线、流程监督 |
-
----
-
-## 🚀 快速开始 / Quick Start
-
-### 前置条件 / Prerequisites
+### 前置条件
 - Python 3.10+
 - Hermes Agent（已配置）
 
-### 安装 / Installation
+### 安装
 
 ```bash
+# 克隆项目
 git clone https://github.com/BBNT-1215/xuanjige.git
 cd xuanjige
-pip install -e ".[all]"          # 完整安装（含测试+Web看板）
-# 或者仅核心安装：
+
+# 安装（推荐：完整安装）
+pip install -e ".[all]"          # 核心 + 测试 + Web看板
+
+# 或仅核心安装
 pip install -e .                  # 仅核心CLI
-pip install -e ".[dev]"          # 核心 + 测试依赖
+pip install -e ".[dev]"           # 核心 + 测试
 ```
 
-### 配置 / Configuration
+### 配置
 
 ```bash
 cp config.example.yaml config.yaml
 # 编辑 config.yaml，填入你的模型配置
 ```
 
-### 启动 / Launch
+### 启动
 
 ```bash
 # 方式1：cronjob 自动驱动（推荐）
@@ -196,32 +91,63 @@ python dashboard/server.py
 hermes -p xuanjige
 ```
 
-### 核心运转流程
+---
+
+## 🏛️ 架构概览
 
 ```
-用户提交任务
-    ↓ workflow_submit
-创建主任务 + 5步子任务链（Kanban SQLite）
-    ↓
-Cronjob 每分钟触发 Watchdog
-    ↓
-Watchdog 扫描所有 READY 步骤 → 执行 → 标记 done
-    ↓
-recompute_ready() 自动将下游步骤升为 READY
-    ↓
-枢鉴审核通过 → 整链完成 → 主任务标记 done
+                           ┌───────────────────────────────────┐
+                           │          👑 用户                   │
+                           │     飞书 · CLI · 任意消息渠道     │
+                           └─────────────────┬─────────────────┘
+                                             │ 下旨
+                           ┌─────────────────▼─────────────────┐
+                           │       🤴 承旨 (chengzhi)           │
+                           │    分拣：闲聊直接回 / 旨意建任务   │
+                           └─────────────────┬─────────────────┘
+                                             │ 传旨
+                           ┌─────────────────▼─────────────────┐
+                           │       📜 机衡 (jiheng)           │
+                           │  接旨 → Skill/Role检索 → 派发执行层 │
+                           └─────────────────┬─────────────────┘
+                                             │ 提交审核
+                           ┌─────────────────▼─────────────────┐
+                           │       🔍 审议 (shenyi)            │
+                           │    四维审议 → 准奏 ✅ / 封驳 🚫    │
+                           └───┬───────────────────────────────┘
+                               │ 准奏
+                    ┌──────────┴──────────┐
+                    ▼                     ▼
+        ┌───────────────────┐ ┌───────────────────┐
+        │    ⚙️ 执行层        │ │  🔬 机研（进化层）  │
+        │  技造：开发        │ │  三库守护          │
+        │  刑策：质检        │ │  Skill进化执行     │
+        │  数算：数据分析    │ │  健康实时监控      │
+        │  文册：文档        │ └───────────────────┘
+        │  兵戎：部署/安全    │
+        └───────────────────┘
+                    │                     ▲
+                    └─────── 进化闭环 ────┘
+```
+
+### 步骤链数据流
+
+```
+task创建 → 承旨分拣 → 机衡调度 → 执行层执行 → 审议复核 → 玄档汇总 → 枢鉴终审 → 完成
+                                                        │
+                                    进化触发 ←──────────┘
 ```
 
 ---
 
-## ✨ 核心特性 / Core Features
+## ✨ 核心特性
 
-### 1. 制度性审核（审议）Institutional Review
+### 1. 制度性审核（审议）
 - 机衡起草方案后，必须经过审议审议
 - 审议可「准奏」或「封驳」（最多3轮，第3轮强制通过）
 - **不是可选插件，是架构强制的质量关卡**
 
-### 2. Skill × Role 双库进化闭环 Self-Evolving Skill & Role Libraries
+### 2. Skill × Role 双库进化闭环
 ```
 任务完成 → 归档L1 → 更新L2评分 → 变化>阈值?
                                         ↓
@@ -232,9 +158,9 @@ recompute_ready() 自动将下游步骤升为 READY
 ```
 - Skill库：16个技能卡片，每次任务后 effectiveness 动态更新
 - Role库：17个角色，每次任务后 quality_score 动态更新
-- 进化引擎自动验证，防止分数抖动
+- EvolutionVerifier 自动验证，防止分数抖动
 
-### 3. 三层记忆系统 Three-Tier Memory System
+### 3. 三层记忆系统
 ```
 L1 任务记忆（raw/resolved/cold）
   ↓ 每次任务归档
@@ -245,7 +171,7 @@ L3 知识库（workflow规则 + 决策公理 + 项目背景）
 - 记忆不是存储过去，而是服务未来决策
 - 90天半衰期 · 180天冷存储 · 自动垃圾回收
 
-### 4. 健康实时监控 Real-Time Health Monitoring
+### 4. 健康实时监控
 | 指标 | 说明 | 阈值方向 |
 |------|------|---------|
 | skill_avg_effectiveness | Skill库平均有效性 | 越低越差 |
@@ -255,111 +181,167 @@ L3 知识库（workflow规则 + 决策公理 + 项目背景）
 | pending_verifications | 待验证项数量 | 越高越差 |
 | skill_conflict_rate | 记忆冲突率 | 越高越差 |
 
-### 5. 断点自愈 Breakpoint Self-Healing
+### 5. 断点自愈
 - 子Agent执行时，工具调用可能全部成功但输出文件未创建
 - 刑策监控断点信号，自动触发恢复流程
 - **精修类任务强制使用Python单趟脚本，禁止多次patch**
 
-### 6. 事件驱动通信 Event-Driven Communication
-- 各Agent间通过EventBus通信
-- 支持异步派发、并行执行、结果汇总
+### 6. 实时看板
+- 7列 Kanban：待分拣 → 已派发 → 执行中 → 待审核 → 已完成 → 已归档 → 阻塞
+- 像素风众生相监控面板
+- 事件驱动实时更新
 
 ---
 
-## 📁 项目结构 / Project Structure
+## 👥 Agent 角色说明
+
+玄机阁共有 **11 个专业 Agent**，各司其职：
+
+| 部门 | Agent ID | 职责 | 擅长领域 |
+|------|----------|------|---------|
+| 🤴 **承旨** | `chengzhi` | 消息分拣、旨意整理 | 闲聊识别、旨意提炼、标题概括 |
+| 📜 **机衡** | `jiheng` | 接旨、检索、派发 | Skill/Role检索、任务调度、结果整合 |
+| 🔍 **审议** | `shenyi` | 审议、把关、封驳 | 质量评审、风险识别、标准把控 |
+| ⚙️ **技造** | `jizao` | 开发、工程、架构 | 功能开发、Bug修复、架构设计 |
+| ⚖️ **刑策** | `xingce` | 质检、测试、审计 | 安全扫描、合规检查、代码审计 |
+| 📝 **文册** | `diancang` | 文档、规范、内容 | 技术文档、API文档、规范制定 |
+| 💰 **数算** | `shusuan` | 数据分析、资源管理 | 数据处理、报表生成、成本分析 |
+| ⚔️ **兵戎** | `bingrong` | 部署、安全、监控 | Docker/K8s、安全巡检、监控配置 |
+| 🔬 **机研** | `jiyan` | 三库管理、进化引擎 | Skill进化、Role追踪、健康监控 |
+| 📊 **玄档** | `zaohuang` | 每日简报、情报汇总 | 定时播报、数据汇总 |
+| 🔭 **枢鉴** | `yushi` | 质量审计、合规检查 | 质量红线、流程监督 |
+
+---
+
+## 📁 项目结构
 
 ```
 xuanjige/
-├── agents/                     # Agent人格定义（SOUL.md）
-│   ├── chengzhi/               # 承旨·消息分拣
-│   ├── jiheng/                # 机衡·调度派发
-│   ├── shenyi/                 # 审议·审核封驳
-│   ├── jizao/                 # 技造·开发工程
-│   ├── xingce/                 # 刑策·质检审计
-│   ├── diancang/               # 文册·文档规范
-│   ├── shusuan/               # 数算·数据分析
-│   ├── bingrong/               # 兵戎·部署安全
-│   ├── jiyan/                 # 机研·进化引擎
-│   ├── zaohuang/               # 玄档·情报枢纽
-│   ├── qitian/                 # 枢观·战略观察
-│   └── yushi/                 # 枢鉴·质量审计
-├── skills/                     # Skill技能库
-│   ├── skill_routing/         # 旨意分拣路由
-│   ├── skill_skill_routing/   # Skill智能检索
-│   ├── skill_role_dispatch/   # Role智能派发
-│   ├── skill_architecture/    # 架构设计
-│   ├── skill_code_review/     # 代码审查
-│   ├── skill_debugging/       # 调试排障
-│   ├── skill_data_analysis/   # 数据分析
-│   ├── skill_reporting/       # 报告撰写
-│   ├── skill_trend_analysis/  # 趋势分析
-│   ├── skill_devops/          # 运维自动化
-│   ├── skill_monitoring/      # 监控配置
-│   ├── skill_incident_response/# 故障响应
-│   ├── skill_database_optimization/# 数据库优化
-│   ├── skill_api_gateway/     # API网关
-│   ├── skill_coding/           # 代码编写
-│   └── skill_qa_testing/      # 质量测试
-├── engine/                     # 核心引擎
-│   ├── memory_manager.py      # L0-L3记忆管理
-│   ├── evolution.py           # 进化引擎+验证闭环
-│   ├── health_monitor.py      # 健康监控
-│   ├── conflict_resolver.py   # 记忆矛盾解决
-│   ├── decay_service.py       # 衰减管理
-│   └── jiyan_agent.py         # 机研常驻进程
-├── three_libs/                # 三库存储
-│   ├── memory/                # L1任务记忆（raw/resolved/cold）
-│   ├── skills/                # L2技能进化数据
-│   ├── roles/                 # L2角色进化数据
-│   └── knowledge/             # L3知识库（rules/axioms/context）
-├── scripts/
-│   ├── kanban.py              # 看板CLI
-│   ├── event_bus.py           # 事件总线
-│   ├── three_libraries.py     # 三库管理CLI
-│   ├── recovery.py            # 断点自愈
-│   └── run_loop.py            # 主循环
-├── dashboard/
-│   ├── server.py              # Web看板服务器
-│   └── index.html             # 看板主页
-├── tests/                     # 测试套件（30/30 PASS）
-├── SKILL.md                   # Skill标准格式定义
-├── ROLE.md                    # Role标准格式定义
-├── ARCHITECTURE.md            # 架构详细文档
-├── hermestrix_cli.py          # 主CLI
-├── pyproject.toml
-├── CHANGELOG.md
-└── README.md
+├── workflow/                     # 工作流引擎（核心运转）
+│   ├── engine.py                 # 核心调度引擎
+│   ├── task_queue.py             # 任务队列（状态机）
+│   ├── agent.py                  # Agent基类
+│   ├── routing.py                # 路由分发
+│   ├── skill_invoker.py          # Skill调用器
+│   ├── kanban_step_chain.py      # 看板步骤链
+│   └── watchdog.py               # 看门狗（自动推进任务）
+│
+├── engine/                       # 核心引擎模块
+│   ├── memory_manager.py         # L0-L3记忆管理
+│   ├── evolution.py              # 进化引擎（EvolutionVerifier）
+│   ├── health_monitor.py         # 健康监控
+│   ├── conflict_resolver.py      # 记忆矛盾解决
+│   ├── decay_service.py          # 衰减管理
+│   └── jiyan_agent.py            # 机研常驻进程
+│
+├── agents/                       # Agent人格定义（11个角色）
+│   ├── chengzhi/                 # 承旨·消息分拣
+│   ├── jiheng/                   # 机衡·调度派发
+│   ├── shenyi/                   # 审议·审核封驳
+│   ├── jizao/                    # 技造·开发工程
+│   ├── xingce/                   # 刑策·质检审计
+│   ├── diancang/                 # 文册·文档规范
+│   ├── shusuan/                  # 数算·数据分析
+│   ├── bingrong/                 # 兵戎·部署安全
+│   ├── jiyan/                    # 机研·进化守护
+│   ├── zaohuang/                 # 玄档·情报枢纽
+│   ├── qitian/                   # 枢观·战略观察
+│   └── yushi/                    # 枢鉴·质量审计
+│
+├── skills/                       # Skill技能库（16个可进化技能）
+│   ├── skill_routing/            # 旨意分拣路由
+│   ├── skill_code_review/        # 代码审查
+│   ├── skill_debugging/          # 调试排障
+│   ├── skill_architecture/       # 架构设计
+│   └── ...（更多技能卡片）
+│
+├── scripts/                      # 工具脚本
+│   ├── kanban.py                 # 看板CLI
+│   ├── event_bus.py              # 事件总线
+│   ├── three_libraries.py        # 三库管理
+│   ├── recovery.py               # 断点自愈
+│   └── run_loop.py               # 主循环
+│
+├── dashboard/                    # Web看板
+│   ├── server.py                 # Web服务器（REST API）
+│   └── index.html                # 看板主页
+│
+├── three_libs/                   # 三库存储
+│   ├── memory/                   # L1任务记忆
+│   ├── skills/                   # L2技能进化数据
+│   ├── roles/                    # L2角色进化数据
+│   └── knowledge/                # L3知识库
+│
+├── data/                         # 运行时数据
+│   ├── tasks.json                # 任务数据
+│   ├── skill_index.json          # Skill索引
+│   └── events.json               # 事件日志
+│
+├── hermestrix_cli.py             # 主CLI入口
+├── pyproject.toml                # 项目配置
+├── SKILL.md                      # Skill标准格式
+├── ROLE.md                       # Role标准格式
+├── ARCHITECTURE.md               # 架构详细文档
+└── README.md                    # 本文档
 ```
 
 ---
 
-## 📐 设计原则 / Design Principles
+## 🤝 贡献指南
 
-### 核心原则 / Core Principles
+欢迎提交 Issue 和 Pull Request！
 
-1. **从本质问题出发，不套模板**
-   - 四个本质问题：意图传递、能力匹配、质量验证、持续进化
-   - 任何架构组件必须回答：它解决哪个本质问题？
+### 开发环境设置
 
-2. **每个组件必须回答三个问题**
-   - 它解决哪个本质问题？
-   - AI实际能力是否匹配？
-   - 如果AI能力不足，如何缓解？
+```bash
+# 克隆项目
+git clone https://github.com/BBNT-1215/xuanjige.git
+cd xuanjige
 
-3. **三库必须分离**
-   - 混合会导致检索质量差、更新逻辑混乱、扩展困难
+# 创建虚拟环境
+python -m venv .venv
+source .venv/bin/activate  # Linux/Mac
+# 或 .venv\Scripts\activate  # Windows
 
-4. **子Agent任务描述必须包含完整路径**
-   - 工作目录 + 输入文件完整路径 + 输出文件完整路径
-   - 禁止依赖搜索发现文件
+# 安装开发依赖
+pip install -e ".[all]"
 
-5. **精修类任务用Python单趟脚本**
-   - 禁止多次patch，中断=全部成果丢失
+# 运行测试
+pytest
 
-6. **进化闭环是架构的一部分，不是附加功能**
+# 代码格式化
+ruff check --fix .
+```
+
+### 贡献方式
+
+1. **Fork** 本仓库
+2. **创建特性分支** (`git checkout -b feature/AmazingFeature`)
+3. **提交更改** (`git commit -m 'Add some AmazingFeature'`)
+4. **推送到分支** (`git push origin feature/AmazingFeature`)
+5. **创建 Pull Request**
+
+### 贡献范围
+
+- 🐛 Bug 修复
+- ✨ 新功能开发
+- 📚 文档改进
+- 🧪 测试覆盖
+- 🎨 代码格式化
+- 🌍 国际化
+
+---
+
+## 🙏 致谢
+
+**本项目直接受 [cft0808/edict](https://github.com/cft0808/edict)（15.7k ⭐）启发**—— edict 是目前最完整的玄机阁框架 AI Agent 实现，奠定了"制度性审核 + 实时看板"的核心范式。本项目在 edict 基础上进行 Hermes Agent 原生适配，并新增断点自愈、三库分离、进化闭环等工程实践。
+
+设计参考：
+- [cft0808/edict](https://github.com/cft0808/edict) — 玄机阁框架完整实现
+- [agent-governance-design skill](https://github.com/lijigang/ljg-skills) — 玄机阁框架方法论沉淀
 
 ---
 
 ## 📄 License
 
-MIT License
+MIT License - 详见 [LICENSE](LICENSE) 文件
