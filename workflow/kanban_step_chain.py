@@ -130,7 +130,7 @@ def get_step_task(subtask_id: str, board: str = None) -> dict | None:
         "status": task.status,
         "body": task.body,
         "assignee": task.assignee,
-        "updated_at": task.started_at,
+        "started_at": task.started_at,
     }
 
 
@@ -156,7 +156,7 @@ def get_chain_steps(root_id: str, board: str = None) -> list[dict]:
                 "status": t.status,
                 "assignee": t.assignee,
                 "body": t.body,
-                "updated_at": t.started_at,
+                "started_at": t.started_at,
             })
 
     steps = [s for s in steps if s.get("step_key") is not None]  # 排除主任务本身

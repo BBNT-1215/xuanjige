@@ -120,7 +120,14 @@ class TaskQueue:
             results = [t for t in results if t['state'] == state]
         if assignee:
             results = [t for t in results if t.get('assignee') == assignee]
-        results.sort(key=lambda t: (t.get('priority', 0), t['created_at']), reverse=True)
+        # ISO字符串排序改为datetime解析，确保跨年/跨月正确排序
+        results.sort(
+            key=lambda t: (
+                t.get('priority', 0),
+                datetime.datetime.fromisoformat(t['created_at']) if t.get('created_at') else datetime.datetime.min
+            ),
+            reverse=True
+        )
         return results[:limit]
 
     def transition(self, task_id: str, new_state: str,

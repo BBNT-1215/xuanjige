@@ -25,20 +25,15 @@ from workflow.task_queue import State, get_queue
 from workflow.agent import get_agent, AGENT_REGISTRY
 
 
-# Agent ID → 角色名（用于delegate_task的goal模板）
-AGENT_ROLE_NAMES = {
-    "jixuan":    "技造",
-    "xingce":   "刑策",
-    "diancang": "文册",
-    "shusuan":  "数算",
-    "bingrong": "兵戎",
-    "jiyan":    "机研",
-    "qitian":   "枢观",
-    "zaohuang": "玄档",
-    "yushi":    "枢鉴",
-    "chengzhi": "承旨",
-    "jiheng":   "机衡",
-}
+# Agent角色名统一从AGENT_REGISTRY派生，消除重复硬编码
+def _build_role_names():
+    names = {}
+    for agent_id, agent_cls in AGENT_REGISTRY.items():
+        instance = agent_cls()
+        names[agent_id] = instance.agent_name
+    return names
+
+AGENT_ROLE_NAMES = _build_role_names()
 
 
 class WorkflowEngine:

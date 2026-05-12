@@ -161,6 +161,8 @@ def tick():
 def _process_chain(conn, main_task: dict, now: datetime.datetime):
     """处理单条步骤链"""
     parent_id = main_task["id"]
+    # 在函数开头定义 now_ts，确保 reclaim 循环可访问
+    now_ts = datetime.datetime.now().timestamp()
 
     steps = get_chain_steps(parent_id, board=BOARD_NAME)
     if not steps:
@@ -179,7 +181,6 @@ def _process_chain(conn, main_task: dict, now: datetime.datetime):
         log(f"  → 派发: {step.get('title', subtask_id)}")
 
         # 原子 claim（防止并发抢占）
-        now_ts = datetime.datetime.now().timestamp()
         conn.execute(
             "UPDATE tasks SET status = 'running', started_at = ? WHERE id = ? AND status = 'ready'",
             (now_ts, subtask_id)
@@ -214,9 +215,16 @@ def _process_chain(conn, main_task: dict, now: datetime.datetime):
                 )
                 log(f"  ✗ 已阻塞（重试耗尽）: {subtask_id}", "ERROR")
             else:
+                # 重试时清除 started_at，使 TTL 从下次 claim 重新计算
                 conn.execute(
-                    "UPDATE tasks SET status = 'ready', started_at = ? WHERE id = ?",
-                    (now_ts, subtask_id)
+                    "UPDATE tasks SET status = 'ready', started_at = 0 WHERE id = ?",
+                    (subtask_id,)
+                )
+                # 写入重试次数
+                ctx["retry_count"] = retries + 1
+                conn.execute(
+                    "UPDATE tasks SET body = ? WHERE id = ?",
+                    (json.dumps(ctx), subtask_id)
                 )
                 log(f"  ↺ 重试: {subtask_id} ({retries+1}/{limit})")
 
