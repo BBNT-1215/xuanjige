@@ -65,7 +65,7 @@ def log(msg: str, level: str = "INFO"):
 
 # ── 步骤执行器 ────────────────────────────────────────────────────────────
 
-def execute_step(step_info: dict) -> dict:
+def execute_step(step_info: dict) -> tuple[dict, dict]:
     """
     执行单个步骤。
 
@@ -75,8 +75,10 @@ def execute_step(step_info: dict) -> dict:
       execute   → 从根任务读取routing → 调用对应执行Agent
       zaohuang  → ZaohuangAgent（情报汇总）
       yushi     → YushiAgent（质量终审）
+
+    返回: (updated_ctx, result_dict)
     """
-    body    = step_info.get("body", "{}")
+    body     = step_info.get("body", "{}")
     step_id  = step_info.get("step_id") or ""
     step_name = step_info.get("step_name", "")
 
@@ -101,13 +103,19 @@ def execute_step(step_info: dict) -> dict:
             write_routing_to_root(ctx, result["result"], board=BOARD_NAME)
 
     elif step_id == "execute":
-        # 从根任务读取承旨的routing，决定执行Agent
+        # 从根任务读取承旨的routing，同时读取jiheng的assignee
         root_id = ctx.get("root_id")
+        target = None
         if root_id:
             root_routing = read_root_routing(root_id, board=BOARD_NAME)
-            target = root_routing.get("target", "jixuan")
-        else:
-            target = ctx.get("routing", {}).get("target", "jixuan")
+            target = root_routing.get("target") or root_routing.get("assignee")
+
+        # 如果根任务没有，从ctx的routing字段降级读取
+        if not target:
+            target = ctx.get("routing", {}).get("target") or ctx.get("routing", {}).get("assignee")
+
+        if not target:
+            target = "jixuan"
 
         agent = get_agent(target)
         if not agent:
@@ -115,6 +123,9 @@ def execute_step(step_info: dict) -> dict:
 
         log(f"  → 执行Agent: {agent.agent_name}({agent.agent_id})")
         result = agent.run(ctx)
+        # agent.run() 可能修改了ctx（写入_generated_code等），更新本地ctx
+        if isinstance(result.get("result"), dict):
+            ctx.update(result["result"])
 
     elif step_id == "zaohuang":
         agent = get_agent("zaohuang")
@@ -125,15 +136,15 @@ def execute_step(step_info: dict) -> dict:
         result = agent.run(ctx)
 
     else:
-        return {"ok": False, "error": f"未知步骤: {step_id}"}
+        return ctx, {"ok": False, "error": f"未知步骤: {step_id}"}
 
     if not agent:
-        return {"ok": False, "error": f"Agent不存在: {step_id}"}
+        return ctx, {"ok": False, "error": f"Agent不存在: {step_id}"}
 
     try:
-        return result
+        return ctx, result
     except Exception as e:
-        return {"ok": False, "error": str(e)}
+        return ctx, {"ok": False, "error": str(e)}
 
 
 # ── 核心 Watchdog ─────────────────────────────────────────────────────────
@@ -213,24 +224,27 @@ def _process_chain(conn, main_task: dict, now: datetime.datetime):
         )
         conn.commit()
 
-        # 执行（同步）
-        result = execute_step(step)
+        # 执行（同步）；execute_step内部会修改传入的ctx，返回(updated_ctx, result)
+        step_ctx, result = execute_step(step)
 
         if result.get("ok"):
-            next_ids = mark_step_done(subtask_id,
-                                     result=str(result.get("result", "")),
-                                     board=BOARD_NAME)
-            log(f"  ✓ 完成: {subtask_id}，下游ready: {next_ids}")
+            # 把agent执行结果（routing/_generated_code等）合并写入body，供下游步骤读取
+            mark_step_done(subtask_id,
+                         result=json.dumps(result.get("result", ""), ensure_ascii=False),
+                         board=BOARD_NAME,
+                         ctx=step_ctx)
+            log(f"  ✓ 完成: {subtask_id}，下游ready: []")
         else:
             # 失败 → 检查重试次数
             step_task = get_step_task(subtask_id, board=BOARD_NAME)
+            retry_ctx = step_ctx  # 用执行后的ctx（可能有部分结果）
             if step_task:
                 try:
-                    ctx = json.loads(step_task.get("body", "{}"))
+                    retry_body = json.loads(step_task.get("body", "{}"))
                 except Exception:
-                    ctx = {}
-                retries = ctx.get("retry_count", 0)
-                limit   = ctx.get("failure_limit", 3)
+                    retry_body = {}
+                retries = retry_body.get("retry_count", 0)
+                limit   = retry_body.get("failure_limit", 3)
             else:
                 retries, limit = 0, 3
 
@@ -247,10 +261,10 @@ def _process_chain(conn, main_task: dict, now: datetime.datetime):
                     (subtask_id,)
                 )
                 # 写入重试次数
-                ctx["retry_count"] = retries + 1
+                retry_body["retry_count"] = retries + 1
                 conn.execute(
                     "UPDATE tasks SET body = ? WHERE id = ?",
-                    (json.dumps(ctx), subtask_id)
+                    (json.dumps(retry_body), subtask_id)
                 )
                 log(f"  ↺ 重试: {subtask_id} ({retries+1}/{limit})")
 

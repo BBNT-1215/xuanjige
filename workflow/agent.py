@@ -62,6 +62,38 @@ def _extract_text(task: dict) -> str:
     return " ".join(str(p) for p in parts if p).lower()
 
 
+def _read_chain_results(root_id: str) -> dict:
+    """
+    读取同一条步骤链中所有已完成步骤的执行结果。
+    返回 {step_id: result_dict}，供玄档聚合。
+    """
+    try:
+        from workflow.kanban_step_chain import get_chain_steps
+        from workflow.agent import get_agent
+    except ImportError:
+        return {}
+
+    results = {}
+    for step in get_chain_steps(root_id, board=None):
+        if step["status"] == "done":
+            body = step.get("body", "{}")
+            try:
+                body_ctx = json.loads(body) if isinstance(body, str) else body
+            except Exception:
+                body_ctx = {}
+            sid = body_ctx.get("step_id", "")
+            # 从body中提取执行结果（agent写入的result字段）
+            result_data = {}
+            for key in ["code", "action", "files", "output", "issues", "quality_score",
+                        "routing", "_generated_code", "_generated_files", "briefing",
+                        "insights", "data"]:
+                if key in body_ctx:
+                    result_data[key] = body_ctx[key]
+            if sid and result_data:
+                results[sid] = result_data
+    return results
+
+
 # ── Agent 基类 ────────────────────────────────────────────────────────────
 
 class AgentBase:
@@ -668,11 +700,22 @@ class ZaohuangAgent(AgentBase):
     def run(self, task: dict) -> dict:
         ctx = _parse_body(task)
         title = task.get("title", "") or ctx.get("title", "")
-        routing = ctx.get("routing", {})
+        root_id = ctx.get("root_id")
 
+        # 读取同链所有已完成步骤的执行结果
+        all_results = {}
+        if root_id:
+            all_results = _read_chain_results(root_id)
+
+        routing = ctx.get("routing", {})
         self.log(f"汇总情报「{title}」")
 
-        briefing = self._summarize(task, ctx, routing)
+        briefing = self._summarize(task, ctx, routing, all_results)
+
+        # 把briefing写入ctx，供下游枢鉴读取
+        ctx["briefing"] = briefing["text"]
+        ctx["briefing_summary"] = briefing["summary"]
+        task["body"] = json.dumps(ctx, ensure_ascii=False)
 
         return {
             "ok": True,
@@ -684,10 +727,11 @@ class ZaohuangAgent(AgentBase):
             "next": "yushi",
         }
 
-    def _summarize(self, task: dict, ctx: dict, routing: dict) -> dict:
+    def _summarize(self, task: dict, ctx: dict, routing: dict,
+                   all_results: dict = None) -> dict:
         target = routing.get("target", "技造")
         reason = routing.get("reason", "")
-        step_results = ctx.get("step_results", [])
+        all_results = all_results or {}
 
         lines = [
             f"## 任务简报：{task.get('title', 'unknown')}",
@@ -698,11 +742,24 @@ class ZaohuangAgent(AgentBase):
             "### 执行摘要",
         ]
 
-        if step_results:
-            for r in step_results:
-                lines.append(f"- {r}")
-        else:
-            lines.append(f"- {target} 已完成执行")
+        # 从同链步骤结果中提取关键信息
+        exec_data = all_results.get("execute", {})
+        if exec_data:
+            code = exec_data.get("code", "")
+            files = exec_data.get("files", [])
+            if code:
+                lines.append(f"- **生成代码**: {len(code)} 字符")
+            if files:
+                lines.append(f"- **产出文件**: {', '.join(files)}")
+            action = exec_data.get("action", "")
+            if action:
+                lines.append(f"- **执行动作**: {action}")
+
+        issues_data = all_results.get("xingce", {}).get("issues", []) if all_results.get("xingce") else []
+        if issues_data:
+            lines.append(f"- **质检问题**: {len(issues_data)}个")
+            for iss in issues_data[:3]:
+                lines.append(f"  - [{iss.get('severity','?')}] {iss.get('msg','')}")
 
         lines.append("")
         summary = f"任务「{task.get('title', '')}」已由{target}执行完成，等待枢鉴审计。"
@@ -726,10 +783,16 @@ class YushiAgent(AgentBase):
     def run(self, task: dict) -> dict:
         ctx = _parse_body(task)
         title = task.get("title", "") or ctx.get("title", "")
+        root_id = ctx.get("root_id")
+
+        # 读取同链所有已完成步骤的执行结果
+        all_results = {}
+        if root_id:
+            all_results = _read_chain_results(root_id)
 
         self.log(f"枢鉴质量审计「{title}」")
 
-        audit = self._audit(task, ctx)
+        audit = self._audit(task, ctx, all_results)
 
         if audit["pass"]:
             self.log("审计通过，任务完成")
@@ -742,29 +805,52 @@ class YushiAgent(AgentBase):
             "next": None if audit["pass"] else "execute",
         }
 
-    def _audit(self, task: dict, ctx: dict) -> dict:
+    def _audit(self, task: dict, ctx: dict, all_results: dict = None) -> dict:
         """执行质量终审"""
+        all_results = all_results or {}
         reasons = []
-        text = _extract_text(task)
 
-        # 基础完整性检查
+        # 1. 读取execute步骤的代码
+        exec_data = all_results.get("execute", {})
+        generated_code = exec_data.get("code", "") or exec_data.get("_generated_code", "")
+
+        # 2. 读取玄档简报
+        zaohuang_data = all_results.get("zaohuang", {})
+        briefing = zaohuang_data.get("briefing", "")
+
+        # 3. 基础完整性检查
         if not task.get("title"):
             reasons.append("任务标题为空")
 
-        # 内容检查
-        if len(text) < 10:
-            reasons.append("任务内容过少")
+        # 4. 如果有生成的代码 → 真实代码审查
+        if generated_code:
+            # 读取刑策质检结果
+            xingce_data = all_results.get("xingce", {})
+            xingce_issues = xingce_data.get("issues", [])
+            quality_score = xingce_data.get("quality_score") or 1.0
 
-        # 代码类任务检查
-        if any(k in text for k in ["代码", "开发", "script"]):
-            if "TODO" in text and "FIXME" in text:
-                reasons.append("代码含未完成标记")
+            if xingce_issues:
+                for iss in xingce_issues[:3]:
+                    reasons.append(f"[{iss.get('severity','?')}] {iss.get('msg','')}")
+
+            if quality_score < 0.7:
+                reasons.append(f"代码质量评分{quality_score}低于0.7")
+
+            # 检查是否含密码硬编码
+            if "password" in generated_code and "hash" not in generated_code.lower():
+                reasons.append("代码包含明文密码")
+        else:
+            # 无代码时用玄档简报内容检查
+            if briefing and len(briefing) < 50:
+                reasons.append("简报内容过少")
 
         passed = len(reasons) == 0
         return {
             "audit": "passed" if passed else "failed",
             "pass": passed,
             "reasons": reasons,
+            "quality_score": quality_score if generated_code else None,
+            "has_code": bool(generated_code),
             "timestamp": datetime.datetime.now().isoformat(),
         }
 

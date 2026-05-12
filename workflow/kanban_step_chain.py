@@ -165,14 +165,38 @@ def get_chain_steps(root_id: str, board: str = None) -> list[dict]:
     return steps
 
 
-def mark_step_done(subtask_id: str, result: str = "",
-                  board: str = None) -> list[str]:
+def mark_step_done(subtask_id: str,
+                  result: str = "",
+                  board: str = None,
+                  ctx: dict = None) -> list[str]:
     """
     标记当前步骤完成，触发 recompute_ready，
     返回变为 ready 的下游步骤IDs。
+
+    ctx: 当前步骤的完整上下文（从step body解析）。
+         如果提供，则将agent执行结果（_generated_code 等）合并写入body，
+         供下游步骤读取。
     """
     conn = connect(board=board)
     now_ts = datetime.datetime.now().timestamp()
+
+    # 合并agent执行结果到body
+    if ctx is not None:
+        # 读取当前body
+        cur = conn.execute(
+            "SELECT body FROM tasks WHERE id = ?", (subtask_id,)
+        ).fetchone()
+        if cur:
+            try:
+                cur_body = json.loads(cur[0]) if cur[0] else {}
+            except Exception:
+                cur_body = {}
+            # 合并：ctx中的执行结果覆盖旧body
+            merged = {**cur_body, **ctx}
+            new_body = json.dumps(merged, ensure_ascii=False)
+            conn.execute(
+                "UPDATE tasks SET body = ? WHERE id = ?", (new_body, subtask_id)
+            )
 
     # 标记 done
     conn.execute(
