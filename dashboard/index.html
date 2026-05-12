@@ -3,314 +3,1531 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>玄机阁 - 自我进化AI协作系统</title>
+<title>玄机阁 · 工程控制台</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;700&display=swap');
+
+  /* ==================== RESET & BASE ==================== */
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1419; color: #e7e9ea; min-height: 100vh; }
 
-  /* Header */
-  .header { background: #1a1f2e; border-bottom: 1px solid #2f3847; padding: 12px 24px; display: flex; align-items: center; gap: 24px; }
-  .header-brand { display: flex; flex-direction: column; }
-  .header h1 { font-size: 18px; color: #f7dc6f; letter-spacing: 2px; }
-  .header .subtitle { font-size: 11px; color: #7f8c8d; margin-top: 2px; }
-  .header-right { margin-left: auto; font-size: 11px; color: #7f8c8d; }
+  body {
+    background: #0d1117;
+    color: #e6edf3;
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
 
-  /* Stats bar */
-  .stats { display: flex; gap: 0; padding: 0 24px; background: #1a1f2e; border-bottom: 1px solid #2f3847; }
-  .stat { padding: 12px 24px; text-align: center; border-right: 1px solid #2f3847; }
-  .stat:first-child { border-left: 3px solid #f7dc6f; }
-  .stat .num { font-size: 22px; font-weight: bold; color: #f7dc6f; }
-  .stat .label { font-size: 10px; color: #7f8c8d; text-transform: uppercase; margin-top: 2px; }
-  .stat .sub { font-size: 9px; color: #4a5568; }
+  /* ==================== TOP COMMAND BAR ==================== */
+  #cmd-bar {
+    background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+    border-bottom: 1px solid #ffd700;
+    padding: 8px 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-shrink: 0;
+    z-index: 100;
+  }
 
-  /* Kanban */
-  .kanban-wrap { padding: 12px; overflow-x: auto; }
-  .kanban { display: flex; gap: 10px; min-width: max-content; }
-  .column { flex: 0 0 240px; background: #1a1f2e; border-radius: 8px; border: 1px solid #2f3847; display: flex; flex-direction: column; max-height: calc(100vh - 160px); }
-  .column-header { padding: 10px 14px; font-size: 12px; font-weight: bold; border-bottom: 1px solid #2f3847; display: flex; justify-content: space-between; align-items: center; }
-  .column-body { flex: 1; overflow-y: auto; padding: 8px; }
+  #cmd-bar .brand {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 18px;
+    color: #ffd700;
+    letter-spacing: 3px;
+    white-space: nowrap;
+    text-shadow: 1px 1px 0 #8b6914;
+  }
 
-  /* Task cards */
-  .task-card { background: #252d3d; border: 1px solid #2f3847; border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; cursor: pointer; transition: border-color 0.15s; }
-  .task-card:hover { border-color: #f7dc6f; }
-  .task-card .task-id { font-size: 9px; color: #4a5568; margin-bottom: 3px; }
-  .task-card .task-title { font-size: 12px; color: #e7e9ea; line-height: 1.4; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .task-card .task-meta { display: flex; gap: 4px; flex-wrap: wrap; }
-  .badge { padding: 1px 5px; border-radius: 3px; font-size: 9px; background: #2f3847; color: #a0a0a0; }
-  .progress-bar { height: 2px; background: #2f3847; border-radius: 1px; margin-top: 6px; overflow: hidden; }
-  .progress-bar .fill { height: 100%; background: #f7dc6f; transition: width 0.3s; }
+  #cmd-input-wrap {
+    flex: 1;
+    display: flex;
+    gap: 6px;
+    max-width: 900px;
+  }
 
-  /* Detail panel */
-  .detail-panel { display: none; position: fixed; right: 0; top: 0; bottom: 0; width: 440px; background: #1a1f2e; border-left: 1px solid #2f3847; overflow-y: auto; padding: 20px; z-index: 100; }
+  #cmd-input {
+    flex: 1;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #e6edf3;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  #cmd-input:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.1);
+  }
+
+  #cmd-input::placeholder {
+    color: #484f58;
+  }
+
+  .cmd-btn {
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #e6edf3;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  .cmd-btn:hover {
+    background: #30363d;
+    border-color: #ffd700;
+    color: #ffd700;
+  }
+
+  .cmd-btn.primary {
+    background: rgba(255, 215, 0, 0.15);
+    border-color: #ffd700;
+    color: #ffd700;
+  }
+
+  .cmd-btn.primary:hover {
+    background: rgba(255, 215, 0, 0.25);
+  }
+
+  #cmd-status {
+    font-size: 11px;
+    color: #7d8590;
+    white-space: nowrap;
+    min-width: 120px;
+    text-align: right;
+  }
+
+  #cmd-status.ok { color: #27ae60; }
+  #cmd-status.error { color: #f87171; }
+  #cmd-status.sending { color: #fbbf24; }
+
+  /* ==================== TAB BAR ==================== */
+  #tab-bar {
+    background: #161b22;
+    border-bottom: 1px solid #21262d;
+    padding: 0 16px;
+    display: flex;
+    gap: 0;
+    flex-shrink: 0;
+    align-items: flex-end;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: #7d8590;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+  }
+
+  .tab-btn:hover {
+    color: #e6edf3;
+    background: rgba(255,255,255,0.03);
+  }
+
+  .tab-btn.active {
+    color: #ffd700;
+    border-bottom-color: #ffd700;
+  }
+
+  .tab-btn .tab-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #30363d;
+    margin-right: 6px;
+  }
+
+  .tab-btn.active .tab-dot { background: #ffd700; }
+
+  /* ==================== MAIN CONTENT ==================== */
+  #main-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+  }
+
+  .tab-panel {
+    display: none;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .tab-panel.active {
+    display: flex;
+  }
+
+  /* ==================== LEFT: KANBAN (65%) ==================== */
+  .kanban-section {
+    flex: 0 0 65%;
+    overflow-y: auto;
+    padding: 12px;
+  }
+
+  .kanban-section::-webkit-scrollbar { width: 6px; }
+  .kanban-section::-webkit-scrollbar-track { background: #161b22; }
+  .kanban-section::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+
+  .kanban-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 4px 14px;
+    border-bottom: 1px solid #21262d;
+    margin-bottom: 12px;
+  }
+
+  .kanban-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffd700;
+    letter-spacing: 2px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+  }
+
+  .kanban-meta {
+    font-size: 11px;
+    color: #7d8590;
+  }
+
+  .kanban {
+    display: flex;
+    gap: 10px;
+    min-width: max-content;
+  }
+
+  /* ==================== KANBAN COLUMNS ==================== */
+  .column {
+    flex: 0 0 220px;
+    background: #161b22;
+    border-radius: 8px;
+    border: 1px solid #21262d;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 210px);
+    overflow: hidden;
+  }
+
+  .column-header {
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: bold;
+    border-bottom: 1px solid #21262d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .col-badge {
+    background: #21262d;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 10px;
+    color: #7d8590;
+  }
+
+  .column-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+  }
+
+  .column-body::-webkit-scrollbar { width: 4px; }
+  .column-body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 2px; }
+
+  /* ==================== TASK CARDS ==================== */
+  .task-card {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .task-card:hover {
+    border-color: #ffd700;
+    transform: translateY(-1px);
+  }
+
+  .task-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+  }
+
+  .task-id {
+    font-size: 9px;
+    color: #484f58;
+    margin-bottom: 3px;
+    font-family: monospace;
+  }
+
+  .task-title {
+    font-size: 12px;
+    color: #e6edf3;
+    line-height: 1.4;
+    margin-bottom: 5px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .task-meta {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9px;
+    background: #21262d;
+    color: #7d8590;
+  }
+
+  .badge.agent { background: rgba(255, 215, 0, 0.15); color: #ffd700; }
+  .badge.org { background: rgba(88, 166, 255, 0.15); color: #58a6ff; }
+
+  .progress-bar {
+    height: 2px;
+    background: #21262d;
+    border-radius: 1px;
+    margin-top: 6px;
+    overflow: hidden;
+  }
+
+  .progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffd700, #c9a84c);
+    transition: width 0.3s;
+  }
+
+  .state-承旨::before, .state-Taizi::before { background: #9b59b6; }
+  .state-机衡::before, .state-Zhongshu::before { background: #3498db; }
+  .state-审议::before, .state-Menxia::before { background: #e67e22; }
+  .state-执行::before, .state-Doing::before { background: #e74c3c; }
+  .state-待回奏::before, .state-Review::before { background: #1abc9c; }
+  .state-完成::before, .state-Done::before { background: #27ae60; }
+  .state-阻塞::before, .state-Blocked::before { background: #c0392b; }
+  .state-待处理::before, .state-Pending::before { background: #484f58; }
+  .state-pending::before { background: #484f58; }
+  .state-running::before { background: #3498db; }
+  .state-done::before { background: #27ae60; }
+
+  /* ==================== RIGHT: CONTROL PANEL (35%) ==================== */
+  .control-panel {
+    flex: 1;
+    border-left: 2px solid #ffd700;
+    overflow-y: auto;
+    background: #0d1117;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .control-panel::-webkit-scrollbar { width: 6px; }
+  .control-panel::-webkit-scrollbar-track { background: #0d1117; }
+  .control-panel::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+
+  /* ==================== SYSTEM STATUS HEADER ==================== */
+  .sys-header {
+    background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+    border-bottom: 1px solid #21262d;
+    padding: 12px 16px;
+    flex-shrink: 0;
+  }
+
+  .sys-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .sys-title {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 18px;
+    color: #ffd700;
+    letter-spacing: 3px;
+    text-shadow: 1px 1px 0 #8b6914;
+  }
+
+  .conn-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #7d8590;
+  }
+
+  .conn-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #27ae60;
+    animation: conn-pulse 2s ease-in-out infinite;
+  }
+
+  .conn-dot.offline {
+    background: #f87171;
+    animation: none;
+  }
+
+  @keyframes conn-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.4); }
+    50% { opacity: 0.8; box-shadow: 0 0 0 4px rgba(39, 174, 96, 0); }
+  }
+
+  .sys-stats-row {
+    display: flex;
+    gap: 6px;
+  }
+
+  .sys-stat-chip {
+    flex: 1;
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 4px;
+    padding: 5px 8px;
+    text-align: center;
+  }
+
+  .sys-stat-chip .val {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffd700;
+    line-height: 1.2;
+  }
+
+  .sys-stat-chip .lbl {
+    font-size: 9px;
+    color: #7d8590;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .sys-stat-chip.exec .val { color: #e74c3c; }
+  .sys-stat-chip.pending .val { color: #fbbf24; }
+  .sys-stat-chip.done .val { color: #27ae60; }
+
+  /* ==================== AGENT PIXEL GRID ==================== */
+  .agent-section {
+    background: #161b22;
+    border-bottom: 1px solid #21262d;
+    padding: 12px;
+    flex-shrink: 0;
+  }
+
+  .agent-section-title {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 12px;
+    color: #ffd700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .agent-section-title::before {
+    content: '◆';
+    color: #c9a84c;
+    font-size: 9px;
+  }
+
+  .agent-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+  }
+
+  .agent-room {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 6px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    position: relative;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+
+  .agent-room:hover { border-color: #ffd700; }
+
+  .agent-room .room-role {
+    font-size: 10px;
+    color: #ffd700;
+    font-weight: bold;
+  }
+
+  .agent-room .room-label {
+    font-size: 9px;
+    color: #7d8590;
+    text-align: center;
+  }
+
+  /* ==================== PIXEL CHARACTER ==================== */
+  .pixel-char {
+    position: relative;
+    width: 48px;
+    height: 56px;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+  }
+
+  .pixel-char::before {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: transparent;
+    box-shadow:
+      12px 0 0 #f5d5a0, 16px 0 0 #f5d5a0, 20px 0 0 #f5d5a0, 24px 0 0 #f5d5a0,
+      8px 4px 0 #f5d5a0, 12px 4px 0 #f5d5a0, 16px 4px 0 #f5d5a0, 20px 4px 0 #f5d5a0,
+      24px 4px 0 #f5d5a0, 28px 4px 0 #f5d5a0,
+      4px 8px 0 #8b6914, 8px 8px 0 #8b6914, 12px 8px 0 #8b6914,
+      16px 8px 0 #ffd700, 20px 8px 0 #ffd700,
+      24px 8px 0 #8b6914, 28px 8px 0 #8b6914, 32px 8px 0 #8b6914,
+      4px 12px 0 #f5d5a0, 8px 12px 0 #f5d5a0, 12px 12px 0 #2d1a0e,
+      16px 12px 0 #f5d5a0, 20px 12px 0 #f5d5a0, 24px 12px 0 #2d1a0e,
+      28px 12px 0 #f5d5a0, 32px 12px 0 #f5d5a0,
+      4px 16px 0 #f5d5a0, 8px 16px 0 #f5d5a0, 12px 16px 0 #f5d5a0,
+      16px 16px 0 #f5d5a0, 20px 16px 0 #f5d5a0, 24px 16px 0 #f5d5a0,
+      28px 16px 0 #f5d5a0, 32px 16px 0 #f5d5a0,
+      16px 20px 0 #c9a84c, 20px 20px 0 #c9a84c,
+      8px 24px 0 var(--robe-color, #c0392b), 12px 24px 0 var(--robe-color, #c0392b),
+      16px 24px 0 var(--robe-color, #c0392b), 20px 24px 0 var(--robe-color, #c0392b),
+      24px 24px 0 var(--robe-color, #c0392b), 28px 24px 0 var(--robe-color, #c0392b),
+      8px 28px 0 var(--robe-color, #c0392b), 12px 28px 0 var(--robe-color, #c0392b),
+      16px 28px 0 var(--robe-color, #c0392b), 20px 28px 0 var(--robe-color, #c0392b),
+      24px 28px 0 var(--robe-color, #c0392b), 28px 28px 0 var(--robe-color, #c0392b),
+      4px 32px 0 var(--robe-color, #c0392b), 8px 32px 0 var(--robe-color, #c0392b),
+      12px 32px 0 var(--robe-color, #c0392b), 16px 32px 0 var(--robe-color, #c0392b),
+      20px 32px 0 var(--robe-color, #c0392b), 24px 32px 0 var(--robe-color, #c0392b),
+      28px 32px 0 var(--robe-color, #c0392b), 32px 32px 0 var(--robe-color, #c0392b),
+      0 36px 0 var(--robe-color, #c0392b), 4px 36px 0 var(--robe-color, #c0392b),
+      8px 36px 0 var(--robe-color, #c0392b), 12px 36px 0 var(--robe-color, #c0392b),
+      16px 36px 0 var(--robe-color, #c0392b), 20px 36px 0 var(--robe-color, #c0392b),
+      24px 36px 0 var(--robe-color, #c0392b), 28px 36px 0 var(--robe-color, #c0392b),
+      32px 36px 0 var(--robe-color, #c0392b), 36px 36px 0 var(--robe-color, #c0392b);
+    animation: char-idle 1.2s steps(1) infinite;
+  }
+
+  .pixel-char.idle::before { animation: char-idle 1.4s ease-in-out infinite; }
+  .pixel-char.thinking::before { animation: char-think 0.8s ease-in-out infinite; }
+  .pixel-char.busy::before { animation: char-busy 0.4s steps(1) infinite; }
+  .pixel-char.mad::before { animation: char-mad 0.15s steps(2) infinite; }
+
+  .pixel-char[data-role="zhishi"] { --robe-color: #e74c3c; }
+  .pixel-char[data-role="qitian"] { --robe-color: #1abc9c; }
+  .pixel-char[data-role="chengzhi"] { --robe-color: #7b68ee; }
+  .pixel-char[data-role="yushi"] { --robe-color: #34495e; }
+  .pixel-char[data-role="jiheng"] { --robe-color: #ffd700; }
+  .pixel-char[data-role="shenyi"] { --robe-color: #c0392b; }
+  .pixel-char[data-role="jizao"] { --robe-color: #2980b9; }
+  .pixel-char[data-role="xingce"] { --robe-color: #8b4513; }
+  .pixel-char[data-role="diancang"] { --robe-color: #27ae60; }
+  .pixel-char[data-role="shusuan"] { --robe-color: #e67e22; }
+  .pixel-char[data-role="bingrong"] { --robe-color: #c0392b; }
+  .pixel-char[data-role="jiyan"] { --robe-color: #9b59b6; }
+
+  @keyframes char-idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+  @keyframes char-think { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } 60% { transform: translateY(-2px); } }
+  @keyframes char-busy { 0%, 100% { transform: translateY(0) scale(1); } 25% { transform: translateY(-3px) scale(1.05); } 75% { transform: translateY(3px) scale(0.95); } }
+  @keyframes char-mad { 0% { transform: translateX(0); } 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+
+  /* ==================== STATUS BUBBLE ==================== */
+  .status-bubble {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #0d1117;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    animation: bubble-pulse 2s ease-in-out infinite;
+  }
+
+  .status-bubble.idle { background: #4ade80; }
+  .status-bubble.thinking { background: #60a5fa; }
+  .status-bubble.busy { background: #fbbf24; }
+  .status-bubble.mad { background: #f87171; animation: bubble-shake 0.2s steps(2) infinite; }
+
+  @keyframes bubble-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+  @keyframes bubble-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px) rotate(-5deg); } 75% { transform: translateX(2px) rotate(5deg); } }
+
+  .thought-bubble {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 2px solid #ffd700;
+    border-radius: 8px;
+    padding: 2px 6px;
+    font-size: 9px;
+    color: #0d1117;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 20;
+  }
+
+  .pixel-char.thinking .thought-bubble { opacity: 1; animation: float-up 1s ease-in-out infinite; }
+  @keyframes float-up { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-4px); } }
+
+  /* ==================== ACTIVITY FEED ==================== */
+  .activity-section {
+    flex: 1;
+    padding: 12px;
+    min-height: 160px;
+  }
+
+  .activity-title {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 12px;
+    color: #ffd700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .activity-title::before { content: '◆'; color: #c9a84c; font-size: 9px; }
+
+  .activity-feed {
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .activity-feed::-webkit-scrollbar { width: 4px; }
+  .activity-feed::-webkit-scrollbar-thumb { background: #30363d; border-radius: 2px; }
+
+  .activity-item {
+    font-size: 11px;
+    padding: 6px 10px;
+    background: #161b22;
+    border-left: 3px solid #ffd700;
+    border-radius: 0 4px 4px 0;
+    animation: slide-in 0.3s ease-out;
+  }
+
+  .activity-item .time { color: #7d8590; font-size: 10px; font-family: monospace; }
+  .activity-item .desc { color: #e6edf3; margin-top: 2px; line-height: 1.3; }
+  .activity-item .agent-tag { color: #ffd700; font-weight: bold; font-size: 10px; }
+
+  @keyframes slide-in { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+
+  /* ==================== STATS CARDS ==================== */
+  .stats-section {
+    background: #161b22;
+    border-top: 1px solid #21262d;
+    padding: 12px;
+    flex-shrink: 0;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 6px;
+  }
+
+  .stat-card {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 6px;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .stat-card .stat-num { font-size: 20px; font-weight: bold; color: #ffd700; line-height: 1.2; }
+  .stat-card .stat-label { font-size: 9px; color: #7d8590; text-transform: uppercase; margin-top: 3px; }
+  .stat-card.exec .stat-num { color: #e74c3c; }
+  .stat-card.pending .stat-num { color: #fbbf24; }
+  .stat-card.review .stat-num { color: #58a6ff; }
+  .stat-card.done .stat-num { color: #27ae60; }
+
+  /* ==================== LEGEND ==================== */
+  .legend {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #7d8590; }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .legend-dot.idle { background: #4ade80; }
+  .legend-dot.thinking { background: #60a5fa; }
+  .legend-dot.busy { background: #fbbf24; }
+  .legend-dot.mad { background: #f87171; }
+
+  /* ==================== SETTINGS PANEL ==================== */
+  #settings-panel {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 520px;
+    background: #161b22;
+    border-left: 2px solid #ffd700;
+    z-index: 300;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  #settings-panel.active { display: flex; }
+
+  .settings-header {
+    background: linear-gradient(180deg, #21262d 0%, #161b22 100%);
+    border-bottom: 1px solid #30363d;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .settings-header h2 {
+    font-family: 'ZCOOL KuaiLe', cursive;
+    font-size: 16px;
+    color: #ffd700;
+    letter-spacing: 2px;
+  }
+
+  .settings-close {
+    background: none;
+    border: none;
+    color: #7d8590;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .settings-close:hover { color: #ffd700; }
+
+  .settings-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+  }
+
+  .settings-body::-webkit-scrollbar { width: 6px; }
+  .settings-body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+
+  .settings-section {
+    margin-bottom: 20px;
+  }
+
+  .settings-section-title {
+    font-size: 11px;
+    color: #ffd700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #21262d;
+  }
+
+  /* Hermes Status */
+  .hermes-status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .hs-card {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 6px;
+    padding: 10px;
+  }
+
+  .hs-card .hs-label { font-size: 10px; color: #7d8590; text-transform: uppercase; margin-bottom: 4px; }
+  .hs-card .hs-val { font-size: 14px; color: #e6edf3; font-weight: bold; }
+  .hs-card .hs-val.running { color: #27ae60; }
+  .hs-card .hs-val.stopped { color: #f87171; }
+  .hs-card .hs-val.warning { color: #fbbf24; }
+
+  /* Agent List in settings */
+  .agent-list-item {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .agent-list-item .ali-name { font-size: 12px; color: #ffd700; font-weight: bold; width: 60px; }
+  .agent-list-item .ali-dept { font-size: 10px; color: #7d8590; width: 60px; }
+  .agent-list-item .ali-desc { font-size: 11px; color: #7d8590; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .agent-list-item .ali-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .agent-list-item .ali-dot.active { background: #27ae60; }
+  .agent-list-item .ali-dot.inactive { background: #484f58; }
+
+  /* Cron Jobs */
+  .cron-job-item {
+    background: #0d1117;
+    border: 1px solid #21262d;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cron-job-item .cji-name { font-size: 12px; color: #e6edf3; flex: 1; }
+  .cron-job-item .cji-schedule { font-size: 10px; color: #7d8590; font-family: monospace; }
+  .cron-job-item .cji-toggle {
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 10px;
+    color: #7d8590;
+    cursor: pointer;
+  }
+  .cron-job-item .cji-toggle.active { color: #27ae60; border-color: #27ae60; }
+
+  /* System Info */
+  .sys-info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid #21262d;
+    font-size: 11px;
+  }
+  .sys-info-row .si-key { color: #7d8590; }
+  .sys-info-row .si-val { color: #e6edf3; font-family: monospace; }
+
+  /* ==================== DETAIL PANEL ==================== */
+  .detail-panel {
+    display: none;
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 400px;
+    background: #161b22;
+    border-left: 1px solid #ffd700;
+    overflow-y: auto;
+    padding: 20px;
+    z-index: 200;
+  }
+
   .detail-panel.active { display: block; }
-  .detail-panel h2 { font-size: 15px; margin-bottom: 14px; color: #f7dc6f; border-bottom: 1px solid #2f3847; padding-bottom: 8px; }
-  .detail-panel .section { margin-bottom: 18px; }
-  .detail-panel .section-title { font-size: 10px; text-transform: uppercase; color: #7f8c8d; margin-bottom: 6px; letter-spacing: 1px; }
-  .detail-panel .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; background: #2f3847; color: #f7dc6f; margin-right: 4px; margin-bottom: 4px; }
-  .detail-panel .flow-item { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #1e2535; font-size: 11px; }
-  .detail-panel .flow-time { font-size: 9px; color: #4a5568; width: 48px; flex-shrink: 0; padding-top: 2px; }
-  .detail-panel .flow-arrow { color: #4a5568; flex-shrink: 0; }
-  .detail-panel .flow-content { flex: 1; }
-  .detail-panel .flow-agent { font-size: 9px; color: #f7dc6f; margin-top: 1px; }
-  .detail-panel .flow-remark { font-size: 10px; color: #7f8c8d; margin-top: 1px; }
-  .close-btn { position: absolute; right: 14px; top: 14px; background: none; border: none; color: #7f8c8d; font-size: 18px; cursor: pointer; }
-  .close-btn:hover { color: #f7dc6f; }
-  .loading { text-align: center; padding: 40px; color: #7f8c8d; }
-  .empty { text-align: center; padding: 30px; color: #3a4555; font-size: 12px; }
 
-  /* Flow badge in cards */
-  .flow-badge { display: flex; align-items: center; gap: 4px; font-size: 9px; color: #4a5568; margin-top: 4px; }
-  .flow-badge .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .detail-panel h2 {
+    font-size: 13px;
+    margin-bottom: 12px;
+    color: #ffd700;
+    border-bottom: 1px solid #21262d;
+    padding-bottom: 8px;
+    font-family: 'ZCOOL KuaiLe', cursive;
+    letter-spacing: 1px;
+  }
 
-  /* State border indicators */
-  .state-承旨 { border-left: 3px solid #9b59b6; }
-  .state-机衡 { border-left: 3px solid #3498db; }
-  .state-审议 { border-left: 3px solid #e67e22; }
-  .state-执行 { border-left: 3px solid #e74c3c; }
-  .state-待回奏 { border-left: 3px solid #1abc9c; }
-  .state-完成 { border-left: 3px solid #27ae60; }
-  .state-阻塞 { border-left: 3px solid #c0392b; }
-  .state-待处理 { border-left: 3px solid #7f8c8d; }
+  .detail-section { margin-bottom: 14px; }
+  .detail-section-title { font-size: 10px; text-transform: uppercase; color: #7d8590; margin-bottom: 5px; letter-spacing: 1px; }
+  .detail-tag { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; background: #21262d; color: #ffd700; margin-right: 4px; margin-bottom: 4px; }
+
+  .detail-flow-item { display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px solid #21262d; font-size: 11px; }
+  .detail-flow-time { font-size: 9px; color: #484f58; width: 40px; flex-shrink: 0; font-family: monospace; padding-top: 2px; }
+  .detail-flow-content { flex: 1; }
+  .detail-flow-agent { font-size: 9px; color: #ffd700; margin-top: 1px; }
+
+  .detail-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .detail-action-btn {
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 4px;
+    padding: 5px 12px;
+    font-size: 11px;
+    color: #e6edf3;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+
+  .detail-action-btn:hover { border-color: #ffd700; color: #ffd700; }
+  .detail-action-btn.danger { color: #f87171; border-color: #f87171; }
+  .detail-action-btn.danger:hover { background: rgba(248, 113, 113, 0.1); }
+
+  .close-btn { position: absolute; right: 14px; top: 14px; background: none; border: none; color: #7d8590; font-size: 20px; cursor: pointer; }
+  .close-btn:hover { color: #ffd700; }
+
+  /* ==================== LOADING/EMPTY STATES ==================== */
+  .loading-hint { text-align: center; color: #484f58; font-size: 12px; padding: 20px; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .empty-state { text-align: center; color: #484f58; font-size: 11px; padding: 16px; }
+
+  /* ==================== CMD OUTPUT TOAST ==================== */
+  #cmd-toast {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #21262d;
+    border: 1px solid #ffd700;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 12px;
+    color: #e6edf3;
+    z-index: 500;
+    max-width: 600px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+
+  #cmd-toast.show { display: block; }
+  #cmd-toast.error { border-color: #f87171; }
+  #cmd-toast pre { white-space: pre-wrap; word-break: break-all; margin-top: 6px; font-size: 11px; color: #7d8590; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-brand">
-    <h1>⚔️ 玄机阁</h1>
-    <div class="subtitle">自我进化 AI Agent 协作系统</div>
+<!-- ==================== TOP COMMAND BAR ==================== -->
+<div id="cmd-bar">
+  <div class="brand">⚔️ 玄机阁</div>
+  <div id="cmd-input-wrap">
+    <input id="cmd-input" type="text" placeholder="输入命令或任务描述，按 Enter 发送，或点击「创建任务」..." autocomplete="off" />
+    <button class="cmd-btn primary" onclick="submitTask()">创建任务</button>
+    <button class="cmd-btn" onclick="openSettings()">⚙️ 设置</button>
+    <button class="cmd-btn" onclick="clearTasks()">清空</button>
   </div>
-  <div style="display:flex;gap:16px;margin-left:auto;align-items:center">
-    <div class="stat" style="border:none;padding:0 16px 0 0;border-right:1px solid #2f3847">
-      <div style="font-size:10px;color:#7f8c8d">机衡状态</div>
-      <div style="font-size:12px;color:#27ae60;margin-top:2px" id="jiyan-status">● 运行中</div>
+  <div id="cmd-status">就绪</div>
+</div>
+
+<!-- ==================== TAB BAR ==================== -->
+<div id="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('kanban')">
+    <span class="tab-dot"></span>看板
+  </button>
+  <button class="tab-btn" onclick="switchTab('agents')">
+    <span class="tab-dot"></span>Agent管理
+  </button>
+  <button class="tab-btn" onclick="switchTab('cron')">
+    <span class="tab-dot"></span>Cron任务
+  </button>
+  <button class="tab-btn" onclick="switchTab('system')">
+    <span class="tab-dot"></span>系统状态
+  </button>
+</div>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<div id="main-content">
+
+  <!-- ==================== TAB: KANBAN ==================== -->
+  <div class="tab-panel active" id="panel-kanban">
+
+    <!-- Left: Kanban -->
+    <div class="kanban-section">
+      <div class="kanban-header">
+        <div class="kanban-title">📋 工程任务看板</div>
+        <div class="kanban-meta">实时 · <span id="last-update">--:--:--</span></div>
+      </div>
+      <div class="kanban" id="kanban">
+        <div class="loading-hint">正在连接数据源...</div>
+      </div>
     </div>
-    <div style="font-size:11px;color:#4a5568">
-      实时看板 · <span id="last-update">--</span>
+
+    <!-- Right: Control Panel -->
+    <div class="control-panel">
+
+      <div class="sys-header">
+        <div class="sys-header-top">
+          <div class="sys-title">控制台</div>
+          <div class="conn-indicator">
+            <div class="conn-dot" id="conn-dot"></div>
+            <span id="conn-text">连接正常</span>
+          </div>
+        </div>
+        <div class="sys-stats-row">
+          <div class="sys-stat-chip exec">
+            <div class="val" id="hstat-exec">0</div>
+            <div class="lbl">执行</div>
+          </div>
+          <div class="sys-stat-chip pending">
+            <div class="val" id="hstat-pending">0</div>
+            <div class="lbl">待审</div>
+          </div>
+          <div class="sys-stat-chip done">
+            <div class="val" id="hstat-done">0</div>
+            <div class="lbl">完成</div>
+          </div>
+          <div class="sys-stat-chip">
+            <div class="val" id="hstat-total">0</div>
+            <div class="lbl">总计</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="agent-section">
+        <div class="agent-section-title">Agent 状态监控</div>
+        <div class="agent-grid" id="agent-grid"></div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot idle"></div>空闲</div>
+          <div class="legend-item"><div class="legend-dot thinking"></div>思考</div>
+          <div class="legend-item"><div class="legend-dot busy"></div>忙碌</div>
+          <div class="legend-item"><div class="legend-dot mad"></div>阻塞</div>
+        </div>
+      </div>
+
+      <div class="activity-section">
+        <div class="activity-title">实时活动流</div>
+        <div class="activity-feed" id="activity-feed">
+          <div class="empty-state">暂无活动记录</div>
+        </div>
+      </div>
+
+      <div class="stats-section">
+        <div class="stats-grid">
+          <div class="stat-card exec">
+            <div class="stat-num" id="stat-exec">0</div>
+            <div class="stat-label">执行中</div>
+          </div>
+          <div class="stat-card pending">
+            <div class="stat-num" id="stat-pending">0</div>
+            <div class="stat-label">待审核</div>
+          </div>
+          <div class="stat-card review">
+            <div class="stat-num" id="stat-review">0</div>
+            <div class="stat-label">待回奏</div>
+          </div>
+          <div class="stat-card done">
+            <div class="stat-num" id="stat-done">0</div>
+            <div class="stat-label">已完成</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end control-panel -->
+  </div><!-- end panel-kanban -->
+
+  <!-- ==================== TAB: AGENT MANAGEMENT ==================== -->
+  <div class="tab-panel" id="panel-agents">
+    <div style="flex:1;overflow-y:auto;padding:16px;">
+      <div class="settings-section-title">🤖 Agent 注册表</div>
+      <div id="agent-list-settings">加载中...</div>
     </div>
   </div>
-</div>
 
-<div class="stats">
-  <div class="stat"><div class="num" id="stat-total">0</div><div class="label">全部</div></div>
-  <div class="stat"><div class="num" id="stat-pending">0</div><div class="label">待处理</div></div>
-  <div class="stat"><div class="num" id="stat-exec">0</div><div class="label">执行中</div></div>
-  <div class="stat"><div class="num" id="stat-review">0</div><div class="label">审议/回奏</div></div>
-  <div class="stat"><div class="num" id="stat-done">0</div><div class="label">已完成</div></div>
-  <div class="stat"><div class="num" id="stat-blocked">0</div><div class="label">阻塞</div></div>
-  <div class="stat" style="border-left:3px solid #f7dc6f;border-right:none">
-    <div class="num" id="stat-evo">—</div><div class="label">进化度</div>
+  <!-- ==================== TAB: CRON ==================== -->
+  <div class="tab-panel" id="panel-cron">
+    <div style="flex:1;overflow-y:auto;padding:16px;">
+      <div class="settings-section-title">⏰ Cron 任务管理</div>
+      <div id="cron-list">加载中...</div>
+    </div>
   </div>
-</div>
 
-<div class="kanban-wrap">
-  <div class="kanban" id="kanban">
-    <div class="loading">加载中...</div>
+  <!-- ==================== TAB: SYSTEM ==================== -->
+  <div class="tab-panel" id="panel-system">
+    <div style="flex:1;overflow-y:auto;padding:16px;">
+      <div class="settings-section-title">🖥️ 系统状态</div>
+      <div id="hermes-status-grid" class="hermes-status-grid">加载中...</div>
+
+      <div class="settings-section" style="margin-top:20px">
+        <div class="settings-section-title">📁 系统信息</div>
+        <div id="sys-info-list"></div>
+      </div>
+
+      <div class="settings-section" style="margin-top:16px">
+        <div class="settings-section-title">📈 统计概览</div>
+        <div id="sys-stats-detail"></div>
+      </div>
+    </div>
   </div>
-</div>
 
+</div><!-- end main-content -->
+
+<!-- ==================== DETAIL PANEL ==================== -->
 <div class="detail-panel" id="detail-panel">
   <button class="close-btn" onclick="closeDetail()">×</button>
   <h2 id="detail-title">任务详情</h2>
   <div id="detail-content"></div>
 </div>
 
+<!-- ==================== SETTINGS PANEL ==================== -->
+<div id="settings-panel">
+  <div class="settings-header">
+    <h2>⚙️ 玄机阁设置</h2>
+    <button class="settings-close" onclick="closeSettings()">×</button>
+  </div>
+  <div class="settings-body">
+    <div class="settings-section">
+      <div class="settings-section-title">🟢 Hermes 运行状态</div>
+      <div id="settings-hermes-status" class="hermes-status-grid">加载中...</div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">🤖 Agent 注册表</div>
+      <div id="settings-agent-list">加载中...</div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">⏰ Cron 任务</div>
+      <div id="settings-cron-list">加载中...</div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-section-title">📁 系统路径</div>
+      <div id="settings-sys-paths"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CMD Output Toast -->
+<div id="cmd-toast"></div>
+
 <script>
-// ============================================================
-// 玄机阁新架构：承旨 → 机衡 → 审议 → 执行层执行 → 回奏
-// ============================================================
+// ================================================================
+// CONSTANTS
+// ================================================================
+
 const COLUMNS = [
-  { key: '承旨',    label: '🤴 承旨',     color: '#9b59b6', desc: '消息分拣·旨意整理' },
-  { key: '机衡',    label: '⚙️ 机衡',      color: '#3498db', desc: '检索Skill/Role·派发' },
-  { key: '审议',    label: '🔍 审议',      color: '#e67e22', desc: '四维审议·准奏/封驳' },
-  { key: '执行',    label: '🔨 技造·刑策·文册·数算·兵戎', color: '#e74c3c', desc: '技造/刑策/文册/数算/兵戎' },
-  { key: '待回奏',  label: '📤 待回奏',   color: '#1abc9c', desc: '等待汇总·回奏用户' },
-  { key: '完成',    label: '🏁 完成',      color: '#27ae60', desc: '任务完成' },
-  { key: '阻塞',    label: '🚫 阻塞',      color: '#c0392b', desc: '异常·需干预' },
+  { key: 'pending',   label: '⏳ 待处理', color: '#484f58', desc: '新建任务' },
+  { key: 'running',   label: '⚙️ 执行中', color: '#3498db', desc: '处理中' },
+  { key: 'done',     label: '🏁 完成',    color: '#27ae60', desc: '已完成' },
+  { key: 'blocked',  label: '🚫 阻塞',    color: '#c0392b', desc: '异常' },
 ];
 
-// State mapping: legacy → new
 const STATE_MAP = {
-  'Taizi': '承旨', 'taizi': '承旨',
-  'Zhongshu': '机衡', 'zhongshu': '机衡',
-  'Menxia': '审议', 'menxia': '审议',
-  'Shangshu': '机衡', 'shangshu': '机衡',
-  'Doing': '执行', 'doing': '执行',
-  'Next': '执行', 'next': '执行',
-  'Review': '待回奏', 'review': '待回奏',
-  'Done': '完成', 'done': '完成',
-  'Blocked': '阻塞', 'blocked': '阻塞',
-  'Pending': '待处理', 'pending': '待处理',
-  'Cancelled': '阻塞', 'cancelled': '阻塞',
+  'Taizi': 'pending', 'Zhongshu': 'running', 'Menxia': 'running',
+  'Doing': 'running', 'Next': 'running', 'Review': 'pending',
+  'Done': 'done', 'Blocked': 'blocked', 'Pending': 'pending',
+  'Cancelled': 'blocked',
+  // 玄机阁新状态
+  '承旨': 'pending', '机衡': 'running', '审议': 'running',
+  '执行': 'running', '技造': 'running', '刑策': 'running',
+  '文册': 'running', '数算': 'running', '兵戎': 'running',
+  '机研': 'running', '枢观': 'running', '玄档': 'running',
+  '枢鉴': 'running',
+  '待回奏': 'pending', '完成': 'done', '阻塞': 'blocked',
 };
 
+const AGENTS = [
+  { id: 'zhishi',   role: 'zhishi',   name: '玄档',   dept: '情报层' },
+  { id: 'qitian',   role: 'qitian',   name: '枢观',   dept: '战略层' },
+  { id: 'chengzhi', role: 'chengzhi', name: '承旨',   dept: '协调层' },
+  { id: 'yushi',    role: 'yushi',    name: '枢鉴',   dept: '协调层' },
+  { id: 'jiheng',   role: 'jiheng',   name: '机衡',   dept: '协调层' },
+  { id: 'shenyi',   role: 'shenyi',   name: '审议',   dept: '协调层' },
+  { id: 'jizao',    role: 'jizao',    name: '技造',   dept: '执行层' },
+  { id: 'xingce',   role: 'xingce',   name: '刑策',   dept: '执行层' },
+  { id: 'diancang', role: 'diancang', name: '文册',   dept: '执行层' },
+  { id: 'shusuan',  role: 'shusuan',  name: '数算',   dept: '执行层' },
+  { id: 'bingrong', role: 'bingrong', name: '兵戎',   dept: '执行层' },
+  { id: 'jiyan',    role: 'jiyan',    name: '机研',   dept: '执行层' },
+];
+
+// ================================================================
+// STATE
+// ================================================================
+let tasks = [];
+let hermesStatus = {};
+let cronJobs = [];
+let activities = [];
+
+// ================================================================
+// HELPERS
+// ================================================================
 function resolveState(state) {
-  return STATE_MAP[state] || state || '待处理';
+  return STATE_MAP[state] || state || 'pending';
 }
 
-let tasks = [];
-let detailTask = null;
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
 
-async function loadTasks() {
-  try {
-    const res = await fetch('/api/tasks');
-    tasks = await res.json();
-    // Normalize legacy states → new states
-    tasks.forEach(t => { t.state = resolveState(t.state); });
-    render();
-    document.getElementById('last-update').textContent = new Date().toLocaleTimeString('zh-CN');
-  } catch (e) {
-    console.error('加载失败', e);
+function colByKey(key) {
+  return COLUMNS.find(c => c.key === key) || { color: '#484f58', desc: key };
+}
+
+// ================================================================
+// CMD BAR
+// ================================================================
+const cmdInput = document.getElementById('cmd-input');
+const cmdStatus = document.getElementById('cmd-status');
+
+cmdInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const val = cmdInput.value.trim();
+    if (!val) return;
+    handleCommand(val);
+  }
+});
+
+async function handleCommand(val) {
+  // 判断是创建任务还是发送命令
+  if (val.startsWith('/') || val.startsWith('!')) {
+    // 直接命令
+    await sendDirectCmd(val.slice(1));
+  } else if (val.startsWith('创建 ') || val.startsWith('task ') || val.startsWith('任务 ')) {
+    const title = val.replace(/^(创建 |task |任务 )/, '');
+    await createTask(title);
+  } else {
+    // 默认：创建任务
+    await createTask(val);
   }
 }
 
-function render() {
-  // Stats
-  const total = tasks.length;
-  const pending = tasks.filter(t => ['承旨','待处理'].includes(resolveState(t.state))).length;
-  const exec = tasks.filter(t => ['机衡','审议','执行'].includes(resolveState(t.state))).length;
-  const review = tasks.filter(t => ['待回奏'].includes(resolveState(t.state))).length;
-  const done = tasks.filter(t => resolveState(t.state) === '完成').length;
-  const blocked = tasks.filter(t => resolveState(t.state) === '阻塞').length;
-  const evoPct = total > 0 ? Math.round(done / total * 100) : 0;
+async function submitTask() {
+  const val = cmdInput.value.trim();
+  if (!val) return;
+  cmdInput.value = '';
+  await handleCommand(val);
+}
 
-  document.getElementById('stat-total').textContent = total;
-  document.getElementById('stat-pending').textContent = pending;
-  document.getElementById('stat-exec').textContent = exec;
-  document.getElementById('stat-review').textContent = review;
-  document.getElementById('stat-done').textContent = done;
-  document.getElementById('stat-blocked').textContent = blocked;
-  document.getElementById('stat-evo').textContent = evoPct + '%';
+async function createTask(title) {
+  setCmdStatus('sending', '创建任务中...');
+  try {
+    const res = await fetch('/api/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, description: '' }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      setCmdStatus('ok', `✓ 任务已创建: ${data.task_id}`);
+      showToast(`✓ 任务「${title}」已创建，ID: ${data.task_id}`);
+      setTimeout(() => loadAll(), 500);
+    } else {
+      setCmdStatus('error', `✗ ${data.error}`);
+      showToast(`✗ 创建失败: ${data.error}`, true);
+    }
+  } catch (e) {
+    setCmdStatus('error', '✗ 网络错误');
+    showToast('✗ 网络错误: ' + e.message, true);
+  }
+  setTimeout(() => setCmdStatus('ok', '就绪'), 3000);
+}
 
+async function sendDirectCmd(cmd) {
+  setCmdStatus('sending', '发送命令...');
+  try {
+    const res = await fetch('/api/cmd', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cmd, channel: 'local' }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      setCmdStatus('ok', '✓ 命令已执行');
+      showToast(`命令输出:\n${data.output || '(无输出)'}`);
+    } else {
+      setCmdStatus('error', `✗ ${data.output || '执行失败'}`);
+      showToast(`✗ ${data.output || '执行失败'}`, true);
+    }
+  } catch (e) {
+    setCmdStatus('error', '✗ 网络错误');
+    showToast('✗ 网络错误', true);
+  }
+  setTimeout(() => setCmdStatus('ok', '就绪'), 4000);
+}
+
+function setCmdStatus(type, msg) {
+  cmdStatus.className = type;
+  cmdStatus.textContent = msg;
+}
+
+function showToast(msg, isError = false) {
+  const toast = document.getElementById('cmd-toast');
+  toast.className = isError ? 'error' : '';
+  toast.innerHTML = msg.replace(/\n/g, '<br>') + (isError ? '' : '<pre>' + msg + '</pre>');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), isError ? 5000 : 3000);
+}
+
+function clearTasks() {
+  tasks = [];
+  activities = [];
+  renderKanban();
+  renderAgentGrid();
+  renderStats();
+  renderActivity();
+}
+
+// ================================================================
+// API LOADER
+// ================================================================
+async function loadAll() {
+  try {
+    const [tasksRes, healthRes, cronRes] = await Promise.all([
+      fetch('/api/tasks').catch(() => ({ ok: false, json: () => [] })),
+      fetch('/api/hermes/status').catch(() => ({ ok: false, json: () => ({}) })),
+      fetch('/api/cron/jobs').catch(() => ({ ok: false, json: () => ({ jobs: [] }) })),
+    ]);
+
+    if (tasksRes.ok) tasks = await tasksRes.json();
+    if (healthRes.ok) hermesStatus = await healthRes.json();
+    if (cronRes.ok) {
+      const cronData = await cronRes.json();
+      cronJobs = cronData.jobs || [];
+    }
+
+    renderKanban();
+    renderAgentGrid();
+    renderStats();
+    renderActivity();
+    updateConnection(true);
+    document.getElementById('last-update').textContent = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+  } catch (e) {
+    console.error('Load error:', e);
+    updateConnection(false);
+  }
+}
+
+function updateConnection(ok) {
+  const dot = document.getElementById('conn-dot');
+  const txt = document.getElementById('conn-text');
+  if (ok) {
+    dot.classList.remove('offline');
+    txt.textContent = '连接正常';
+  } else {
+    dot.classList.add('offline');
+    txt.textContent = '离线';
+  }
+}
+
+// ================================================================
+// KANBAN RENDER
+// ================================================================
+function renderKanban() {
   const kanban = document.getElementById('kanban');
   let html = '';
 
   for (const col of COLUMNS) {
     const colTasks = tasks.filter(t => {
-      const s = resolveState(t.state);
-      if (col.key === '待处理') return s === '待处理' || (!t.state);
+      const s = resolveState(t.state || t.status);
       return s === col.key;
     });
 
     html += `<div class="column">
       <div class="column-header" style="border-top: 3px solid ${col.color}">
         ${col.label}
-        <span style="background:#2f3847;padding:1px 7px;border-radius:10px;font-size:10px;color:#7f8c8d">${colTasks.length}</span>
+        <span class="col-badge">${colTasks.length}</span>
       </div>
       <div class="column-body">`;
 
     if (colTasks.length === 0) {
-      html += '<div class="empty">—</div>';
+      html += '<div class="empty-state">—</div>';
     } else {
-      for (const t of colTasks) {
-        const todos = t.todos || [];
-        const completed = todos.filter(td => td.status === 'completed').length;
-        const total_todos = todos.length;
-        const pct = total_todos > 0 ? Math.round(completed / total_todos * 100) : 0;
-        const agent = t.official || t.agent || '';
-        const org = t.org || '';
+      for (const t of colTasks.slice(0, 30)) {
+        const agent = t.official || t.agent || t.assignee || '';
+        const state = resolveState(t.state || t.status);
 
-        html += `<div class="task-card state-${t.state || '待处理'}" onclick="showDetail('${t.id}')">
-          <div class="task-id">${t.id}</div>
-          <div class="task-title">${escapeHtml(t.title || '')}</div>
+        html += `<div class="task-card state-${state}" onclick="showDetail('${t.id}')">
+          <div class="task-id">${escapeHtml(t.id || '')}</div>
+          <div class="task-title">${escapeHtml(t.title || t.name || '')}</div>
           <div class="task-meta">
-            ${agent ? `<span class="badge" style="color:#f7dc6f">${escapeHtml(agent)}</span>` : ''}
-            ${org ? `<span class="badge">${escapeHtml(org)}</span>` : ''}
+            ${agent ? `<span class="badge agent">${escapeHtml(agent)}</span>` : ''}
           </div>
-          ${total_todos > 0 ? `<div class="progress-bar"><div class="fill" style="width:${pct}%"></div></div>` : ''}
-          ${t.flow_log && t.flow_log.length > 0 ? `<div class="flow-badge"><span class="dot" style="background:${col.color}"></span>${t.flow_log[t.flow_log.length-1].to || col.desc}</div>` : ''}
         </div>`;
       }
+      if (colTasks.length > 30) {
+        html += `<div class="empty-state">还有 ${colTasks.length - 30} 项...</div>`;
+      }
     }
+
     html += '</div></div>';
   }
 
   kanban.innerHTML = html;
 }
 
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+// ================================================================
+// AGENT GRID
+// ================================================================
+function computeAgentState(agentId) {
+  const agentTasks = tasks.filter(t => {
+    const a = (t.official || t.agent || t.assignee || '').toLowerCase();
+    return a.includes(agentId.toLowerCase());
+  });
+
+  const busyCount = agentTasks.filter(t => {
+    const s = resolveState(t.state || t.status);
+    return s === 'running';
+  }).length;
+
+  const blockedCount = agentTasks.filter(t => {
+    const s = resolveState(t.state || t.status);
+    return s === 'blocked';
+  }).length;
+
+  if (blockedCount > 0) return 'mad';
+  if (busyCount >= 3) return 'busy';
+  if (busyCount >= 1) return 'thinking';
+  return 'idle';
 }
 
-function showDetail(taskId) {
-  detailTask = tasks.find(t => t.id === taskId);
-  if (!detailTask) return;
+function renderAgentGrid() {
+  const grid = document.getElementById('agent-grid');
+  let html = '';
+
+  for (const agent of AGENTS) {
+    const state = computeAgentState(agent.id);
+    const taskCount = tasks.filter(t => {
+      const a = (t.official || t.agent || t.assignee || '').toLowerCase();
+      return a.includes(agent.id.toLowerCase());
+    }).length;
+
+    const thoughtMap = { idle: '', thinking: '思考中...', busy: '执行中', mad: '阻塞!' };
+
+    html += `<div class="agent-room">
+      <div class="pixel-char ${state}" data-role="${agent.role}" id="char-${agent.id}" style="position:relative">
+        <div class="status-bubble ${state}"></div>
+        ${state === 'thinking' ? `<div class="thought-bubble">${thoughtMap[state]}</div>` : ''}
+      </div>
+      <div class="room-role">${agent.name}</div>
+      <div class="room-label">${taskCount}任务</div>
+    </div>`;
+  }
+
+  grid.innerHTML = html;
+}
+
+// ================================================================
+// STATS
+// ================================================================
+function renderStats() {
+  const total = tasks.length;
+  const exec = tasks.filter(t => resolveState(t.state || t.status) === 'running').length;
+  const pending = tasks.filter(t => resolveState(t.state || t.status) === 'pending').length;
+  const done = tasks.filter(t => resolveState(t.state || t.status) === 'done').length;
+  const blocked = tasks.filter(t => resolveState(t.state || t.status) === 'blocked').length;
+
+  document.getElementById('hstat-total').textContent = total;
+  document.getElementById('hstat-exec').textContent = exec;
+  document.getElementById('hstat-pending').textContent = pending;
+  document.getElementById('hstat-done').textContent = done;
+
+  document.getElementById('stat-exec').textContent = exec;
+  document.getElementById('stat-pending').textContent = pending;
+  document.getElementById('stat-review').textContent = pending;
+  document.getElementById('stat-done').textContent = done;
+}
+
+// ================================================================
+// ACTIVITY FEED
+// ================================================================
+function renderActivity() {
+  const feed = document.getElementById('activity-feed');
+  if (activities.length === 0) {
+    activities = tasks.slice(0, 15).map(t => ({
+      time: (t.updated_at || t.created_at || '').slice(11, 19) || '',
+      desc: `${t.title || t.id} → ${resolveState(t.state || t.status)}`,
+      agent: t.official || t.agent || '',
+      state: resolveState(t.state || t.status),
+    }));
+  }
+
+  if (activities.length === 0) {
+    feed.innerHTML = '<div class="empty-state">暂无活动记录</div>';
+    return;
+  }
+
+  let html = '';
+  for (const act of activities.slice(0, 12)) {
+    const col = colByKey(act.state);
+    html += `<div class="activity-item" style="border-left-color:${col.color}">
+      <div class="time">${act.time}</div>
+      <div class="desc">${escapeHtml(act.desc || '')}</div>
+      ${act.agent ? `<div><span class="agent-tag">@${escapeHtml(act.agent)}</span></div>` : ''}
+    </div>`;
+  }
+  feed.innerHTML = html;
+}
+
+// ================================================================
+// DETAIL PANEL
+// ================================================================
+async function showDetail(taskId) {
+  const task = tasks.find(t => String(t.id) === String(taskId));
+  if (!task) return;
 
   const panel = document.getElementById('detail-panel');
   const content = document.getElementById('detail-content');
   document.getElementById('detail-title').textContent = taskId;
 
-  const state = resolveState(detailTask.state);
-  const stateColor = (COLUMNS.find(c => c.key === state) || { color: '#7f8c8d' }).color;
+  const state = resolveState(task.state || task.status);
 
   let html = `
-    <div class="section">
-      <div class="section-title">标题</div>
-      <div style="font-size:13px;line-height:1.5">${escapeHtml(detailTask.title || '—')}</div>
+    <div class="detail-section">
+      <div class="detail-section-title">标题</div>
+      <div style="font-size:13px;line-height:1.5">${escapeHtml(task.title || task.name || '—')}</div>
     </div>
-    <div class="section">
-      <div class="section-title">状态</div>
+    <div class="detail-section">
+      <div class="detail-section-title">状态</div>
       <div>
-        <span class="tag" style="border-left:3px solid ${stateColor};background:#252d3d">${state}</span>
-        ${detailTask.official ? `<span class="tag">${escapeHtml(detailTask.official)}</span>` : ''}
-        ${detailTask.org ? `<span class="tag">${escapeHtml(detailTask.org)}</span>` : ''}
+        <span class="detail-tag" style="border-left:3px solid ${colByKey(state).color}">${state}</span>
+        ${(task.official || task.agent || task.assignee) ? `<span class="detail-tag">${escapeHtml(task.official || task.agent || task.assignee)}</span>` : ''}
       </div>
     </div>
-    <div class="section">
-      <div class="section-title">当前动态</div>
-      <div style="font-size:12px;color:#e7e9ea;padding:6px 8px;background:#252d3d;border-radius:4px">${escapeHtml(detailTask.now || '—')}</div>
+    <div class="detail-section">
+      <div class="detail-section-title">描述</div>
+      <div style="font-size:12px;color:#7d8590;line-height:1.5">${escapeHtml(task.description || task.desc || task.body || '—')}</div>
     </div>
-    <div class="section">
-      <div class="section-title">流转记录 · ${(detailTask.flow_log || []).length}条</div>`;
+    <div class="detail-section">
+      <div class="detail-section-title">时间</div>
+      <div style="font-size:11px;color:#7d8590">创建: ${task.created_at || '—'}<br>更新: ${task.updated_at || '—'}</div>
+    </div>`;
 
-  const flowLog = detailTask.flow_log || [];
-  if (flowLog.length === 0) {
-    html += '<div style="color:#3a4555;font-size:11px">暂无流转记录</div>';
-  } else {
-    // Show most recent first
-    const reversed = [...flowLog].reverse();
-    for (const fl of reversed.slice(0, 8)) {
-      const col = COLUMNS.find(c => c.key === fl.to);
-      const dotColor = col ? col.color : '#4a5568';
-      html += `<div class="flow-item">
-        <div class="flow-time">${(fl.at || '').slice(11, 16)}</div>
-        <div class="flow-arrow" style="color:${dotColor}">●</div>
-        <div class="flow-content">
-          <div>${escapeHtml(fl.from || '')} → <strong style="color:#e7e9ea">${escapeHtml(fl.to || '')}</strong></div>
-          ${fl.remark ? `<div class="flow-remark">${escapeHtml(fl.remark)}</div>` : ''}
-          ${fl.agent ? `<div class="flow-agent">@${escapeHtml(fl.agent)}</div>` : ''}
-        </div>
-      </div>`;
-    }
-  }
-  html += '</div>';
-
-  const todos = detailTask.todos || [];
-  if (todos.length > 0) {
-    const doneCount = todos.filter(td => td.status === 'completed').length;
-    html += `<div class="section">
-      <div class="section-title">子任务 · ${doneCount}/${todos.length}完成</div>`;
-    for (const td of todos) {
-      const check = td.status === 'completed' ? '✅' : '⬜';
-      html += `<div style="font-size:11px;padding:3px 0;color:${td.status === 'completed' ? '#7f8c8d' : '#e7e9ea'}">${check} ${escapeHtml(td.title || '')}</div>`;
-    }
-    html += '</div>';
-  }
-
-  const progressLog = detailTask.progress_log || [];
-  if (progressLog.length > 0) {
-    html += `<div class="section">
-      <div class="section-title">最近进展</div>`;
-    for (const pl of progressLog.slice(-4)) {
-      html += `<div style="padding:5px 0;border-bottom:1px solid #1e2535;font-size:11px">
-        <div>${escapeHtml(pl.current || '')}</div>
-        ${pl.plan ? `<div style="color:#7f8c8d;font-size:10px;margin-top:2px">→ ${escapeHtml(pl.plan)}</div>` : ''}
-      </div>`;
-    }
-    html += '</div>';
-  }
+  // Action buttons
+  html += `<div class="detail-actions">
+    <button class="detail-action-btn" onclick="flowTask('${taskId}', 'next')">▶ 流转</button>
+    <button class="detail-action-btn" onclick="flowTask('${taskId}', 'retry')">↻ 重试</button>
+    <button class="detail-action-btn danger" onclick="flowTask('${taskId}', 'cancel')">✕ 取消</button>
+  </div>`;
 
   content.innerHTML = html;
   panel.classList.add('active');
@@ -318,12 +1535,239 @@ function showDetail(taskId) {
 
 function closeDetail() {
   document.getElementById('detail-panel').classList.remove('active');
-  detailTask = null;
 }
 
-// Auto-refresh every 5s
-loadTasks();
-setInterval(loadTasks, 5000);
+async function flowTask(taskId, action) {
+  try {
+    const res = await fetch('/api/tasks/flow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ task_id: taskId, action }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showToast(`✓ 任务 ${taskId} 已${action === 'next' ? '流转' : action === 'retry' ? '重试' : '取消'}`);
+      closeDetail();
+      setTimeout(() => loadAll(), 500);
+    } else {
+      showToast(`✗ ${data.error}`, true);
+    }
+  } catch (e) {
+    showToast('✗ 操作失败', true);
+  }
+}
+
+// Close detail when clicking outside
+document.addEventListener('click', (e) => {
+  const panel = document.getElementById('detail-panel');
+  if (panel.classList.contains('active') && !panel.contains(e.target) && !e.target.closest('.task-card')) {
+    closeDetail();
+  }
+});
+
+// ================================================================
+// SETTINGS PANEL
+// ================================================================
+function openSettings() {
+  const panel = document.getElementById('settings-panel');
+  panel.classList.add('active');
+  loadSettings();
+}
+
+function closeSettings() {
+  document.getElementById('settings-panel').classList.remove('active');
+}
+
+async function loadSettings() {
+  try {
+    const [statusRes, agentsRes, cronRes, healthRes] = await Promise.all([
+      fetch('/api/hermes/status'),
+      fetch('/api/agents'),
+      fetch('/api/cron/jobs'),
+      fetch('/api/health'),
+    ]);
+
+    const status = statusRes.ok ? await statusRes.json() : {};
+    const agentsData = agentsRes.ok ? await agentsRes.json() : { agents: [] };
+    const cronData = cronRes.ok ? await cronRes.json() : { jobs: [] };
+    const health = healthRes.ok ? await healthRes.json() : {};
+
+    // Hermes Status
+    const hsGrid = document.getElementById('settings-hermes-status') || document.getElementById('hermes-status-grid');
+    if (hsGrid) {
+      hsGrid.innerHTML = `
+        <div class="hs-card">
+          <div class="hs-label">Hermes Agent</div>
+          <div class="hs-val ${status.hermes_running ? 'running' : 'stopped'}">${status.hermes_running ? '● 运行中' : '○ 停止'}</div>
+          <div style="font-size:10px;color:#7d8590;margin-top:4px">PID: ${status.hermes_pids ? status.hermes_pids.join(', ') : '—'}</div>
+        </div>
+        <div class="hs-card">
+          <div class="hs-label">Watchdog</div>
+          <div class="hs-val ${status.watchdog_running ? 'running' : 'stopped'}">${status.watchdog_running ? '● 运行中' : '○ 停止'}</div>
+        </div>
+        <div class="hs-card">
+          <div class="hs-label">看板数据库</div>
+          <div class="hs-val ${status.db_exists ? 'running' : 'warning'}">${status.db_exists ? '● 已连接' : '○ 未连接'}</div>
+          <div style="font-size:10px;color:#7d8590;margin-top:4px;word-break:break-all">${(status.kanban_db || '').split('/').slice(-2).join('/')}</div>
+        </div>
+        <div class="hs-card">
+          <div class="hs-label">运行时长</div>
+          <div class="hs-val">${health.uptime_human || '—'}</div>
+        </div>`;
+    }
+
+    // Agent list
+    const agentList = document.getElementById('settings-agent-list') || document.getElementById('agent-list-settings');
+    if (agentList) {
+      if (agentsData.agents && agentsData.agents.length > 0) {
+        agentList.innerHTML = agentsData.agents.map(a => `
+          <div class="agent-list-item">
+            <div class="ali-dot ${a.has_soul ? 'active' : 'inactive'}"></div>
+            <div class="ali-name">${escapeHtml(a.name || a.id)}</div>
+            <div class="ali-dept">${escapeHtml(a.dept || '')}</div>
+            <div class="ali-desc">${escapeHtml(a.description || '')}</div>
+          </div>`).join('');
+      } else {
+        // Fallback to local AGENTS list
+        agentList.innerHTML = AGENTS.map(a => `
+          <div class="agent-list-item">
+            <div class="ali-dot active"></div>
+            <div class="ali-name">${a.name}</div>
+            <div class="ali-dept">${a.dept}</div>
+            <div class="ali-desc">${a.dept} · ${a.id}</div>
+          </div>`).join('');
+      }
+    }
+
+    // Cron jobs
+    const cronList = document.getElementById('settings-cron-list') || document.getElementById('cron-list');
+    if (cronList) {
+      if (cronData.jobs && cronData.jobs.length > 0) {
+        cronList.innerHTML = cronData.jobs.map(j => `
+          <div class="cron-job-item">
+            <div class="cji-name">${escapeHtml(j.name || j.id)}</div>
+            <div class="cji-schedule">${escapeHtml(j.schedule || '—')}</div>
+            <button class="cji-toggle ${j.enabled ? 'active' : ''}" onclick="toggleCron('${j.id}', ${!j.enabled})">${j.enabled ? '暂停' : '恢复'}</button>
+          </div>`).join('');
+      } else {
+        cronList.innerHTML = '<div class="empty-state">暂无 Cron 任务</div>';
+      }
+    }
+
+    // System paths
+    const pathsEl = document.getElementById('settings-sys-paths');
+    if (pathsEl) {
+      pathsEl.innerHTML = `
+        <div class="sys-info-row"><span class="si-key">看板数据库</span><span class="si-val">${status.kanban_db || '~/.hermes/kanban.db'}</span></div>
+        <div class="sys-info-row"><span class="si-key">Hermestrix</span><span class="si-val">${health.kanban_db ? health.kanban_db.replace(/\//g, ' / ').split('/').slice(-3).join('/') : '—'}</span></div>`;
+    }
+
+    // System panel
+    if (document.getElementById('panel-system').classList.contains('active')) {
+      renderSystemPanel(status, health);
+    }
+
+    // Agent panel
+    if (document.getElementById('panel-agents').classList.contains('active')) {
+      const alEl = document.getElementById('agent-list-settings');
+      if (alEl) {
+        alEl.innerHTML = agentList ? agentList.innerHTML : alEl.innerHTML;
+      }
+    }
+
+    // Cron panel
+    if (document.getElementById('panel-cron').classList.contains('active')) {
+      const clEl = document.getElementById('cron-list');
+      if (clEl) {
+        clEl.innerHTML = cronList ? cronList.innerHTML : clEl.innerHTML;
+      }
+    }
+
+  } catch (e) {
+    console.error('Settings load error:', e);
+  }
+}
+
+function renderSystemPanel(status, health) {
+  const hsGrid = document.getElementById('hermes-status-grid');
+  if (hsGrid) {
+    hsGrid.innerHTML = `
+      <div class="hs-card"><div class="hs-label">Hermes</div><div class="hs-val ${status.hermes_running ? 'running' : 'stopped'}">${status.hermes_running ? '● 运行' : '○ 停止'}</div></div>
+      <div class="hs-card"><div class="hs-label">Watchdog</div><div class="hs-val ${status.watchdog_running ? 'running' : 'stopped'}">${status.watchdog_running ? '● 运行' : '○ 停止'}</div></div>
+      <div class="hs-card"><div class="hs-label">Dashboard</div><div class="hs-val running">● :${status.dashboard_port || 7892}</div></div>
+      <div class="hs-card"><div class="hs-label">运行时长</div><div class="hs-val">${health.uptime_human || '—'}</div></div>`;
+  }
+
+  const sysInfo = document.getElementById('sys-info-list');
+  if (sysInfo) {
+    sysInfo.innerHTML = `
+      <div class="sys-info-row"><span class="si-key">数据库</span><span class="si-val">${status.db_exists ? '● 已连接' : '○ 未连接'}</span></div>
+      <div class="sys-info-row"><span class="si-key">看板路径</span><span class="si-val">${(status.kanban_db || '').split('/').slice(-2).join('/')}</span></div>
+      <div class="sys-info-row"><span class="si-key">Cron任务</span><span class="si-val">${cronJobs.length}个</span></div>
+      <div class="sys-info-row"><span class="si-key">总任务</span><span class="si-val">${tasks.length}个</span></div>`;
+  }
+
+  const statsDetail = document.getElementById('sys-stats-detail');
+  if (statsDetail) {
+    const done = tasks.filter(t => resolveState(t.state || t.status) === 'done').length;
+    const running = tasks.filter(t => resolveState(t.state || t.status) === 'running').length;
+    const pending = tasks.filter(t => resolveState(t.state || t.status) === 'pending').length;
+    const blocked = tasks.filter(t => resolveState(t.state || t.status) === 'blocked').length;
+    statsDetail.innerHTML = `
+      <div class="sys-info-row"><span class="si-key">总计</span><span class="si-val">${tasks.length}</span></div>
+      <div class="sys-info-row"><span class="si-key">运行中</span><span class="si-val" style="color:#3498db">${running}</span></div>
+      <div class="sys-info-row"><span class="si-key">已完成</span><span class="si-val" style="color:#27ae60">${done}</span></div>
+      <div class="sys-info-row"><span class="si-key">待处理</span><span class="si-val" style="color:#fbbf24">${pending}</span></div>
+      <div class="sys-info-row"><span class="si-key">阻塞</span><span class="si-val" style="color:#f87171">${blocked}</span></div>`;
+  }
+}
+
+async function toggleCron(jobId, enable) {
+  const url = enable ? '/api/cron/resume' : '/api/cron/pause';
+  try {
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ job_id: jobId }),
+    });
+    loadSettings();
+  } catch (e) {
+    showToast('✗ 操作失败', true);
+  }
+}
+
+// ================================================================
+// TAB SWITCHING
+// ================================================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+  const btn = [...document.querySelectorAll('.tab-btn')].find(b => b.textContent.includes(
+    tab === 'kanban' ? '看板' : tab === 'agents' ? 'Agent' : tab === 'cron' ? 'Cron' : '系统'
+  ));
+  if (btn) btn.classList.add('active');
+
+  const panel = document.getElementById('panel-' + tab);
+  if (panel) panel.classList.add('active');
+
+  if (tab !== 'kanban') {
+    loadSettings();
+  }
+}
+
+// ================================================================
+// INIT
+// ================================================================
+loadAll();
+setInterval(loadAll, 5000);
+
+// Clock
+setInterval(() => {
+  const now = new Date();
+  document.title = `⚔️ 玄机阁 · ${now.toLocaleTimeString('zh-CN', { hour12: false })}`;
+}, 1000);
 </script>
+
 </body>
 </html>
