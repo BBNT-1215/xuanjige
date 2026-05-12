@@ -1132,24 +1132,18 @@
 // ================================================================
 
 const COLUMNS = [
-  { key: 'pending',   label: '⏳ 待处理', color: '#484f58', desc: '新建任务' },
-  { key: 'running',   label: '⚙️ 执行中', color: '#3498db', desc: '处理中' },
-  { key: 'done',     label: '🏁 完成',    color: '#27ae60', desc: '已完成' },
-  { key: 'blocked',  label: '🚫 阻塞',    color: '#c0392b', desc: '异常' },
+  { key: 'ready',    label: '⏳ 待处理', color: '#9b59b6', desc: '就绪' },
+  { key: 'running',  label: '⚙️ 执行中', color: '#3498db', desc: '处理中' },
+  { key: 'todo',     label: '📋 待办',   color: '#e67e22', desc: '待办' },
+  { key: 'blocked',  label: '🚫 阻塞',   color: '#c0392b', desc: '异常' },
+  { key: 'done',    label: '🏁 完成',   color: '#27ae60', desc: '已完成' },
+  { key: 'archived', label: '📦 归档',   color: '#7d8590', desc: '归档' },
 ];
 
 const STATE_MAP = {
-  'Taizi': 'pending', 'Zhongshu': 'running', 'Menxia': 'running',
-  'Doing': 'running', 'Next': 'running', 'Review': 'pending',
-  'Done': 'done', 'Blocked': 'blocked', 'Pending': 'pending',
-  'Cancelled': 'blocked',
-  // 玄机阁新状态
-  '承旨': 'pending', '机衡': 'running', '审议': 'running',
-  '执行': 'running', '技造': 'running', '刑策': 'running',
-  '文册': 'running', '数算': 'running', '兵戎': 'running',
-  '机研': 'running', '枢观': 'running', '玄档': 'running',
-  '枢鉴': 'running',
-  '待回奏': 'pending', '完成': 'done', '阻塞': 'blocked',
+  // 直接映射：数据库status → 看板column key（现在一致）
+  'ready': 'ready', 'todo': 'todo', 'running': 'running',
+  'done': 'done', 'blocked': 'blocked', 'archived': 'archived',
 };
 
 const AGENTS = [

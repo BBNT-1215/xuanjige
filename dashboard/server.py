@@ -45,32 +45,33 @@ STATIC_DIR = pathlib.Path(__file__).parent / 'static'
 STATIC_DIR.mkdir(exist_ok=True)
 
 PORT = 7892
-HOST = '127.0.0.1'
+HOST = '0.0.0.0'
 
 _START_TIME = datetime.datetime.now()
 
 
-def _sqlite_tasks(board='hermestrix', limit=200):
-    """从Kanban SQLite读取任务"""
+def _sqlite_tasks(limit=200):
+    """从Kanban SQLite读取任务（所有workspace_kind=scratch的任务）"""
     if not KANBAN_DB.exists():
         return []
     try:
         conn = sqlite3.connect(str(KANBAN_DB))
         conn.row_factory = sqlite3.Row
         rows = conn.execute(
-            "SELECT * FROM tasks WHERE board=? ORDER BY CAST(id AS INTEGER) DESC LIMIT ?",
-            (board, limit)
+            "SELECT * FROM tasks ORDER BY created_at DESC LIMIT ?",
+            (limit,)
         ).fetchall()
         conn.close()
         tasks = []
         for r in rows:
             task = dict(r)
-            # Parse body JSON
             if task.get('body'):
                 try:
                     task['body_parsed'] = json.loads(task['body'])
                 except Exception:
                     task['body_parsed'] = {}
+            # Map status → state for frontend compatibility
+            task['state'] = task.get('status', 'todo')
             tasks.append(task)
         return tasks
     except Exception as e:
@@ -146,15 +147,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     # ── Task CRUD ────────────────────────────────────────────────
 
     def _get_tasks(self):
-        board = self._query_param('board') or 'hermestrix'
         limit = int(self._query_param('limit') or 200)
-        tasks = _sqlite_tasks(board=board, limit=limit)
-        # Fallback to tasks.json if SQLite empty
-        if not tasks and TASKS_FILE.exists():
-            try:
-                tasks = json.loads(TASKS_FILE.read_text(encoding='utf-8'))
-            except Exception:
-                tasks = []
+        tasks = _sqlite_tasks(limit=limit)
         return tasks
 
     def _handle_create_task(self):
@@ -171,64 +165,39 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         description = data.get('description') or data.get('desc') or ''
         priority = data.get('priority', 'normal')
 
-        # 写入Kanban SQLite
-        task_id = None
-        if KANBAN_DB.exists():
-            try:
-                conn = sqlite3.connect(str(KANBAN_DB))
-                cursor = conn.execute(
-                    "SELECT MAX(CAST(id AS INTEGER)) FROM tasks WHERE board='hermestrix'"
-                )
-                max_id = cursor.fetchone()[0] or 0
-                task_id = str(max_id + 1)
-                now = datetime.datetime.now().isoformat()
-                body_json = json.dumps({
-                    'title': title,
-                    'description': description,
-                    'priority': priority,
-                    'created_by': 'dashboard',
-                    'step_id': 'root',
-                }, ensure_ascii=False)
-                conn.execute(
-                    "INSERT INTO tasks (id, board, title, body, state, created_at, updated_at) "
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    (task_id, 'hermestrix', title, body_json, 'pending', now, now)
-                )
-                conn.commit()
-                conn.close()
-            except Exception as e:
-                self.send_json({'ok': False, 'error': f'DB write failed: {e}'})
-                return
-        else:
-            # Fallback: write to tasks.json
-            if TASKS_FILE.exists():
-                try:
-                    existing = json.loads(TASKS_FILE.read_text(encoding='utf-8'))
-                except Exception:
-                    existing = []
-            else:
-                existing = []
-            task_id = str(len(existing) + 1)
-            task = {
-                'id': task_id,
-                'title': title,
-                'description': description,
-                'state': 'pending',
-                'priority': priority,
-                'created_at': datetime.datetime.now().isoformat(),
-                'updated_at': datetime.datetime.now().isoformat(),
-            }
-            existing.append(task)
-            TASKS_FILE.write_text(json.dumps(existing, ensure_ascii=False), encoding='utf-8')
+        # 使用真实的玄机阁步骤链创建任务
+        sys.path.insert(0, str(_BASE))
+        sys.path.insert(0, str(_BASE / 'hermes-agent'))
+        try:
+            from hermes_cli.kanban_db import connect
+            from workflow.kanban_step_chain import create_root_task, build_step_chain
+        except ImportError as e:
+            self.send_json({'ok': False, 'error': f'Import error: {e}'})
+            return
 
-        # 触发watchdog处理该任务
-        self._trigger_watchdog(task_id)
+        try:
+            # 1. 创建根任务
+            root_id = create_root_task(
+                title=title,
+                description=description,
+                routing={},
+            )
+            # 2. 构建6步子任务链
+            step_ids = build_step_chain(
+                task_id=root_id,
+                title=title,
+                routing={},
+            )
+        except Exception as e:
+            self.send_json({'ok': False, 'error': f'Step chain error: {e}'})
+            return
 
         self.send_json({
             'ok': True,
-            'task_id': task_id,
+            'task_id': root_id,
             'title': title,
-            'message': f'任务已创建: {title}',
+            'message': f'任务已创建: {title}（{len(step_ids)}个步骤）',
+            'step_ids': step_ids,
         })
 
     def _handle_flow_task(self):
@@ -248,20 +217,26 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.send_json({'ok': False, 'error': 'task_id required'})
             return
 
-        # Update task state in DB
+        # Update task status in DB (real schema: status, no board)
         if KANBAN_DB.exists():
             try:
                 conn = sqlite3.connect(str(KANBAN_DB))
-                now = datetime.datetime.now().isoformat()
+                import time
+                now_ts = int(time.time())
                 if action == 'cancel':
                     conn.execute(
-                        "UPDATE tasks SET state=?, updated_at=? WHERE id=? AND board=?",
-                        ('cancelled', now, str(task_id), 'hermestrix')
+                        "UPDATE tasks SET status=? WHERE id=?",
+                        ('archived', str(task_id))
                     )
                 elif action == 'retry':
                     conn.execute(
-                        "UPDATE tasks SET state=?, updated_at=? WHERE id=? AND board=?",
-                        ('pending', now, str(task_id), 'hermestrix')
+                        "UPDATE tasks SET status=? WHERE id=?",
+                        ('ready', str(task_id))
+                    )
+                elif action == 'done':
+                    conn.execute(
+                        "UPDATE tasks SET status=?, completed_at=? WHERE id=?",
+                        ('done', now_ts, str(task_id))
                     )
                 conn.commit()
                 conn.close()
@@ -419,21 +394,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return {"roles": []}
 
     def _get_stats(self) -> dict:
-        tasks = _sqlite_tasks(board='hermestrix', limit=500)
-        if not tasks and TASKS_FILE.exists():
-            try:
-                tasks = json.loads(TASKS_FILE.read_text(encoding='utf-8'))
-            except Exception:
-                tasks = []
-
+        tasks = _sqlite_tasks(limit=500)
         states = {}
         for t in tasks:
-            s = t.get('state', 'unknown')
+            s = t.get('status', 'unknown')
             states[s] = states.get(s, 0) + 1
 
         return {
             'total': len(tasks),
-            'by_state': states,
+            'by_status': states,
             'updated_at': datetime.datetime.now().isoformat(),
         }
 
