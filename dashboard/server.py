@@ -152,7 +152,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         return tasks
 
     def _handle_create_task(self):
-        """POST /api/tasks — 创建新任务，触发步骤链"""
+        """POST /api/tasks — 创建任务 + 立即由Hermes Agent执行"""
         try:
             length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(length).decode('utf-8') if length else '{}'
@@ -163,41 +163,77 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
         title = data.get('title') or data.get('task_title') or '新任务'
         description = data.get('description') or data.get('desc') or ''
-        priority = data.get('priority', 'normal')
 
-        # 使用真实的玄机阁步骤链创建任务
-        sys.path.insert(0, str(_BASE))
-        sys.path.insert(0, str(_BASE / 'hermes-agent'))
-        try:
-            from hermes_cli.kanban_db import connect
-            from workflow.kanban_step_chain import create_root_task, build_step_chain
-        except ImportError as e:
-            self.send_json({'ok': False, 'error': f'Import error: {e}'})
-            return
+        # ── 1. 在kanban DB创建任务 ──────────────────────────────
+        import time
+        HERMES_AGENT = pathlib.Path.home() / '.hermes' / 'hermes-agent'
+        KANBAN_DB = pathlib.Path.home() / '.hermes' / 'kanban.db'
+
+        task_id = f"t_{os.urandom(8).hex()}"
+        now_ts = int(time.time())
+        body_json = json.dumps({
+            'title': title,
+            'description': description,
+            'source': 'dashboard',
+            'root_id': task_id,
+        }, ensure_ascii=False)
 
         try:
-            # 1. 创建根任务
-            root_id = create_root_task(
-                title=title,
-                description=description,
-                routing={},
+            conn = sqlite3.connect(str(KANBAN_DB))
+            conn.execute(
+                "INSERT INTO tasks (id, title, body, status, created_by, created_at, workspace_kind) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (task_id, title, body_json, 'running', 'dashboard', now_ts, 'scratch')
             )
-            # 2. 构建6步子任务链
-            step_ids = build_step_chain(
-                task_id=root_id,
-                title=title,
-                routing={},
-            )
+            conn.commit()
+            conn.close()
         except Exception as e:
-            self.send_json({'ok': False, 'error': f'Step chain error: {e}'})
+            self.send_json({'ok': False, 'error': f'DB error: {e}'})
             return
+
+        # ── 2. 后台执行：hermes -z "<title>" ──────────────────
+        def _run_hermes():
+            """后台线程：执行Hermes并写结果回DB"""
+            try:
+                # 用hermes -z CLI调用，输出到stdout
+                result = subprocess.run(
+                    ['hermes', '-z', title],
+                    capture_output=True,
+                    text=True,
+                    timeout=300,
+                    cwd=str(HERMES_AGENT),
+                    env={**os.environ, 'HERMES_YOLO_MODE': '1'},
+                )
+                output = result.stdout.strip() if result.stdout else ''
+                if not output:
+                    output = result.stderr.strip() if result.stderr else ''
+
+            except subprocess.TimeoutExpired:
+                output = '[超时：任务执行超过5分钟]'
+            except Exception as ex:
+                output = f'[执行错误：{ex}]'
+
+            try:
+                conn2 = sqlite3.connect(str(KANBAN_DB))
+                conn2.execute(
+                    "UPDATE tasks SET status=?, result=?, completed_at=? WHERE id=?",
+                    ('done', output, int(time.time()), task_id)
+                )
+                conn2.commit()
+                conn2.close()
+            except Exception:
+                pass
+
+        import threading
+        t = threading.Thread(target=_run_hermes, daemon=True)
+        t.start()
 
         self.send_json({
             'ok': True,
-            'task_id': root_id,
+            'task_id': task_id,
             'title': title,
-            'message': f'任务已创建: {title}（{len(step_ids)}个步骤）',
-            'step_ids': step_ids,
+            'status': 'running',
+            'message': f'任务已创建，Hermes正在执行...',
         })
 
     def _handle_flow_task(self):
