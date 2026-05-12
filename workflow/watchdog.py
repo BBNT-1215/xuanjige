@@ -38,6 +38,7 @@ from workflow.kanban_step_chain import (
     abort_chain,
 )
 from workflow.agent import get_agent
+from workflow.routing import read_root_routing, write_routing_to_root
 
 
 # ── 配置 ──────────────────────────────────────────────────────────────────
@@ -67,11 +68,16 @@ def log(msg: str, level: str = "INFO"):
 def execute_step(step_info: dict) -> dict:
     """
     执行单个步骤。
-    当前实现：调用玄机阁内置 Agent（同步，主进程内）。
-    未来可替换为 subprocess worker 或 Hermes profile。
+
+    步骤分工：
+      chengzhi  → ChengzhiAgent（任务分拣）
+      jiheng    → JihengAgent（调度写入routing）
+      execute   → 从根任务读取routing → 调用对应执行Agent
+      zaohuang  → ZaohuangAgent（情报汇总）
+      yushi     → YushiAgent（质量终审）
     """
-    body   = step_info.get("body", "{}")
-    step_id = step_info.get("step_id") or ""
+    body    = step_info.get("body", "{}")
+    step_id  = step_info.get("step_id") or ""
     step_name = step_info.get("step_name", "")
 
     # 解析上下文
@@ -82,21 +88,42 @@ def execute_step(step_info: dict) -> dict:
 
     log(f"执行步骤: {step_name}({step_id})")
 
-    # 根据 step_id 选择 Agent
+    # ── 步骤路由 ────────────────────────────────
     if step_id == "chengzhi":
         agent = get_agent("chengzhi")
+        result = agent.run(ctx)
+
     elif step_id == "jiheng":
         agent = get_agent("jiheng")
+        result = agent.run(ctx)
+        # 机衡执行完后：将routing写回主任务body，供execute步骤读取
+        if result.get("ok"):
+            write_routing_to_root(ctx, result["result"], board=BOARD_NAME)
+
     elif step_id == "execute":
-        routing = ctx.get("routing", {})
-        target  = routing.get("target", "jixuan")
-        agent   = get_agent(target)
+        # 从根任务读取承旨的routing，决定执行Agent
+        root_id = ctx.get("root_id")
+        if root_id:
+            root_routing = read_root_routing(root_id, board=BOARD_NAME)
+            target = root_routing.get("target", "jixuan")
+        else:
+            target = ctx.get("routing", {}).get("target", "jixuan")
+
+        agent = get_agent(target)
         if not agent:
             agent = get_agent("jixuan")
+
+        log(f"  → 执行Agent: {agent.agent_name}({agent.agent_id})")
+        result = agent.run(ctx)
+
     elif step_id == "zaohuang":
         agent = get_agent("zaohuang")
+        result = agent.run(ctx)
+
     elif step_id == "yushi":
         agent = get_agent("yushi")
+        result = agent.run(ctx)
+
     else:
         return {"ok": False, "error": f"未知步骤: {step_id}"}
 
@@ -104,7 +131,6 @@ def execute_step(step_info: dict) -> dict:
         return {"ok": False, "error": f"Agent不存在: {step_id}"}
 
     try:
-        result = agent.run(ctx)
         return result
     except Exception as e:
         return {"ok": False, "error": str(e)}
