@@ -55,7 +55,7 @@ class WorkflowEngine:
     def log(self, msg: str):
         entry = {"time": datetime.datetime.now().isoformat(), "msg": msg}
         self._log.append(entry)
-        print(f"[引擎] {msg}")
+        print(f"[引擎] {msg}", file=sys.stderr)
 
     def get_log(self) -> list:
         return self._log[-100:]

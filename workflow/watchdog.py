@@ -55,7 +55,8 @@ LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 def log(msg: str, level: str = "INFO"):
     ts = datetime.datetime.now().strftime("%H:%M:%S")
     line = f"[{ts}][{level}] {msg}"
-    print(line)
+    import sys
+    print(line, file=sys.stderr)
     try:
         LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
         LOG_FILE.open("a").write(line + "\n")
