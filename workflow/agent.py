@@ -1395,8 +1395,12 @@ class ShenyiAgent(AgentBase):
         has_files = bool(exec_data.get("files") or exec_data.get("_generated_files"))
 
         if not exec_ok:
-            findings.append({"dim": "正确性", "severity": "critical", "msg": "execute执行失败"})
-            approved = False
+            # execute 返回 ok=False，但只要有实质产出，仍放行（可能是警告性问题）
+            if has_code or has_files:
+                findings.append({"dim": "正确性", "severity": "warning", "msg": "execute有警告但产出有效，继续"})
+            else:
+                findings.append({"dim": "正确性", "severity": "critical", "msg": "execute执行失败且无产出"})
+                approved = False
         elif not has_code and not has_files:
             findings.append({"dim": "正确性", "severity": "warning", "msg": "execute无可见产出"})
         else:

@@ -19,23 +19,23 @@ kanban_file: ~/.hermes/hermestrix/data/kanban.json
 # Agent配置
 agents:
   # 默认模型（可在各Agent SOUL中覆盖）
-  default_model: "MiniMax-M3"
+  default_model: "deepseek/deepseek-v4-flash:free"
 
-  # 各Agent独立模型配置
-  # 可用: MiniMax-M3, MiniMax-M2, Claude-3.5, GPT-4o, DeepSeek
+agents:
+  default_model: "deepseek/deepseek-v4-flash:free"
   model_per_agent:
-    chengzhi: "MiniMax-M3"    # 承旨
-    jiheng: "MiniMax-M3"      # 机衡
-    shenyi: "MiniMax-M3"      # 审议
-    jiyan: "MiniMax-M2"       # 机研
-    jizao: "MiniMax-M2"       # 技造
-    xingce: "MiniMax-M2"      # 刑策
-    diancang: "MiniMax-M2"     # 文册
-    shusuan: "MiniMax-M2"     # 数算
-    bingrong: "MiniMax-M3"    # 兵戎
-    zaohuang: "MiniMax-M2"    # 玄档
-    qitian: "MiniMax-M3"      # 枢观
-    yushi: "MiniMax-M2"       # 枢鉴
+    chengzhi: "deepseek/deepseek-v4-flash:free"
+    jiheng: "deepseek/deepseek-v4-flash:free"
+    shenyi: "deepseek/deepseek-v4-flash:free"
+    jiyan: "deepseek/deepseek-v4-flash:free"
+    jizao: "deepseek/deepseek-v4-flash:free"
+    xingce: "deepseek/deepseek-v4-flash:free"
+    diancang: "deepseek/deepseek-v4-flash:free"
+    shusuan: "deepseek/deepseek-v4-flash:free"
+    bingrong: "deepseek/deepseek-v4-flash:free"
+    zaohuang: "deepseek/deepseek-v4-flash:free"
+    qitian: "deepseek/deepseek-v4-flash:free"
+    yushi: "deepseek/deepseek-v4-flash:free"
 
 # 断点自愈配置
 recovery:

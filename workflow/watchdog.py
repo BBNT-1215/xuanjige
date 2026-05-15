@@ -128,6 +128,12 @@ def execute_step(step_info: dict) -> tuple[dict, dict]:
         if isinstance(result.get("result"), dict):
             ctx.update(result["result"])
 
+    elif step_id == "shenyi":
+        agent = get_agent("shenyi")
+        result = agent.run(ctx)
+        if isinstance(result.get("result"), dict):
+            ctx.update(result["result"])
+
     elif step_id == "zaohuang":
         agent = get_agent("zaohuang")
         result = agent.run(ctx)
@@ -244,8 +250,8 @@ def _process_chain(conn, main_task: dict, now: datetime.datetime):
                     retry_body = json.loads(step_task.get("body", "{}"))
                 except Exception:
                     retry_body = {}
-                retries = retry_body.get("retry_count", 0)
-                limit   = retry_body.get("failure_limit", 3)
+                retries = retry_body.get("retry_count", 0) or 0
+                limit   = retry_body.get("failure_limit") or 3
             else:
                 retries, limit = 0, 3
 
@@ -288,6 +294,35 @@ def _process_chain(conn, main_task: dict, now: datetime.datetime):
                 conn.commit()
         except Exception:
             pass
+
+    # 3b. 检查 BLOCKED 步骤：parent done → 自动恢复为 ready（重新尝试）
+    #      （仅当 retry_count < limit 时有效，否则保持 blocked）
+    blocked = [s for s in steps if s["status"] == "blocked"]
+    for step in blocked:
+        # 检查所有 parent 是否都是 done
+        parent_ids = conn.execute("""
+            SELECT parent_id FROM task_links WHERE child_id = ?
+        """, (step["id"],)).fetchall()
+        parent_done = all(
+            conn.execute("SELECT status FROM tasks WHERE id = ?", (pid["parent_id"],)).fetchone()["status"] == "done"
+            for pid in parent_ids
+        )
+        if not parent_done:
+            continue
+        # 读取 retry 信息
+        try:
+            body = json.loads(step["body"]) if isinstance(step["body"], str) else step.get("body", {})
+        except Exception:
+            body = {}
+        retries = (body.get("retry_count") or 0) if isinstance(body.get("retry_count"), (int, float)) else 0
+        limit = (body.get("failure_limit") or 3) if isinstance(body.get("failure_limit"), (int, float)) else 3
+        if retries < limit:
+            conn.execute(
+                "UPDATE tasks SET status = 'ready', started_at = 0 WHERE id = ?",
+                (step["id"],)
+            )
+            log(f"  ↺ Blocked恢复(重试): {step['id']} ({retries}/{limit})")
+            conn.commit()
 
     # 4. 整条链完成
     if is_chain_complete(parent_id, board=BOARD_NAME):

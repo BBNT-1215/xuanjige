@@ -207,6 +207,22 @@ def mark_step_done(subtask_id: str,
 
     # recompute_ready：父 done → 子 todo → ready
     recompute_ready(conn)
+
+    # 恢复被blocked的子步骤（parent done → child blocked → ready）
+    # recompute_ready 只处理 todo，不会动 blocked
+    blocked_children = conn.execute("""
+        SELECT id FROM tasks WHERE status = 'blocked'
+        AND id IN (
+            SELECT child_id FROM task_links
+            WHERE parent_id = ?
+        )
+    """, (subtask_id,)).fetchall()
+    for (child_id,) in blocked_children:
+        conn.execute(
+            "UPDATE tasks SET status = 'ready' WHERE id = ? AND status = 'blocked'",
+            (child_id,)
+        )
+
     conn.commit()
 
     return []

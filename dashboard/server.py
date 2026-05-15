@@ -584,7 +584,7 @@ def main():
             HOST = sys.argv[i+1]
 
     socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer((HOST, PORT), Handler) as httpd:
+    with socketserver.ThreadingTCPServer((HOST, PORT), Handler) as httpd:
         print(f"\n\n⚔️ 玄机阁 Dashboard v2")
         print(f"   http://{HOST}:{PORT}")
         print(f"   看板: http://{HOST}:{PORT}/index.html")

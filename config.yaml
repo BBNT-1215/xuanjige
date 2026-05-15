@@ -12,20 +12,20 @@ three_libraries:
 kanban_file: ~/.hermes/hermestrix/data/tasks.json
 
 agents:
-  default_model: "MiniMax-M3"
+  default_model: "stepfun/step-3.5-flash"
   model_per_agent:
-    chengzhi: "MiniMax-M3"
-    jiheng: "MiniMax-M3"
-    shenyi: "MiniMax-M3"
-    jiyan: "MiniMax-M2"
-    jizao: "MiniMax-M2"
-    xingce: "MiniMax-M2"
-    diancang: "MiniMax-M2"
-    shusuan: "MiniMax-M2"
-    bingrong: "MiniMax-M3"
-    zaohuang: "MiniMax-M2"
-    qitian: "MiniMax-M3"
-    yushi: "MiniMax-M2"
+    chengzhi: "stepfun/step-3.5-flash"
+    jiheng: "stepfun/step-3.5-flash"
+    shenyi: "stepfun/step-3.5-flash"
+    jiyan: "stepfun/step-3.5-flash"
+    jizao: "stepfun/step-3.5-flash"
+    xingce: "stepfun/step-3.5-flash"
+    diancang: "stepfun/step-3.5-flash"
+    shusuan: "stepfun/step-3.5-flash"
+    bingrong: "stepfun/step-3.5-flash"
+    zaohuang: "stepfun/step-3.5-flash"
+    qitian: "stepfun/step-3.5-flash"
+    yushi: "stepfun/step-3.5-flash"
 
 recovery:
   max_tool_calls: 20

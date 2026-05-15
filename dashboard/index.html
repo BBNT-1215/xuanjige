@@ -1302,7 +1302,17 @@ async function loadAll() {
       fetch('/api/cron/jobs').catch(() => ({ ok: false, json: () => ({ jobs: [] }) })),
     ]);
 
-    if (tasksRes.ok) tasks = await tasksRes.json();
+    if (tasksRes.ok) {
+      tasks = await tasksRes.json();
+      // 解析body字段为对象
+      for (const t of tasks) {
+        if (t.body && typeof t.body === 'string') {
+          try { t.body_obj = JSON.parse(t.body); } catch { t.body_obj = {}; }
+        } else {
+          t.body_obj = t.body || {};
+        }
+      }
+    }
     if (healthRes.ok) hermesStatus = await healthRes.json();
     if (cronRes.ok) {
       const cronData = await cronRes.json();
@@ -1509,11 +1519,16 @@ async function showDetail(taskId) {
     </div>
     <div class="detail-section">
       <div class="detail-section-title">描述</div>
-      <div style="font-size:12px;color:#7d8590;line-height:1.5">${escapeHtml(task.description || task.desc || task.body || '—')}</div>
+      <div style="font-size:12px;color:#7d8590;line-height:1.5">${escapeHtml(task.description || task.desc || task.body_obj?.description || '—')}</div>
     </div>
     <div class="detail-section">
+      <div class="detail-section-title">成果</div>
+      <div style="font-size:12px;color:#c9d1d9;line-height:1.6;max-height:400px;overflow-y:auto;background:#161b22;padding:10px;border-radius:6px;white-space:pre-wrap;word-break:break-all">${task.result ? escapeHtml(task.result) : '<span style="color:#7d8590">— 无成果</span>'}</div>
+    </div>
+    ${task.result ? `<div class="detail-section"><button class="detail-action-btn" onclick="downloadResult('${taskId}', '${escapeHtml(task.title || taskId)}')" style="margin-top:8px">⬇ 下载成果</button></div>` : ''}
+    <div class="detail-section">
       <div class="detail-section-title">时间</div>
-      <div style="font-size:11px;color:#7d8590">创建: ${task.created_at || '—'}<br>更新: ${task.updated_at || '—'}</div>
+      <div style="font-size:11px;color:#7d8590">创建: ${task.created_at ? new Date(task.created_at*1000).toLocaleString('zh-CN') : '—'}<br>完成: ${task.completed_at ? new Date(task.completed_at*1000).toLocaleString('zh-CN') : '—'}</div>
     </div>`;
 
   // Action buttons
@@ -1529,6 +1544,18 @@ async function showDetail(taskId) {
 
 function closeDetail() {
   document.getElementById('detail-panel').classList.remove('active');
+}
+
+function downloadResult(taskId, title) {
+  const task = tasks.find(t => String(t.id) === String(taskId));
+  if (!task || !task.result) return;
+  const blob = new Blob([task.result], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_')}_${taskId}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 async function flowTask(taskId, action) {
