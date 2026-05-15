@@ -52,11 +52,14 @@ LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 
 # ── 日志 ──────────────────────────────────────────────────────────────────
 
-def log(msg: str, level: str = "INFO"):
+def log(msg: str, level: str = "INFO", always_print: bool = False):
     ts = datetime.datetime.now().strftime("%H:%M:%S")
     line = f"[{ts}][{level}] {msg}"
     import sys
-    print(line, file=sys.stderr)
+    # 仅在 always_print=True 或级别非INFO 时输出到 stderr
+    # 仅周期性扫描信息 (INFO) 写文件，不打扰用户
+    if always_print or level != "INFO":
+        print(line, file=sys.stderr)
     try:
         LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
         LOG_FILE.open("a").write(line + "\n")
@@ -331,7 +334,7 @@ def _process_chain(conn, main_task: dict, now: datetime.datetime):
             (now_ts, parent_id)
         )
         conn.commit()
-        log(f"  ✓✓ 任务链完成: {parent_id}")
+        log(f"  ✓✓ 任务链完成: {parent_id}", always_print=True)
 
 
 # ── CLI 入口 ──────────────────────────────────────────────────────────────
