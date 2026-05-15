@@ -19,7 +19,7 @@
 
 ## 🏛️ 一句话介绍
 
-> 玄机阁是一套**制度驱动的 AI Agent 协作操作系统**——借鉴玄机阁的制度智慧，让 AI Agent 协作从"自由聊天"进化为"制度化运转"，实现可量化、可审计、可进化的自我进化体系。
+> 玄机阁是一套**制度驱动的 AI Agent 协作操作系统**——借鉴三省六部制的制度智慧，让 AI Agent 协作从"自由聊天"进化为"制度化运转"，实现可量化、可审计、可进化的自我进化体系。
 
 ---
 
@@ -334,11 +334,11 @@ ruff check --fix .
 
 ## 🙏 致谢
 
-**本项目直接受 [cft0808/edict](https://github.com/cft0808/edict)（15.7k ⭐）启发**—— edict 是目前最完整的玄机阁框架 AI Agent 实现，奠定了"制度性审核 + 实时看板"的核心范式。本项目在 edict 基础上进行 Hermes Agent 原生适配，并新增断点自愈、三库分离、进化闭环等工程实践。
+**本项目直接受 [cft0808/edict](https://github.com/cft0808/edict)（15.7k ⭐）启发**—— edict 是目前最完整的三省六部制框架 AI Agent 实现，奠定了"制度性审核 + 实时看板"的核心范式。本项目在 edict 基础上进行 Hermes Agent 原生适配，并新增断点自愈、三库分离、进化闭环等工程实践。
 
 设计参考：
-- [cft0808/edict](https://github.com/cft0808/edict) — 玄机阁框架完整实现
-- [agent-governance-design skill](https://github.com/lijigang/ljg-skills) — 玄机阁框架方法论沉淀
+- [cft0808/edict](https://github.com/cft0808/edict) — 三省六部制框架完整实现
+- [agent-governance-design skill](https://github.com/lijigang/ljg-skills) —三省六部制框架方法论沉淀
 
 ---
 
